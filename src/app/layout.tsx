@@ -3,6 +3,7 @@ import { Montserrat, Open_Sans } from "next/font/google";
 import "@/styles/globals.css";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -105,9 +106,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-white font-opensans antialiased">
-        <Navigation />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <SessionProvider>
+          <Navigation />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </SessionProvider>
       </body>
     </html>
   );

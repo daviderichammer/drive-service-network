@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
   CheckCircle,
   MapPin,
@@ -117,6 +118,7 @@ function DetailRow({
 
 export default function ConfirmationPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [data, setData] = useState<ConfirmationData | null>(null);
   const [confirmationCode, setConfirmationCode] = useState("");
 
@@ -348,6 +350,32 @@ export default function ConfirmationPage() {
               Book Another Service
             </Button>
           </div>
+
+          {session ? (
+            <div className="mt-4 p-4 bg-teal/5 border border-teal/20 rounded-xl text-center">
+              <p className="font-opensans text-sm text-navy mb-2">
+                This appointment has been saved to your member dashboard.
+              </p>
+              <Link
+                href="/dashboard/appointments"
+                className="font-montserrat font-semibold text-teal text-sm hover:text-teal-600 transition-colors"
+              >
+                View in Dashboard →
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-4 p-4 bg-navy/5 border border-navy/10 rounded-xl text-center">
+              <p className="font-opensans text-sm text-gray-600 mb-2">
+                Create a free account to track this appointment and get commercial pricing.
+              </p>
+              <Link
+                href="/auth/register"
+                className="font-montserrat font-semibold text-teal text-sm hover:text-teal-600 transition-colors"
+              >
+                Create Free Account →
+              </Link>
+            </div>
+          )}
 
           <p className="text-center text-xs text-gray-400 font-opensans mt-6">
             Powered by{" "}

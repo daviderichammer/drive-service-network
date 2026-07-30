@@ -273,6 +273,13 @@ export default function AppointmentPage() {
           vehicleModel: vehicleModel,
           vehicleMileage: vehicleMileage || undefined,
           notes: notes.trim() || undefined,
+          // Additional context for member dashboard record
+          serviceName: bookingState.selectedServiceName,
+          shopName: bookingState.selectedShopName,
+          shopAddress: bookingState.selectedShopAddress,
+          shopPhone: bookingState.selectedShopPhone || undefined,
+          shopZipCode: bookingState.zipCode,
+          scheduledDate: selectedTimeslotDate || undefined,
         }),
       });
       const apptData = await apptRes.json();

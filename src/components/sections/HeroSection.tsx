@@ -1,0 +1,177 @@
+import React from "react";
+import Link from "next/link";
+import { ArrowRight, CheckCircle, Shield, TrendingDown, Clock } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+
+const heroStats = [
+  { value: "220+", label: "Vehicles Operated" },
+  { value: "515+", label: "Services Available" },
+  { value: "50+", label: "States Covered" },
+  { value: "24/7", label: "Support Access" },
+];
+
+const heroTrustPoints = [
+  "No hidden fees or markups",
+  "Commercial pricing for all members",
+  "Nationwide certified shop network",
+];
+
+export function HeroSection() {
+  return (
+    <section className="relative min-h-screen flex items-center bg-gradient-hero overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
+
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-navy/40" />
+
+      {/* Teal accent line */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal via-gold to-teal" />
+
+      <div className="relative section-container pt-32 pb-20 md:pt-40 md:pb-28">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left Column — Content */}
+          <div>
+            <Badge variant="teal" size="lg" className="mb-6">
+              Built by Operators. Designed for Operators.
+            </Badge>
+
+            <h1 className="font-montserrat font-black text-white text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-6">
+              One Network.{" "}
+              <span className="text-gold">Every Vehicle.</span>{" "}
+              Nationwide.
+            </h1>
+
+            <p className="font-opensans text-white/80 text-lg md:text-xl leading-relaxed mb-8 max-w-xl">
+              Drive Service Network connects fleet operators with trusted repair
+              and maintenance providers across the country — with commercial
+              pricing, simplified scheduling, and real operational expertise
+              behind every interaction.
+            </p>
+
+            {/* Trust Points */}
+            <ul className="space-y-2.5 mb-10">
+              {heroTrustPoints.map((point) => (
+                <li key={point} className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-teal flex-shrink-0" />
+                  <span className="font-opensans text-white/80 text-sm">{point}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button variant="gold" size="lg" asChild>
+                <Link href="/membership">
+                  Start Saving Today
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+              >
+                <Link href="/how-it-works">
+                  See How It Works
+                </Link>
+              </Button>
+            </div>
+
+            {/* Social Proof */}
+            <p className="mt-6 font-opensans text-white/50 text-xs">
+              Trusted by Turo hosts, rental operators, and commercial fleet managers nationwide
+            </p>
+          </div>
+
+          {/* Right Column — Stats Card */}
+          <div className="lg:flex justify-end hidden">
+            <div className="w-full max-w-md">
+              {/* Main Stats Card */}
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-hero">
+                <h3 className="font-montserrat font-bold text-white text-lg mb-6">
+                  Platform at a Glance
+                </h3>
+
+                <div className="grid grid-cols-2 gap-6 mb-8">
+                  {heroStats.map((stat) => (
+                    <div key={stat.label}>
+                      <div className="stat-value">{stat.value}</div>
+                      <div className="stat-label">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Feature Pills */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3">
+                    <div className="w-8 h-8 bg-teal/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <TrendingDown className="w-4 h-4 text-teal" />
+                    </div>
+                    <div>
+                      <div className="font-montserrat font-semibold text-white text-sm">
+                        Commercial Discounts
+                      </div>
+                      <div className="font-opensans text-white/60 text-xs">
+                        Exclusive pricing for operators
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3">
+                    <div className="w-8 h-8 bg-gold/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-4 h-4 text-gold" />
+                    </div>
+                    <div>
+                      <div className="font-montserrat font-semibold text-white text-sm">
+                        3-Step Booking
+                      </div>
+                      <div className="font-opensans text-white/60 text-xs">
+                        Schedule service in minutes
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3">
+                    <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Shield className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-montserrat font-semibold text-white text-sm">
+                        Certified Network
+                      </div>
+                      <div className="font-opensans text-white/60 text-xs">
+                        Vetted shops, guaranteed quality
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Stats Row */}
+        <div className="lg:hidden mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {heroStats.map((stat) => (
+            <div
+              key={stat.label}
+              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center"
+            >
+              <div className="font-montserrat font-black text-gold text-2xl">{stat.value}</div>
+              <div className="font-opensans text-white/60 text-xs mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

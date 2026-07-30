@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 20%;
+    --primary: 222 47% 20%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 174 57% 39%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 43 80% 55%;
+    --accent-foreground: 222 47% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 47% 20%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground font-opensans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-montserrat font-bold;
+  }
+}
+
+@layer components {
+  /* Section containers */
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  .section-padding-sm {
+    @apply py-10 md:py-16 lg:py-20;
+  }
+
+  /* Typography */
+  .heading-display {
+    @apply font-montserrat font-bold text-display-md md:text-display-lg lg:text-display-xl tracking-tight;
+  }
+
+  .heading-xl {
+    @apply font-montserrat font-bold text-3xl md:text-4xl lg:text-5xl tracking-tight;
+  }
+
+  .heading-lg {
+    @apply font-montserrat font-bold text-2xl md:text-3xl lg:text-4xl tracking-tight;
+  }
+
+  .heading-md {
+    @apply font-montserrat font-semibold text-xl md:text-2xl lg:text-3xl;
+  }
+
+  .heading-sm {
+    @apply font-montserrat font-semibold text-lg md:text-xl;
+  }
+
+  .body-lg {
+    @apply font-opensans text-lg leading-relaxed;
+  }
+
+  .body-md {
+    @apply font-opensans text-base leading-relaxed;
+  }
+
+  /* Cards */
+  .card-base {
+    @apply bg-white rounded-xl shadow-card border border-gray-100 overflow-hidden;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-navy text-white font-montserrat font-semibold text-sm rounded-lg transition-all duration-200 hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-navy focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-teal text-white font-montserrat font-semibold text-sm rounded-lg transition-all duration-200 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent border-2 border-white text-white font-montserrat font-semibold text-sm rounded-lg transition-all duration-200 hover:bg-white hover:text-navy focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-navy font-montserrat font-bold text-sm rounded-lg transition-all duration-200 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Form inputs */
+  .input-base {
+    @apply w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-navy placeholder-gray-400 font-opensans text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent;
+  }
+
+  /* Trust signal badge */
+  .trust-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 bg-navy/10 text-navy rounded-full text-xs font-montserrat font-semibold uppercase tracking-wide;
+  }
+
+  /* Gradient text */
+  .text-gradient-teal {
+    @apply bg-gradient-to-r from-teal to-teal-300 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold to-gold-400 bg-clip-text text-transparent;
+  }
+
+  /* Divider */
+  .divider-gold {
+    @apply w-16 h-1 bg-gold rounded-full;
+  }
+
+  .divider-teal {
+    @apply w-16 h-1 bg-teal rounded-full;
+  }
+
+  /* Nav */
+  .nav-link {
+    @apply font-opensans font-medium text-sm text-white/80 hover:text-white transition-colors duration-200;
+  }
+
+  /* Step number */
+  .step-number {
+    @apply w-12 h-12 rounded-full bg-teal text-white font-montserrat font-bold text-lg flex items-center justify-center flex-shrink-0;
+  }
+
+  /* Stat card */
+  .stat-value {
+    @apply font-montserrat font-black text-4xl md:text-5xl text-gold;
+  }
+
+  .stat-label {
+    @apply font-opensans text-sm text-white/70 mt-1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+}

@@ -1,0 +1,351 @@
+// Drive Service Network — Prisma Schema
+// Global Drive Holdings Inc.
+// Phase 1 Foundation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  CUSTOMER
+  FLEET_OPERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum MembershipTier {
+  FREE
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum FleetType {
+  TURO_HOST
+  RENTAL_OPERATOR
+  COMMERCIAL_FLEET
+  DEALER
+  CORPORATE
+  MUNICIPAL
+  OTHER
+}
+
+enum VehicleStatus {
+  ACTIVE
+  INACTIVE
+  IN_SERVICE
+  SOLD
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum ContactFormStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  SPAM
+}
+
+// ============================================================
+// USER MANAGEMENT
+// ============================================================
+
+model User {
+  id                String     @id @default(cuid())
+  email             String     @unique
+  emailVerified     DateTime?
+  firstName         String
+  lastName          String
+  phone             String?
+  role              UserRole   @default(CUSTOMER)
+  status            UserStatus @default(ACTIVE)
+  membershipTier    MembershipTier @default(FREE)
+  membershipExpiry  DateTime?
+
+  // Openbay Integration
+  openbayUserId     String?    @unique
+  openbaySubId      String?
+
+  // Address
+  addressLine1      String?
+  addressLine2      String?
+  city              String?
+  state             String?
+  zipCode           String?
+  country           String?    @default("US")
+
+  // Metadata
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  lastLoginAt       DateTime?
+
+  // Relations
+  vehicles          Vehicle[]
+  fleets            FleetMember[]
+  appointments      Appointment[]
+  contactForms      ContactForm[]
+
+  @@index([email])
+  @@index([openbayUserId])
+  @@index([membershipTier])
+  @@map("users")
+}
+
+// ============================================================
+// VEHICLE MANAGEMENT
+// ============================================================
+
+model Vehicle {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fleetId       String?
+  fleet         Fleet?        @relation(fields: [fleetId], references: [id])
+
+  // Vehicle Details
+  year          Int
+  make          String
+  model         String
+  trim          String?
+  vin           String?       @unique
+  licensePlate  String?
+  color         String?
+  mileage       Int?
+  engineType    String?
+  engineSize    String?
+  transmission  String?
+  fuelType      String?
+
+  // Status
+  status        VehicleStatus @default(ACTIVE)
+  nickname      String?       // e.g., "Turo Unit 1"
+
+  // Openbay Integration
+  openbayVehicleId String?
+
+  // Metadata
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  appointments  Appointment[]
+
+  @@index([userId])
+  @@index([fleetId])
+  @@index([vin])
+  @@map("vehicles")
+}
+
+// ============================================================
+// FLEET MANAGEMENT
+// ============================================================
+
+model Fleet {
+  id              String      @id @default(cuid())
+  name            String
+  type            FleetType   @default(OTHER)
+  description     String?     @db.Text
+
+  // Contact
+  contactName     String?
+  contactEmail    String?
+  contactPhone    String?
+
+  // Address
+  addressLine1    String?
+  city            String?
+  state           String?
+  zipCode         String?
+
+  // Business Details
+  dotNumber       String?
+  taxId           String?
+  vehicleCount    Int?        @default(0)
+
+  // Membership
+  membershipTier  MembershipTier @default(FREE)
+  membershipExpiry DateTime?
+
+  // Metadata
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  members         FleetMember[]
+  vehicles        Vehicle[]
+  appointments    Appointment[]
+
+  @@index([type])
+  @@index([membershipTier])
+  @@map("fleets")
+}
+
+model FleetMember {
+  id        String   @id @default(cuid())
+  fleetId   String
+  fleet     Fleet    @relation(fields: [fleetId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("MEMBER") // OWNER, MANAGER, MEMBER
+  createdAt DateTime @default(now())
+
+  @@unique([fleetId, userId])
+  @@map("fleet_members")
+}
+
+// ============================================================
+// APPOINTMENT / SERVICE MANAGEMENT
+// ============================================================
+
+model Appointment {
+  id                String            @id @default(cuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id])
+  vehicleId         String?
+  vehicle           Vehicle?          @relation(fields: [vehicleId], references: [id])
+  fleetId           String?
+  fleet             Fleet?            @relation(fields: [fleetId], references: [id])
+
+  // Service Details
+  serviceType       String
+  serviceDescription String?          @db.Text
+  estimatedCost     Decimal?          @db.Decimal(10, 2)
+  finalCost         Decimal?          @db.Decimal(10, 2)
+
+  // Shop / Provider
+  shopName          String?
+  shopAddress       String?
+  shopPhone         String?
+  shopZipCode       String?
+
+  // Scheduling
+  scheduledDate     DateTime?
+  scheduledTime     String?
+  completedAt       DateTime?
+  status            AppointmentStatus @default(PENDING)
+
+  // Openbay Integration
+  openbayAppointmentId String?
+  openbayShopId        String?
+  openbayServiceId     String?
+  openbayTimeslotId    String?
+
+  // Notes
+  customerNotes     String?           @db.Text
+  technicianNotes   String?           @db.Text
+
+  // Metadata
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([fleetId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@map("appointments")
+}
+
+// ============================================================
+// CONTACT / LEAD MANAGEMENT
+// ============================================================
+
+model ContactForm {
+  id          String            @id @default(cuid())
+  userId      String?
+  user        User?             @relation(fields: [userId], references: [id])
+
+  // Contact Details
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  company     String?
+
+  // Inquiry
+  subject     String
+  message     String            @db.Text
+  inquiryType String?           // general, membership, fleet, partnership, support
+
+  // Status
+  status      ContactFormStatus @default(NEW)
+  assignedTo  String?
+  resolvedAt  DateTime?
+  notes       String?           @db.Text
+
+  // Metadata
+  ipAddress   String?
+  userAgent   String?           @db.Text
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@map("contact_forms")
+}
+
+// ============================================================
+// SERVICE CATALOG (cached from Openbay)
+// ============================================================
+
+model ServiceCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  iconName    String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  services    Service[]
+
+  @@map("service_categories")
+}
+
+model Service {
+  id              String          @id @default(cuid())
+  categoryId      String
+  category        ServiceCategory @relation(fields: [categoryId], references: [id])
+
+  // Service Details
+  name            String
+  description     String?         @db.Text
+  openbayServiceId Int?           @unique
+
+  // Pricing (estimated ranges)
+  priceMin        Decimal?        @db.Decimal(10, 2)
+  priceMax        Decimal?        @db.Decimal(10, 2)
+
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([categoryId])
+  @@index([openbayServiceId])
+  @@map("services")
+}

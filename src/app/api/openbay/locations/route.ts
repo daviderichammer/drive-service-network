@@ -63,5 +63,5 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ locations: data, count: data.length });
+  return NextResponse.json({ locations: data, count: Array.isArray(data) ? data.length : 0 });
 }

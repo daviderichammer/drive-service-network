@@ -16,9 +16,9 @@ export interface ButtonProps
 
 const buttonVariants = {
   primary:
-    "bg-navy text-white hover:bg-navy-700 focus:ring-navy shadow-sm hover:shadow-md",
-  secondary:
     "bg-teal text-white hover:bg-teal-600 focus:ring-teal shadow-sm hover:shadow-md",
+  secondary:
+    "bg-navy text-white hover:bg-navy-700 focus:ring-navy shadow-sm hover:shadow-md",
   outline:
     "bg-transparent border-2 border-navy text-navy hover:bg-navy hover:text-white focus:ring-navy",
   ghost:

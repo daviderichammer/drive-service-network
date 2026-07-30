@@ -5,8 +5,20 @@
  * SECURITY: This module runs EXCLUSIVELY on the server.
  * The API key is NEVER exposed to the client.
  * All Openbay calls are proxied through Next.js API routes.
+ *
+ * API Base: https://openbay.driveservicenetwork.com
+ * Partner ID: 116
+ *
+ * Actual endpoint structure (from staging demo):
+ *   GET  /api/services
+ *   POST /api/locations/search  { zipcode, locationType, max_results, radius }
+ *   GET  /api/locations/:id
+ *   POST /api/locations/:id/timeslots  { number_of_days }
+ *   POST /api/users  { email, first_name, last_name, zipcode }
+ *   POST /api/appointments  { user_id, location_id, scheduled_time, vehicle_year, vehicle_make, vehicle_model, vehicle_mileage, appointment_type, notes, services }
+ *   GET  /api/appointments  { user_id }
+ *   POST /api/users/:id/sso-link  { dayDuration }
  */
-
 import axios, { AxiosInstance, AxiosError } from "axios";
 
 // ============================================================
@@ -32,6 +44,9 @@ export interface OpenbayLocation {
   reviewCount?: number;
   distance?: number;
   services?: string[];
+  latitude?: number;
+  longitude?: number;
+  hours?: Record<string, string>;
 }
 
 export interface OpenbayTimeslot {
@@ -39,6 +54,9 @@ export interface OpenbayTimeslot {
   date: string;
   time: string;
   available: boolean;
+  datetime?: string;
+  proposedTime?: string;
+  fullTitle?: string;
 }
 
 export interface OpenbayUser {
@@ -66,6 +84,9 @@ export interface OpenbayAppointment {
   timeslotId: string;
   status: string;
   scheduledAt: string;
+  confirmationNumber?: string;
+  shopName?: string;
+  serviceName?: string;
 }
 
 export interface OpenbaySearchParams {
@@ -97,12 +118,109 @@ export interface BookAppointmentParams {
   timeslotId: string;
   vehicleId?: string;
   notes?: string;
+  vehicleYear?: string;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleMileage?: string;
+  scheduledTime?: string;
 }
 
 export interface OpenbayApiError {
   code: string;
   message: string;
   statusCode: number;
+}
+
+// ============================================================
+// RAW API TYPES (staging server response shapes)
+// ============================================================
+
+interface RawService {
+  id: number;
+  name: string;
+  category?: string;
+  ability_requirements?: Array<{ category_name?: string; category_full_name?: string }>;
+}
+
+interface RawLocation {
+  openbay_id: string;
+  name: string;
+  address_1?: string;
+  address_2?: string;
+  city: string;
+  state: string;
+  zipcode?: string;
+  phone_number?: string;
+  review_rating?: number;
+  review_count?: number;
+  distance?: number;
+  latitude?: number;
+  longitude?: number;
+  monday?: { open: string | null; close: string | null };
+  tuesday?: { open: string | null; close: string | null };
+  wednesday?: { open: string | null; close: string | null };
+  thursday?: { open: string | null; close: string | null };
+  friday?: { open: string | null; close: string | null };
+  saturday?: { open: string | null; close: string | null };
+  sunday?: { open: string | null; close: string | null };
+}
+
+interface RawTimeslot {
+  day: string;
+  key: string;
+  slot_title: string;
+  proposed_time: string;
+  full_slot_title: string;
+}
+
+// ============================================================
+// TRANSFORMERS
+// ============================================================
+
+function transformService(raw: RawService): OpenbayService {
+  const category =
+    raw.category ||
+    raw.ability_requirements?.[0]?.category_name ||
+    raw.ability_requirements?.[0]?.category_full_name ||
+    "Other";
+  return {
+    id: raw.id,
+    name: raw.name.trim(),
+    category,
+  };
+}
+
+function transformLocation(raw: RawLocation): OpenbayLocation {
+  return {
+    id: raw.openbay_id,
+    name: raw.name,
+    address: [raw.address_1, raw.address_2].filter(Boolean).join(", "),
+    city: raw.city,
+    state: raw.state,
+    zip: raw.zipcode || "",
+    phone: raw.phone_number,
+    rating: raw.review_rating || undefined,
+    reviewCount: raw.review_count || undefined,
+    distance: raw.distance,
+    latitude: raw.latitude,
+    longitude: raw.longitude,
+  };
+}
+
+function transformTimeslot(raw: RawTimeslot): OpenbayTimeslot {
+  // Extract time from proposed_time ISO string
+  const timeMatch = raw.proposed_time.match(/T(\d{2}:\d{2})/);
+  const time = timeMatch ? timeMatch[1] : raw.slot_title.trim();
+
+  return {
+    id: raw.key,
+    date: raw.day,
+    time,
+    available: true,
+    datetime: raw.proposed_time,
+    proposedTime: raw.proposed_time,
+    fullTitle: raw.full_slot_title,
+  };
 }
 
 // ============================================================
@@ -130,7 +248,13 @@ class OpenbayClient {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
+        // Openbay uses 'Api-Key ob_xxx' format for the staging API
+        // If the key already starts with 'Api-Key' or 'Bearer', use as-is
+        ...(apiKey && {
+          Authorization: apiKey.startsWith("Api-Key ") || apiKey.startsWith("Bearer ")
+            ? apiKey
+            : `Api-Key ${apiKey}`,
+        }),
         "X-Partner-ID": this.partnerId,
       },
     });
@@ -173,10 +297,9 @@ class OpenbayClient {
   // ============================================================
 
   async getServices(): Promise<OpenbayService[]> {
-    const response = await this.client.get(
-      "/partners/v2/partner-api/services"
-    );
-    return response.data?.services || response.data || [];
+    const response = await this.client.get("/partners/v2/partner-api/services");
+    const raw: RawService[] = response.data?.services || response.data || [];
+    return Array.isArray(raw) ? raw.map(transformService) : [];
   }
 
   // ============================================================
@@ -184,38 +307,41 @@ class OpenbayClient {
   // ============================================================
 
   async searchLocations(params: OpenbaySearchParams): Promise<OpenbayLocation[]> {
-    const response = await this.client.get("/partners/v2/partner-locations", {
-      params: {
-        zip: params.zipCode,
-        radius: params.radius || 25,
-        service_type: params.serviceType || "appointment",
-        ...(params.vehicleMake && { make: params.vehicleMake }),
-        ...(params.serviceId && { service_id: params.serviceId }),
-      },
+    const response = await this.client.post("/partners/v2/partner-locations", {
+      zipcode: params.zipCode,
+      radius: params.radius || 25,
+      locationType: params.serviceType === "oil_change" ? "oil" : "appointment",
+      max_results: 20,
+      ...(params.vehicleMake && { vehicle_make: params.vehicleMake }),
     });
-    return response.data?.locations || response.data || [];
+    const raw: RawLocation[] = Array.isArray(response.data) ? response.data : (response.data?.locations || []);
+    return raw.map(transformLocation);
   }
 
   async getLocationDetails(shopId: string): Promise<OpenbayLocation> {
-    const response = await this.client.get(
-      `/partners/v2/partner-locations/${shopId}`
-    );
-    return response.data;
+    const response = await this.client.get(`/partners/v2/partner-locations/${shopId}`);
+    return transformLocation(response.data as RawLocation);
   }
 
   async getTimeslots(
     shopId: string,
-    serviceId: number,
-    date?: string
+    _serviceId: number,
+    _date?: string,
+    numberOfDays?: number
   ): Promise<OpenbayTimeslot[]> {
     const response = await this.client.post(
-      `/partners/v2/partner-locations/${shopId}/timeslots`,
+      `/partners/v2/partner-locations/${shopId}/time-slots`,
       {
-        service_id: serviceId,
-        date: date || new Date().toISOString().split("T")[0],
+        location_id: shopId,
+        number_of_days: numberOfDays || 14,
       }
     );
-    return response.data?.timeslots || response.data || [];
+    const raw: RawTimeslot[] =
+      response.data?.slots ||
+      response.data?.time_slots ||
+      response.data?.timeslots ||
+      (Array.isArray(response.data) ? response.data : []);
+    return Array.isArray(raw) ? raw.map(transformTimeslot) : [];
   }
 
   // ============================================================
@@ -223,28 +349,38 @@ class OpenbayClient {
   // ============================================================
 
   async createUser(params: CreateUserParams): Promise<OpenbayUser> {
-    const response = await this.client.post(
-      "/partners/v2/partner-api/users",
-      {
-        first_name: params.firstName,
-        last_name: params.lastName,
-        email: params.email,
-        zip_code: params.zipCode,
-      }
-    );
-    return response.data;
+    const response = await this.client.post("/partners/v2/partner-api/users", {
+      first_name: params.firstName,
+      last_name: params.lastName,
+      email: params.email,
+      zipcode: params.zipCode,
+    });
+    const data = response.data;
+    return {
+      id: String(data.user_id || data.id || ""),
+      email: params.email,
+      firstName: params.firstName,
+      lastName: params.lastName,
+      zipCode: params.zipCode,
+    };
   }
 
   async getUser(userId: string): Promise<OpenbayUser> {
-    const response = await this.client.get(
-      `/partners/v2/partner-api/users/${userId}`
-    );
-    return response.data;
+    const response = await this.client.get(`/partners/v1/partner-users/${userId}`);
+    const data = response.data;
+    return {
+      id: String(data.user_id || data.id || userId),
+      email: data.email || "",
+      firstName: data.first_name || "",
+      lastName: data.last_name || "",
+      zipCode: data.zipcode || "",
+    };
   }
 
   async generateSSOLink(userId: string): Promise<{ url: string }> {
     const response = await this.client.post(
-      `/partners/v1/partner-users/${userId}/service-request-link`
+      `/partners/v1/partner-users/${userId}/service-request-link`,
+      { dayDuration: 7 }
     );
     return response.data;
   }
@@ -256,24 +392,20 @@ class OpenbayClient {
   async createSubscription(
     params: CreateSubscriptionParams
   ): Promise<OpenbaySubscription> {
-    const response = await this.client.post(
-      "/partners/v2/partner-api/subscriptions",
-      {
-        user_id: params.userId,
-        start_date: params.startDate,
-        end_date: params.endDate,
-        partner_ref_id: params.partnerRefId,
-      }
-    );
+    const response = await this.client.post("/partners/v2/partner-api/subscriptions", {
+      user_id: params.userId,
+      start_date: params.startDate,
+      end_date: params.endDate,
+      partner_ref_id: params.partnerRefId,
+    });
     return response.data;
   }
 
   async getSubscriptions(userId?: string): Promise<OpenbaySubscription[]> {
     const response = await this.client.get(
-      "/partners/v2/partner-api/subscriptions",
-      {
-        params: userId ? { user_id: userId } : undefined,
-      }
+      userId
+        ? `/partners/v2/partner-api/subscriptions/user/${userId}`
+        : "/partners/v2/partner-api/subscriptions"
     );
     return response.data?.subscriptions || response.data || [];
   }
@@ -285,27 +417,35 @@ class OpenbayClient {
   async bookAppointment(
     params: BookAppointmentParams
   ): Promise<OpenbayAppointment> {
-    const response = await this.client.post(
-      "/partners/v2/partner-api/appointments",
-      {
-        user_id: params.userId,
-        shop_id: params.shopId,
-        service_id: params.serviceId,
-        timeslot_id: params.timeslotId,
-        vehicle_id: params.vehicleId,
-        notes: params.notes,
-      }
-    );
-    return response.data;
+    const response = await this.client.post("/partners/v2/partner-api/appointments", {
+      user_id: Number(params.userId),
+      location_id: params.shopId,
+      scheduled_time: params.scheduledTime || params.timeslotId,
+      vehicle_year: params.vehicleYear ? parseInt(params.vehicleYear) : undefined,
+      vehicle_make: params.vehicleMake,
+      vehicle_model: params.vehicleModel,
+      vehicle_mileage: params.vehicleMileage ? parseInt(params.vehicleMileage) : undefined,
+      appointment_type: "service",
+      notes: params.notes || "",
+      services: params.serviceId ? [params.serviceId] : [],
+    });
+    const data = response.data?.appointment || response.data;
+    return {
+      id: String(data.id || data.appointment_id || ""),
+      userId: params.userId,
+      shopId: params.shopId,
+      serviceId: params.serviceId,
+      timeslotId: params.timeslotId,
+      status: data.appointment_status || data.status || "confirmed",
+      scheduledAt: data.scheduled_at || params.timeslotId,
+      confirmationNumber: String(data.id || data.appointment_id || ""),
+    };
   }
 
   async getAppointments(userId?: string): Promise<OpenbayAppointment[]> {
-    const response = await this.client.get(
-      "/partners/v2/partner-api/appointments",
-      {
-        params: userId ? { user_id: userId } : undefined,
-      }
-    );
+    const response = await this.client.get("/partners/v2/partner-api/appointments", {
+      params: userId ? { user_id: userId } : undefined,
+    });
     return response.data?.appointments || response.data || [];
   }
 }

@@ -69,10 +69,15 @@ export function HeroSection() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
+              <Button variant="primary" size="lg" asChild>
+                <Link href="/book">
+                  Book a Service
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </Button>
               <Button variant="gold" size="lg" asChild>
                 <Link href="/membership">
                   Start Saving Today
-                  <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
               <Button

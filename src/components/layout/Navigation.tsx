@@ -145,6 +145,9 @@ export function Navigation() {
               <Phone className="w-4 h-4" />
               <span>(800) 555-1234</span>
             </a>
+            <Button variant="primary" size="sm" asChild>
+              <Link href="/book">Book a Service</Link>
+            </Button>
             <Button variant="gold" size="sm" asChild>
               <Link href="/membership">Get Started</Link>
             </Button>
@@ -194,7 +197,10 @@ export function Navigation() {
                 ))}
               </div>
 
-              <div className="mt-4 px-4">
+              <div className="mt-4 px-4 flex flex-col gap-2">
+                <Button variant="primary" size="md" className="w-full" asChild>
+                  <Link href="/book">Book a Service</Link>
+                </Button>
                 <Button variant="gold" size="md" className="w-full" asChild>
                   <Link href="/membership">Get Started Today</Link>
                 </Button>

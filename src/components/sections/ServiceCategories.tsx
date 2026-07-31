@@ -78,6 +78,7 @@ export function ServiceCategories() {
             From routine maintenance to complex repairs, Drive Service Network
             connects you with certified technicians for every service your fleet
             requires — with commercial pricing on every transaction.
+            Ask about discounts up to 25%.
           </p>
         </div>
 

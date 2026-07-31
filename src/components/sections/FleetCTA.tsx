@@ -10,6 +10,7 @@ const benefits = [
   "Priority scheduling for fleet accounts",
   "Dedicated account management",
   "Cross-platform GDH ecosystem benefits",
+  "Up to 25% Discounts",
 ];
 
 export function FleetCTA() {
@@ -28,16 +29,14 @@ export function FleetCTA() {
           {/* Left */}
           <div>
             <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-4">
-              For Fleet Operators
+              For Fleet Operators, Turo Hosts and Independent Car Rental Operators
             </p>
             <h2 className="font-montserrat font-black text-white text-3xl md:text-4xl lg:text-5xl leading-tight mb-6">
               Managing a Fleet?{" "}
               <span className="text-gold">We Built This For You.</span>
             </h2>
             <p className="font-opensans text-white/70 text-lg leading-relaxed mb-8">
-              Whether you operate 5 vehicles or 500, Drive Service Network
-              delivers the commercial tools, nationwide coverage, and operational
-              expertise that independent fleet operators have needed for years.
+              Whether you operate 5 vehicles or 500, Drive Service Network saves you time and money with instant quotes from service facilities convenient for you, easy online booking, centralized maintenance history and discounts up to 25% for subscribers.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -48,7 +47,7 @@ export function FleetCTA() {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/contact">
+                <Link href="/contact" className="text-gold">
                   Talk to Our Team
                 </Link>
               </Button>
@@ -58,7 +57,7 @@ export function FleetCTA() {
           {/* Right — Benefits */}
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8">
             <h3 className="font-montserrat font-bold text-white text-lg mb-6">
-              Fleet Membership Includes
+              Fleet Subscription Includes
             </h3>
             <ul className="space-y-3">
               {benefits.map((benefit) => (

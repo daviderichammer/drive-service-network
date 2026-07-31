@@ -23,7 +23,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 
 const inquiryOptions = [
   { value: "general", label: "General Inquiry" },
-  { value: "membership", label: "Membership" },
+  { value: "membership", label: "Subscription" },
   { value: "fleet", label: "Fleet Solutions" },
   { value: "partnership", label: "Partnership" },
   { value: "support", label: "Support" },

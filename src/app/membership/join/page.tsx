@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Join DSN Membership — Free Enrollment",
+  title: "Join DSN Subscription — Free Enrollment",
   description:
     "Become a Drive Service Network member and unlock commercial pricing, fleet records, vehicle history, and priority service access. Free enrollment — no credit card required.",
 };
@@ -26,37 +26,37 @@ const comparisonFeatures = [
   {
     category: "Pricing & Savings",
     features: [
-      { name: "Commercial pricing on all repairs", member: true, nonMember: false },
-      { name: "Fleet volume discounts", member: true, nonMember: false },
-      { name: "Parts pricing transparency", member: true, nonMember: false },
-      { name: "Labor rate benchmarks", member: true, nonMember: false },
+      { name: "Commercial pricing on all repairs", subscriber: true, nonSubscriber: false },
+      { name: "Fleet volume discounts", subscriber: true, nonSubscriber: false },
+      { name: "Parts pricing transparency", subscriber: true, nonSubscriber: false },
+      { name: "Labor rate benchmarks", subscriber: true, nonSubscriber: false },
     ],
   },
   {
     category: "Vehicle & Fleet Records",
     features: [
-      { name: "Vehicle service history tracking", member: true, nonMember: false },
-      { name: "Multi-vehicle management", member: true, nonMember: false },
-      { name: "Maintenance schedule reminders", member: true, nonMember: false },
-      { name: "VIN-based vehicle profiles", member: true, nonMember: false },
+      { name: "Vehicle service history tracking", subscriber: true, nonSubscriber: false },
+      { name: "Multi-vehicle management", subscriber: true, nonSubscriber: false },
+      { name: "Maintenance schedule reminders", subscriber: true, nonSubscriber: false },
+      { name: "VIN-based vehicle profiles", subscriber: true, nonSubscriber: false },
     ],
   },
   {
     category: "Booking & Service",
     features: [
-      { name: "Online service booking", member: true, nonMember: true },
-      { name: "Priority booking access", member: true, nonMember: false },
-      { name: "Booking history & records", member: true, nonMember: false },
-      { name: "Appointment reminders", member: true, nonMember: false },
+      { name: "Online service booking", subscriber: true, nonSubscriber: true },
+      { name: "Priority booking access", subscriber: true, nonSubscriber: false },
+      { name: "Booking history & records", subscriber: true, nonSubscriber: false },
+      { name: "Appointment reminders", subscriber: true, nonSubscriber: false },
     ],
   },
   {
     category: "Support & Resources",
     features: [
-      { name: "Dedicated member support", member: true, nonMember: false },
-      { name: "Fleet operator resources", member: true, nonMember: false },
-      { name: "Financing access", member: true, nonMember: false },
-      { name: "Standard customer support", member: true, nonMember: true },
+      { name: "Dedicated subscriber support", subscriber: true, nonSubscriber: false },
+      { name: "Fleet operator resources", subscriber: true, nonSubscriber: false },
+      { name: "Financing access", subscriber: true, nonSubscriber: false },
+      { name: "Standard customer support", subscriber: true, nonSubscriber: true },
     ],
   },
 ];
@@ -66,7 +66,7 @@ const memberBenefits = [
     icon: TrendingDown,
     title: "Commercial Savings",
     description:
-      "Access negotiated commercial rates across our nationwide network. Members consistently save 15–35% compared to retail pricing on repairs and maintenance.",
+      "Access negotiated commercial rates across our nationwide network. Subscribers consistently save 15–35% compared to retail pricing on repairs and maintenance.",
     stat: "Up to 35% savings",
   },
   {
@@ -87,7 +87,7 @@ const memberBenefits = [
     icon: Zap,
     title: "Future Features",
     description:
-      "Members get early access to upcoming features: telematics integration, predictive maintenance alerts, commercial financing, and enterprise reporting.",
+      "Subscribers get early access to upcoming features: telematics integration, predictive maintenance alerts, commercial financing, and enterprise reporting.",
     stat: "Early access",
   },
 ];
@@ -157,18 +157,18 @@ export default function MembershipJoinPage() {
               </span>
             </div>
             <h1 className="font-montserrat font-bold text-4xl md:text-5xl text-white mb-6 leading-tight">
-              Membership That{" "}
+              Subscription That{" "}
               <span className="text-gold">Pays for Itself</span>
             </h1>
             <p className="font-opensans text-white/80 text-lg leading-relaxed mb-10">
-              DSN membership isn&apos;t a cost — it&apos;s an investment. Commercial pricing,
+              DSN subscribership isn&apos;t a cost — it&apos;s an investment. Commercial pricing,
               complete vehicle records, and fleet management tools that save operators
               thousands every year. Start free today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="xl" asChild>
                 <Link href="/auth/register">
-                  Become a Member — It&apos;s Free
+                  Become a Subscriber — It&apos;s Free
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
@@ -191,7 +191,7 @@ export default function MembershipJoinPage() {
           <div className="text-center mb-14">
             <h2 className="heading-lg text-navy mb-4">
               Why Operators Choose{" "}
-              <span className="text-teal">DSN Membership</span>
+              <span className="text-teal">DSN Subscription</span>
             </h2>
             <p className="font-opensans text-gray-500 text-lg max-w-2xl mx-auto">
               We built DSN because operators deserve the same commercial advantages
@@ -231,12 +231,12 @@ export default function MembershipJoinPage() {
         <div className="section-container">
           <div className="text-center mb-14">
             <h2 className="heading-lg text-navy mb-4">
-              Member vs.{" "}
-              <span className="text-teal">Non-Member</span>
+              Subscriber vs.{" "}
+              <span className="text-teal">Non-Subscriber</span>
             </h2>
             <p className="font-opensans text-gray-500 text-lg max-w-2xl mx-auto">
-              The difference is clear. DSN members get access to tools and pricing
-              that non-members simply cannot access.
+              The difference is clear. DSN subscribers get access to tools and pricing
+              that non-subscribers simply cannot access.
             </p>
           </div>
 
@@ -248,14 +248,14 @@ export default function MembershipJoinPage() {
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <Shield className="w-5 h-5 text-white" />
                   <span className="font-montserrat font-bold text-white text-base">
-                    DSN Member
+                    DSN Subscriber
                   </span>
                 </div>
                 <span className="font-opensans text-teal-100 text-sm">Free to join</span>
               </div>
               <div className="bg-gray-200 rounded-xl p-4 text-center">
                 <span className="font-montserrat font-bold text-gray-600 text-base">
-                  Non-Member
+                  Non-Subscriber
                 </span>
                 <p className="font-opensans text-gray-500 text-sm mt-1">Standard access</p>
               </div>
@@ -279,14 +279,14 @@ export default function MembershipJoinPage() {
                         {feature.name}
                       </span>
                       <div className="flex justify-center">
-                        {feature.member ? (
+                        {feature.subscriber ? (
                           <CheckCircle2 className="w-5 h-5 text-teal" />
                         ) : (
                           <XCircle className="w-5 h-5 text-gray-300" />
                         )}
                       </div>
                       <div className="flex justify-center">
-                        {feature.nonMember ? (
+                        {feature.nonSubscriber ? (
                           <CheckCircle2 className="w-5 h-5 text-gray-400" />
                         ) : (
                           <XCircle className="w-5 h-5 text-gray-300" />

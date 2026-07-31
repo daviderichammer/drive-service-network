@@ -102,10 +102,8 @@ export default function AboutPage() {
               Not From a Whiteboard.
             </h1>
             <p className="font-opensans text-white/80 text-lg md:text-xl leading-relaxed">
-              Drive Service Network was created after years of managing one of
-              the nation&apos;s largest independent vehicle rental fleets. We
-              didn&apos;t build this platform from theory. We built it from
-              necessity.
+              Drive Service Network was created after managing a 220+ car rental fleet,
+              operating 31 auto parts stores with 55,000 SKUs and repair facilities with 450+ service bays.
             </p>
           </div>
         </div>
@@ -129,12 +127,12 @@ export default function AboutPage() {
                 </p>
                 <p>
                   Years of managing a large rental fleet — more than 220 vehicles
-                  across multiple Florida markets — provided firsthand experience
+                  across multiple Florida and Georgia markets — provided firsthand experience
                   with virtually every operational challenge associated with fleet
                   ownership.
                 </p>
                 <p>
-                  Although thousands of repair facilities exist throughout the
+                  Although tens of thousands of repair facilities exist throughout the
                   United States, there was no single nationwide resource designed
                   specifically for independent fleet operators, rental businesses,
                   dealerships, and mobility providers.
@@ -300,12 +298,12 @@ export default function AboutPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild>
                 <Link href="/membership">
-                  Join the Network
-                  <ArrowRight className="w-5 h-5" />
+                  <span className="text-navy">Join the Network</span>
+                  <ArrowRight className="w-5 h-5 text-navy" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/contact">Contact Our Team</Link>
+                <Link href="/contact" className="text-gold">Contact Our Team</Link>
               </Button>
             </div>
           </div>

@@ -43,7 +43,7 @@ const contactInfo = [
 const inquiryTypes = [
   {
     type: "membership",
-    title: "Membership Inquiry",
+    title: "Subscription Inquiry",
     description: "Questions about plans, pricing, and benefits",
     icon: "🏆",
   },

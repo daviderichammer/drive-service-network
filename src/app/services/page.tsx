@@ -185,12 +185,12 @@ export default function ServicesPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="gold" size="lg" asChild>
                 <Link href="/how-it-works">
-                  Schedule Service
-                  <ArrowRight className="w-5 h-5" />
+                  <span className="text-navy">Schedule Service</span>
+                  <ArrowRight className="w-5 h-5 text-navy" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/membership">View Membership Plans</Link>
+                <Link href="/membership" className="text-gold">View Subscription Plans</Link>
               </Button>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function ServicesPage() {
             <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
               Our nationwide network of certified repair facilities covers every
               category of vehicle maintenance and repair. All services are
-              available with commercial pricing for DSN members.
+              available with commercial pricing for DSN subscribers.
             </p>
           </div>
 
@@ -292,19 +292,19 @@ export default function ServicesPage() {
               <span className="text-gold">Every Service</span>
             </h2>
             <p className="font-opensans text-white/70 text-lg leading-relaxed mb-8">
-              DSN members receive exclusive commercial pricing unavailable to the
+              DSN subscribers receive exclusive commercial pricing unavailable to the
               general public. The savings on a single major repair often exceed
-              the annual membership cost.
+              the annual subscription cost.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild>
                 <Link href="/membership">
-                  View Membership Plans
-                  <ArrowRight className="w-5 h-5" />
+                  <span className="text-navy">View Subscription Plans</span>
+                  <ArrowRight className="w-5 h-5 text-navy" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/how-it-works">Schedule Service</Link>
+                <Link href="/how-it-works" className="text-gold">Schedule Service</Link>
               </Button>
             </div>
           </div>

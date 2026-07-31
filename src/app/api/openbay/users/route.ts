@@ -5,7 +5,7 @@
  * Proxy: POST /partners/v2/partner-api/users
  * API key is NEVER exposed to the client.
  *
- * Phase 3 update: For logged-in DSN members, reuse their stored openbayUserId
+ * Phase 3 update: For logged-in DSN subscribers, reuse their stored openbayUserId
  * instead of creating a new guest user each time.
  */
 import { NextRequest, NextResponse } from "next/server";

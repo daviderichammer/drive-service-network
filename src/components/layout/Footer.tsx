@@ -8,7 +8,7 @@ const footerLinks = {
     links: [
       { href: "/services", label: "Services" },
       { href: "/how-it-works", label: "How It Works" },
-      { href: "/membership", label: "Membership" },
+      { href: "/membership", label: "Subscription" },
       { href: "/fleet-operators", label: "For Fleet Operators" },
       { href: "/contact", label: "Contact Us" },
     ],
@@ -32,6 +32,10 @@ const footerLinks = {
       { href: "#", label: "Drive Cloud" },
       { href: "#", label: "Drive Connect" },
       { href: "#", label: "Drive Growth Partners Network" },
+      { href: "https://globaldriveHoldings.com", label: "Global Drive Holdings" },
+      { href: "#", label: "Drive Commerce" },
+      { href: "#", label: "Drive Financial" },
+      { href: "#", label: "Drive Management" },
     ],
   },
   legal: {
@@ -104,7 +108,7 @@ export function Footer() {
                   Drive Service Network
                 </div>
                 <div className="font-opensans text-white/50 text-xs leading-tight">
-                  Global Drive Holdings Inc.
+                  A Global Drive Holdings Inc. company
                 </div>
               </div>
             </Link>
@@ -176,10 +180,7 @@ export function Footer() {
               <span className="font-montserrat font-semibold text-white/40 text-xs ml-1">
                 Openbay
               </span>
-              <span className="font-opensans text-white/30 text-xs mx-1">·</span>
-              <span className="font-opensans text-white/30 text-xs">
-                Partner #116
-              </span>
+
             </div>
           </div>
         </div>

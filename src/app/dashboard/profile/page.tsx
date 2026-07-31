@@ -154,7 +154,7 @@ export default function ProfilePage() {
                   {profile.membershipTier} Member
                 </span>
                 <span className="font-opensans text-gray-400 text-xs">
-                  Member since {new Date(profile.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                  Subscriber since {new Date(profile.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
                 </span>
               </div>
             </div>

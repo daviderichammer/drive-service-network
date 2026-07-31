@@ -69,6 +69,28 @@ const ecosystemProducts = [
     badgeColor: "",
     href: "#",
   },
+  {
+    name: "Drive Management Inc.",
+    tagline: "Vehicle Acquisition & Financing",
+    description:
+      "Comprehensive vehicle acquisition and financing solutions for fleet operators. Build and scale your fleet with the right vehicles at the right terms.",
+    icon: "🚗",
+    color: "border-teal/30 hover:border-teal",
+    badge: null,
+    badgeColor: "",
+    href: "#",
+  },
+  {
+    name: "Drive Financial Inc.",
+    tagline: "Financial Products & Financing Solutions",
+    description:
+      "Financial products and financing solutions designed specifically for vehicle operators and fleet businesses.",
+    icon: "💼",
+    color: "border-gold/30 hover:border-gold",
+    badge: null,
+    badgeColor: "",
+    href: "#",
+  },
 ];
 
 export function EcosystemCrossSell() {
@@ -84,9 +106,7 @@ export function EcosystemCrossSell() {
             <span className="text-teal">A Complete Operating Platform.</span>
           </h2>
           <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
-            Drive Service Network is one part of a comprehensive ecosystem
-            designed to help vehicle operators build more profitable businesses.
-            Every product solves a real operational problem.
+            Drive Service Network, a Global Drive Holdings company that is part of a comprehensive ecosystem designed to help vehicle operators build more profitable businesses. Every product solves a real operational problem.
           </p>
         </div>
 
@@ -134,7 +154,7 @@ export function EcosystemCrossSell() {
           <p className="font-opensans text-gray-400 text-sm">
             All Global Drive Holdings products are designed to work together seamlessly.
             <br />
-            Members receive preferred pricing across the entire ecosystem.
+            Subscribers receive preferred pricing across the entire ecosystem.
           </p>
         </div>
       </div>

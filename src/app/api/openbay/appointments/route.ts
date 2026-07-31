@@ -5,7 +5,7 @@
  * Proxy: POST /partners/v2/partner-api/appointments
  * API key is NEVER exposed to the client.
  *
- * Phase 3 update: For logged-in DSN members, also save the appointment
+ * Phase 3 update: For logged-in DSN subscribers, also save the appointment
  * to the local Prisma database for dashboard history.
  */
 import { NextRequest, NextResponse } from "next/server";

@@ -7,10 +7,10 @@ const steps = [
   {
     number: "01",
     icon: Search,
-    title: "Find a Shop",
+    title: "Find a Shop in Your Zip Code",
     description:
       "Enter your ZIP code and vehicle details. Our platform instantly surfaces certified repair shops in your area with real-time availability — no phone calls, no waiting.",
-    highlight: "Powered by Openbay's nationwide network",
+    highlight: "A Nationwide Network since 2012",
     color: "bg-teal",
     iconColor: "text-teal",
     iconBg: "bg-teal/10",
@@ -18,7 +18,7 @@ const steps = [
   {
     number: "02",
     icon: CalendarCheck,
-    title: "Schedule Service",
+    title: "Instant Quote & Schedule",
     description:
       "Select your service, choose a convenient time slot, and confirm your appointment in seconds. Our 3-step process replaces the industry's typical 6-step workflow.",
     highlight: "30-minute time slots, real-time availability",
@@ -45,7 +45,7 @@ export function HowItWorksPreview() {
       <div className="section-container">
         <div className="text-center mb-14">
           <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
-            Simplified Workflow
+            Find. Book. Repaired.
           </p>
           <h2 className="heading-lg text-navy">
             Service in{" "}

@@ -4,8 +4,8 @@ import { Award, Users, MapPin, Wrench, TrendingDown, Clock } from "lucide-react"
 const signals = [
   {
     icon: Award,
-    value: "220+",
-    label: "Vehicles Operated",
+    value: "40,000",
+    label: "U.S. Repair Facilities in Network",
     description: "Real-world fleet experience behind every decision",
     color: "text-gold",
     bg: "bg-gold/10",
@@ -28,7 +28,7 @@ const signals = [
   },
   {
     icon: TrendingDown,
-    value: "Up to 30%",
+    value: "Up to 25%",
     label: "Commercial Savings",
     description: "Exclusive pricing unavailable to the general public",
     color: "text-teal",
@@ -37,7 +37,7 @@ const signals = [
   {
     icon: Clock,
     value: "3 Steps",
-    label: "Simplified Booking",
+    label: "Find. Book. Repaired.",
     description: "Schedule service in minutes, not hours",
     color: "text-gold",
     bg: "bg-gold/10",
@@ -65,9 +65,9 @@ export function TrustSignals() {
             <span className="text-teal">Real Experience</span>
           </h2>
           <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
-            Drive Service Network was created after managing one of the nation&apos;s
-            largest independent rental fleets. We built the solution we wished
-            existed.
+            Drive Service Network was created after managing a 220+ car rental fleet,
+            operating 31 auto parts stores with 55,000 SKUs and repair facilities with 450+ service bays.
+            We built the solution we wished existed.
           </p>
         </div>
 

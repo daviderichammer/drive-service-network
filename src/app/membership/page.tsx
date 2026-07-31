@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
 export const metadata: Metadata = {
-  title: "Membership — Commercial Pricing & Fleet Benefits",
+  title: "Subscription — Commercial Pricing & Fleet Benefits",
   description:
-    "Drive Service Network membership delivers commercial pricing, nationwide shop access, fleet management tools, and GDH ecosystem benefits. Plans for every operator.",
+    "Drive Service Network subscription delivers commercial pricing, nationwide shop access, fleet management tools, and GDH ecosystem benefits. Plans for every operator.",
 };
 
 const tiers = [
@@ -101,7 +101,7 @@ const memberBenefits = [
   {
     title: "Nationwide Coverage",
     description:
-      "One membership covers every vehicle in your fleet, regardless of where it operates. Service in any market, same pricing, same quality.",
+      "One subscription covers every vehicle in your fleet, regardless of where it operates. Service in any market, same pricing, same quality.",
     icon: "🗺️",
   },
   {
@@ -119,7 +119,7 @@ const memberBenefits = [
   {
     title: "GDH Ecosystem Access",
     description:
-      "Membership includes preferred pricing across the entire Global Drive Holdings ecosystem — Drive Protection, Drive Parts Network, Drive KeZ, and more.",
+      "Subscription includes preferred pricing across the entire Global Drive Holdings ecosystem — Drive Protection, Drive Parts Network, Drive KeZ, and more.",
     icon: "🌐",
   },
   {
@@ -134,7 +134,7 @@ const faqs = [
   {
     question: "How quickly can I start using DSN after signing up?",
     answer:
-      "Immediately. Once your membership is active, you can search for shops, view availability, and book appointments right away. No waiting period, no approval process.",
+      "Immediately. Once your subscription is active, you can search for shops, view availability, and book appointments right away. No waiting period, no approval process.",
   },
   {
     question: "Can I add vehicles to my account after signing up?",
@@ -144,7 +144,7 @@ const faqs = [
   {
     question: "How much can I save with commercial pricing?",
     answer:
-      "Savings vary by service type and market, but DSN members typically save 15-30% compared to standard retail pricing. On major repairs, the savings often exceed the annual membership cost.",
+      "Savings vary by service type and market, but DSN subscribers typically save 15-25% compared to standard retail pricing. On major repairs, the savings often exceed the annual subscription cost.",
   },
   {
     question: "Is there a contract or long-term commitment?",
@@ -171,14 +171,14 @@ export default function MembershipPage() {
         <div className="section-container">
           <div className="max-w-3xl">
             <Badge variant="gold" size="lg" className="mb-6">
-              Membership Plans
+              Subscription Plans
             </Badge>
             <h1 className="font-montserrat font-black text-white text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-6">
               Commercial Pricing.{" "}
               <span className="text-gold">Nationwide Access.</span>
             </h1>
             <p className="font-opensans text-white/80 text-lg md:text-xl leading-relaxed">
-              Drive Service Network membership delivers the commercial tools,
+              Drive Service Network subscription delivers the commercial tools,
               pricing, and support that vehicle operators need to reduce costs
               and simplify maintenance — at every scale.
             </p>
@@ -199,7 +199,7 @@ export default function MembershipPage() {
             </h2>
             <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
               Whether you operate 1 vehicle or 500, Drive Service Network has a
-              membership plan designed for your operation.
+              subscription plan designed for your operation.
             </p>
           </div>
 
@@ -315,10 +315,10 @@ export default function MembershipPage() {
         <div className="section-container">
           <div className="text-center mb-14">
             <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
-              Member Benefits
+              Subscriber Benefits
             </p>
             <h2 className="heading-lg text-navy">
-              What Your Membership{" "}
+              What Your Subscription{" "}
               <span className="text-teal">Delivers</span>
             </h2>
           </div>

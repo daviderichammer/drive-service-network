@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
 const heroStats = [
-  { value: "220+", label: "Vehicles Operated" },
+  { value: "40,000", label: "U.S. Repair Facilities in Network" },
   { value: "515+", label: "Services Available" },
   { value: "50+", label: "States Covered" },
   { value: "24/7", label: "Support Access" },
@@ -13,8 +13,9 @@ const heroStats = [
 
 const heroTrustPoints = [
   "No hidden fees or markups",
-  "Commercial pricing for all members",
+  "Commercial Fleet Pricing for all subscribers",
   "Nationwide certified shop network",
+  "Up to 25% Discounts Available",
 ];
 
 export function HeroSection() {
@@ -70,9 +71,9 @@ export function HeroSection() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="primary" size="lg" asChild>
-                <Link href="/book">
+                <Link href="/book" className="text-gold">
                   Book a Service
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5 text-gold" />
                 </Link>
               </Button>
               <Button variant="gold" size="lg" asChild>
@@ -85,7 +86,7 @@ export function HeroSection() {
                 size="lg"
                 asChild
               >
-                <Link href="/how-it-works">
+                <Link href="/how-it-works" className="text-gold">
                   See How It Works
                 </Link>
               </Button>
@@ -123,7 +124,7 @@ export function HeroSection() {
                     </div>
                     <div>
                       <div className="font-montserrat font-semibold text-white text-sm">
-                        Commercial Discounts
+                        Commercial Fleet Pricing
                       </div>
                       <div className="font-opensans text-white/60 text-xs">
                         Exclusive pricing for operators

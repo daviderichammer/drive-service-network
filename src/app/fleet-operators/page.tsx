@@ -26,7 +26,7 @@ const segments = [
     solutions: [
       "Same-day and next-day appointment availability",
       "Nationwide network — service wherever your cars are",
-      "Commercial pricing reduces repair costs 15-30%",
+      "Commercial pricing reduces repair costs 15-25%",
       "Financing options for major repairs (Phase 2)",
     ],
     stat: "1-10 vehicles",
@@ -81,7 +81,7 @@ const keyBenefits = [
     icon: TrendingDown,
     title: "Commercial Pricing",
     description:
-      "DSN negotiates commercial rates with our network partners. Members receive pricing tiers unavailable to the general public — typically 15-30% below standard retail.",
+      "DSN negotiates commercial rates with our network partners. Subscribers receive pricing tiers unavailable to the general public — typically 15-25% below standard retail.",
     color: "text-teal",
     bg: "bg-teal/10",
   },
@@ -89,7 +89,7 @@ const keyBenefits = [
     icon: MapPin,
     title: "Nationwide Coverage",
     description:
-      "One membership covers every vehicle in your fleet, regardless of where it operates. Service in any market, same pricing, same quality standard.",
+      "One subscription covers every vehicle in your fleet, regardless of where it operates. Service in any market, same pricing, same quality standard.",
     color: "text-gold",
     bg: "bg-gold/10",
   },
@@ -129,7 +129,7 @@ const keyBenefits = [
 
 const fleetStats = [
   { value: "220+", label: "Vehicles in our founding fleet" },
-  { value: "15-30%", label: "Average cost reduction" },
+  { value: "15-25%", label: "Average cost reduction" },
   { value: "5 min", label: "Average booking time" },
   { value: "50", label: "States covered" },
 ];
@@ -163,7 +163,7 @@ export default function FleetOperatorsPage() {
                   </Link>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
-                  <Link href="/contact">Talk to Our Team</Link>
+                  <Link href="/contact" className="text-gold">Talk to Our Team</Link>
                 </Button>
               </div>
             </div>
@@ -350,7 +350,7 @@ export default function FleetOperatorsPage() {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/membership">View Fleet Plans</Link>
+                <Link href="/membership" className="text-gold">View Fleet Plans</Link>
               </Button>
             </div>
           </div>

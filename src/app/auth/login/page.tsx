@@ -182,7 +182,7 @@ function LoginForm() {
 
         <p className="mt-6 text-center font-opensans text-sm text-gray-500">
           <Link href="/membership/join" className="text-teal hover:text-teal-600 font-medium transition-colors">
-            Learn about DSN Membership benefits →
+            Learn about DSN Subscription benefits →
           </Link>
         </p>
       </div>

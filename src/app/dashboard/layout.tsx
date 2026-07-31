@@ -4,7 +4,7 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Member Dashboard | Drive Service Network",
+  title: "Subscriber Dashboard | Drive Service Network",
   description: "Manage your vehicles, view service history, and track appointments.",
 };
 

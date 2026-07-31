@@ -14,7 +14,7 @@ const steps = [
   {
     number: "01",
     icon: Search,
-    title: "Find a Certified Shop",
+    title: "Get an Instant Quote & Find a Certified Shop",
     description:
       "Enter your ZIP code and select the service your vehicle needs. Our platform instantly surfaces certified repair shops in your area with real-time availability, ratings, and service capabilities.",
     details: [
@@ -24,7 +24,7 @@ const steps = [
       "See real-time availability",
       "Compare pricing estimates",
     ],
-    apiNote: "Powered by Openbay's nationwide network of 10,000+ certified shops",
+    apiNote: "A Nationwide Network since 2012",
     color: "teal",
     bgColor: "bg-teal/10",
     textColor: "text-teal",
@@ -75,7 +75,7 @@ const vsComparison = [
   { feature: "Time to schedule", dsn: "Under 5 minutes", typical: "20-45 minutes" },
   { feature: "Phone calls required", dsn: "Zero", typical: "2-4 calls" },
   { feature: "Pricing transparency", dsn: "Upfront estimates", typical: "Quote after inspection" },
-  { feature: "Commercial pricing", dsn: "Automatic for members", typical: "Must negotiate each time" },
+  { feature: "Commercial pricing", dsn: "Automatic for subscribers", typical: "Must negotiate each time" },
   { feature: "Service history", dsn: "Centralized for all vehicles", typical: "Scattered across shops" },
   { feature: "Fleet management", dsn: "Built-in dashboard", typical: "Manual spreadsheets" },
   { feature: "Nationwide coverage", dsn: "50 states", typical: "Local only" },
@@ -224,8 +224,8 @@ export default function HowItWorksPage() {
               The Difference
             </p>
             <h2 className="heading-lg text-navy">
-              DSN vs. The{" "}
-              <span className="text-teal">Typical Experience</span>
+              Drive Service Network vs.{" "}
+              <span className="text-teal">The Typical Experience</span>
             </h2>
             <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
               We didn&apos;t just digitize the old process. We reimagined it from
@@ -285,18 +285,18 @@ export default function HowItWorksPage() {
             </p>
             <h2 className="heading-lg text-navy mb-6">
               Enterprise-Grade Infrastructure.{" "}
-              <span className="text-teal">DSN Experience.</span>
+              <span className="text-teal">Drive Service Network Experience.</span>
             </h2>
             <p className="font-opensans text-gray-500 text-lg leading-relaxed mb-8">
               Drive Service Network is powered by Openbay&apos;s industry-leading
               automotive marketplace infrastructure — giving you access to
-              10,000+ certified shops, real-time availability, and seamless
+              40,000 Certified Shops, real-time availability, and seamless
               appointment management, all within the Drive Service Network
               experience.
             </p>
             <div className="grid grid-cols-3 gap-6 mb-10">
               <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="font-montserrat font-black text-3xl text-teal">10K+</div>
+                <div className="font-montserrat font-black text-3xl text-teal">40K+</div>
                 <div className="font-opensans text-gray-500 text-xs mt-1">Certified Shops</div>
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
@@ -327,12 +327,12 @@ export default function HowItWorksPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild>
                 <Link href="/membership">
-                  Get Started Today
-                  <ArrowRight className="w-5 h-5" />
+                  <span className="text-navy">Get Started Today</span>
+                  <ArrowRight className="w-5 h-5 text-navy" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/contact">Talk to Our Team</Link>
+                <Link href="/contact" className="text-gold">Talk to Our Team</Link>
               </Button>
             </div>
           </div>

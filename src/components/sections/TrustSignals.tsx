@@ -58,7 +58,7 @@ export function TrustSignals() {
       <div className="section-container">
         <div className="text-center mb-10">
           <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
-            Why Operators Choose DSN
+            Why Operators Choose Drive Service Network
           </p>
           <h2 className="heading-lg text-navy">
             The Platform Built From{" "}

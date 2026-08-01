@@ -4,7 +4,7 @@ import { Star, Quote } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "Managing 47 Turo vehicles across three cities was a logistical nightmare before DSN. Now I schedule service for any vehicle in any market in minutes. The commercial pricing alone saves me thousands every month.",
+      "Managing 47 Turo vehicles across three cities was a logistical nightmare before Drive Service Network. Now I schedule service for any vehicle in any market in minutes. The commercial pricing alone saves me thousands every month.",
     author: "Marcus T.",
     role: "Turo Host",
     fleet: "47 Vehicles · Tampa, FL",
@@ -12,7 +12,7 @@ const testimonials = [
   },
   {
     quote:
-      "We run a 200-vehicle rental fleet and DSN has completely changed how we manage maintenance. One platform, one process, consistent quality across every market. This is what the industry needed.",
+      "We run a 200-vehicle rental fleet and Drive Service Network has completely changed how we manage maintenance. One platform, one process, consistent quality across every market. This is what the industry needed.",
     author: "Jennifer R.",
     role: "Fleet Operations Manager",
     fleet: "200+ Vehicles · Multi-Market",
@@ -20,7 +20,7 @@ const testimonials = [
   },
   {
     quote:
-      "The 3-step booking process is exactly what operators need. I don't have time to navigate complex systems. DSN gets my vehicles serviced and back on the road — that's all I need.",
+      "The 3-step booking process is exactly what operators need. I don't have time to navigate complex systems. Drive Service Network gets my vehicles serviced and back on the road — that's all I need.",
     author: "David K.",
     role: "Independent Rental Operator",
     fleet: "28 Vehicles · Orlando, FL",

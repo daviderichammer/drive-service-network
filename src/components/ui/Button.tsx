@@ -1,9 +1,7 @@
 "use client";
-
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
-
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "gold" | "destructive";
@@ -13,7 +11,6 @@ export interface ButtonProps
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
-
 const buttonVariants = {
   primary:
     "bg-teal text-white hover:bg-teal-600 focus:ring-teal shadow-sm hover:shadow-md",
@@ -28,7 +25,6 @@ const buttonVariants = {
   destructive:
     "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
 };
-
 const buttonSizes = {
   sm: "px-4 py-2 text-xs gap-1.5",
   md: "px-6 py-3 text-sm gap-2",
@@ -36,7 +32,6 @@ const buttonSizes = {
   xl: "px-10 py-5 text-lg gap-3",
   icon: "p-2.5",
 };
-
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -53,16 +48,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : "button";
+    const computedClassName = cn(
+      "inline-flex items-center justify-center font-montserrat font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap",
+      buttonVariants[variant],
+      buttonSizes[size],
+      className
+    );
 
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
+        className: cn(computedClassName, (children as React.ReactElement<React.HTMLAttributes<HTMLElement>>).props.className),
+        ref,
+      } as React.HTMLAttributes<HTMLElement>);
+    }
+
+    const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(
-          "inline-flex items-center justify-center font-montserrat font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap",
-          buttonVariants[variant],
-          buttonSizes[size],
-          className
-        )}
+        className={computedClassName}
         ref={ref}
         disabled={disabled || loading}
         {...props}
@@ -102,7 +105,5 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
-
 Button.displayName = "Button";
-
 export { Button };

@@ -157,7 +157,7 @@ const faqs = [
       "That's exactly what Drive Service Network was built for. Our nationwide network means you can find certified shops in any market, with the same commercial pricing and booking experience regardless of location.",
   },
   {
-    question: "How does the Openbay integration work?",
+    question: "How does Drive Service Network's partnership with Openbay work?",
     answer:
       "Drive Service Network is powered by Openbay's marketplace infrastructure. When you search for shops and book appointments, you're accessing Openbay's network of certified providers — all through the Drive Service Network experience with your commercial pricing applied automatically.",
   },

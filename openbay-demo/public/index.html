@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Openbay Partner API Demo — Drive Service Network</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="16" fill="#2563EB"/>
+            <path d="M8 20 L16 10 L24 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="22" r="2" fill="white"/>
+          </svg>
+          <span class="logo-text">Openbay <span class="logo-accent">Partner API</span></span>
+        </div>
+        <nav class="nav">
+          <a href="#services" class="nav-link">Services</a>
+          <a href="#finder" class="nav-link">Shop Finder</a>
+          <a href="#workflow" class="nav-link">Full Workflow</a>
+          <a href="#explorer" class="nav-link">API Explorer</a>
+        </nav>
+        <div class="header-badge">
+          <span class="badge badge-staging">Staging API</span>
+          <span class="badge badge-partner">Partner #116</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">Openbay+ Partner API<br><span class="hero-accent">Live Demo</span></h1>
+        <p class="hero-subtitle">Explore the full capabilities of the Openbay Partner API — search auto repair services, find nearby shops, manage users, subscriptions, and book appointments — all powered by live staging data.</p>
+        <div class="hero-stats" id="heroStats">
+          <div class="stat-card">
+            <div class="stat-value" id="statServices">—</div>
+            <div class="stat-label">Available Services</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">20+</div>
+            <div class="stat-label">API Endpoints</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">Real-time</div>
+            <div class="stat-label">Live Staging Data</div>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <a href="#finder" class="btn btn-primary">Find Auto Repair Shops</a>
+          <a href="#workflow" class="btn btn-secondary">Try Full Workflow</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Capabilities Overview -->
+  <section class="capabilities">
+    <div class="container">
+      <h2 class="section-title">What the API Can Do</h2>
+      <p class="section-subtitle">The Openbay Partner API provides a complete auto service marketplace infrastructure for your platform.</p>
+      <div class="capabilities-grid">
+        <div class="cap-card">
+          <div class="cap-icon">🔧</div>
+          <h3>515+ Services</h3>
+          <p>Access a comprehensive catalog of auto repair and maintenance services — from oil changes to transmission repair.</p>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">📍</div>
+          <h3>Shop Discovery</h3>
+          <p>Find certified auto repair shops near any ZIP code. Filter by service type, vehicle make, and availability.</p>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">📅</div>
+          <h3>Appointment Booking</h3>
+          <p>View real-time availability and book appointments at shops in the Openbay network with 30-minute time slots.</p>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">👤</div>
+          <h3>User Management</h3>
+          <p>Create and manage users, vehicles, and subscriptions. Generate SSO links for seamless user onboarding.</p>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">🔑</div>
+          <h3>Subscription Control</h3>
+          <p>Create, update, and cancel Openbay+ subscriptions with flexible start/end dates and partner reference IDs.</p>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">🚗</div>
+          <h3>Vehicle Profiles</h3>
+          <p>Manage vehicle information including year, make, model, VIN, mileage, and engine specs for each user.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Browser -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Browse Auto Repair Services</h2>
+        <p class="section-subtitle">Live data from <code>GET /partners/v2/partner-api/services</code></p>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="serviceSearch" placeholder="Search services (e.g. oil change, brakes, tire rotation...)" class="search-input">
+        <select id="categoryFilter" class="select-input">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div id="servicesLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading services from Openbay API...</p>
+      </div>
+      <div id="servicesGrid" class="services-grid" style="display:none"></div>
+      <div id="servicesMeta" class="services-meta" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- Shop Finder -->
+  <section class="section section-alt" id="finder">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Find Auto Repair Shops Near You</h2>
+        <p class="section-subtitle">Live data from <code>GET /partners/v2/partner-locations</code></p>
+      </div>
+      <div class="finder-form card">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">ZIP Code</label>
+            <input type="text" id="finderZip" value="10001" placeholder="Enter ZIP code" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Search Radius (miles)</label>
+            <select id="finderRadius" class="form-input">
+              <option value="5" selected>5 miles</option>
+              <option value="10">10 miles</option>
+              <option value="25">25 miles</option>
+              <option value="50">50 miles</option>
+              <option value="100">100 miles</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Service Type</label>
+            <select id="finderType" class="form-input">
+              <option value="appointment">Appointment</option>
+              <option value="service">Service</option>
+              <option value="oil">Oil Change</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Vehicle Make (optional)</label>
+            <input type="text" id="finderMake" placeholder="e.g. Toyota, Honda" class="form-input">
+          </div>
+        </div>
+        <button id="findShopsBtn" class="btn btn-primary">Search Shops</button>
+      </div>
+      <div id="shopsLoading" class="loading-state" style="display:none">
+        <div class="spinner"></div>
+        <p>Searching for shops...</p>
+      </div>
+      <div id="shopsResults" class="shops-grid" style="display:none"></div>
+      <div id="shopsEmpty" class="empty-state" style="display:none">
+        <p>No shops found for this search. Try a different ZIP code or expand the radius.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop Detail Modal -->
+  <div id="shopModal" class="modal" style="display:none">
+    <div class="modal-overlay" onclick="closeShopModal()"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeShopModal()">✕</button>
+      <div id="shopModalContent"></div>
+    </div>
+  </div>
+
+  <!-- Full Workflow Demo -->
+  <section class="section" id="workflow">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Full API Workflow Demo</h2>
+        <p class="section-subtitle">Walk through the complete Openbay+ onboarding flow: Create User → Create Subscription → Find Shop → Book Appointment</p>
+      </div>
+      <div class="workflow-steps">
+        <!-- Step 1: Create User -->
+        <div class="workflow-step" id="step1">
+          <div class="step-header">
+            <div class="step-number">1</div>
+            <div class="step-info">
+              <h3>Create User</h3>
+              <code class="endpoint">POST /partners/v2/partner-api/users</code>
+            </div>
+            <div class="step-status" id="step1Status"></div>
+          </div>
+          <div class="step-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                <input type="text" id="wfFirstName" value="Alex" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                <input type="text" id="wfLastName" value="Johnson" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="wfEmail" value="" placeholder="auto-generated" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ZIP Code</label>
+                <input type="text" id="wfZip" value="10001" class="form-input">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="workflowCreateUser()">Create User</button>
+            <div id="step1Result" class="step-result" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Step 2: Create Subscription -->
+        <div class="workflow-step locked" id="step2">
+          <div class="step-header">
+            <div class="step-number">2</div>
+            <div class="step-info">
+              <h3>Create Subscription</h3>
+              <code class="endpoint">POST /partners/v2/partner-api/subscriptions</code>
+            </div>
+            <div class="step-status" id="step2Status"></div>
+          </div>
+          <div class="step-body">
+            <p class="step-note">Complete Step 1 first to get a User ID.</p>
+            <div class="form-row" id="step2Form" style="display:none">
+              <div class="form-group">
+                <label class="form-label">User ID</label>
+                <input type="text" id="wfUserId" readonly class="form-input form-input-readonly">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Start Date</label>
+                <input type="date" id="wfSubStart" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">End Date</label>
+                <input type="date" id="wfSubEnd" class="form-input">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="step2Btn" onclick="workflowCreateSubscription()" disabled>Create Subscription</button>
+            <div id="step2Result" class="step-result" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Step 3: Find Shop & Get Timeslots -->
+        <div class="workflow-step locked" id="step3">
+          <div class="step-header">
+            <div class="step-number">3</div>
+            <div class="step-info">
+              <h3>Find Shop & View Availability</h3>
+              <code class="endpoint">GET /partners/v2/partner-locations + POST timeslots</code>
+            </div>
+            <div class="step-status" id="step3Status"></div>
+          </div>
+          <div class="step-body">
+            <p class="step-note" id="step3Note">Complete Steps 1 & 2 first.</p>
+            <div id="step3Form" style="display:none">
+              <button class="btn btn-primary" onclick="workflowFindShops()">Find Shops Near ZIP</button>
+              <div id="step3ShopList" class="shop-select-list" style="display:none"></div>
+              <div id="step3Timeslots" style="display:none">
+                <h4 class="timeslots-title">Available Appointment Times</h4>
+                <div id="timeslotGrid" class="timeslot-grid"></div>
+              </div>
+            </div>
+            <div id="step3Result" class="step-result" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Step 4: Book Appointment -->
+        <div class="workflow-step locked" id="step4">
+          <div class="step-header">
+            <div class="step-number">4</div>
+            <div class="step-info">
+              <h3>Book Appointment</h3>
+              <code class="endpoint">POST /partners/v2/partner-api/appointments</code>
+            </div>
+            <div class="step-status" id="step4Status"></div>
+          </div>
+          <div class="step-body">
+            <p class="step-note" id="step4Note">Select a shop and time slot in Step 3 first.</p>
+            <div id="step4Form" style="display:none">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Vehicle Year</label>
+                  <input type="number" id="wfVehicleYear" value="2020" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Vehicle Make</label>
+                  <input type="text" id="wfVehicleMake" value="Toyota" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Vehicle Model</label>
+                  <input type="text" id="wfVehicleModel" value="Camry" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Mileage</label>
+                  <input type="number" id="wfMileage" value="45000" class="form-input">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea id="wfNotes" class="form-input" rows="2" placeholder="Any notes for the shop...">Regular maintenance check</textarea>
+              </div>
+              <button class="btn btn-primary" id="step4Btn" onclick="workflowBookAppointment()">Book Appointment</button>
+            </div>
+            <div id="step4Result" class="step-result" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Step 5: Generate SSO Link -->
+        <div class="workflow-step locked" id="step5">
+          <div class="step-header">
+            <div class="step-number">5</div>
+            <div class="step-info">
+              <h3>Generate SSO Link</h3>
+              <code class="endpoint">POST /partners/v1/partner-users/{userId}/service-request-link</code>
+            </div>
+            <div class="step-status" id="step5Status"></div>
+          </div>
+          <div class="step-body">
+            <p class="step-note" id="step5Note">Complete Step 1 first to get a User ID.</p>
+            <div id="step5Form" style="display:none">
+              <p>Generate a single-sign-on link that logs the user directly into Openbay's service request flow.</p>
+              <button class="btn btn-primary" onclick="workflowGenerateSSO()">Generate SSO Link</button>
+            </div>
+            <div id="step5Result" class="step-result" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Explorer -->
+  <section class="section section-alt" id="explorer">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">API Explorer</h2>
+        <p class="section-subtitle">Test any endpoint directly. All requests are proxied through the server to the live Openbay staging API.</p>
+      </div>
+      <div class="explorer-layout">
+        <div class="explorer-sidebar">
+          <h4 class="sidebar-title">Endpoints</h4>
+          <div class="endpoint-list">
+            <div class="endpoint-group">
+              <div class="endpoint-group-title">Services</div>
+              <button class="endpoint-btn" onclick="loadEndpoint('GET', '/partners/v2/partner-api/services', null)">GET Services</button>
+            </div>
+            <div class="endpoint-group">
+              <div class="endpoint-group-title">Locations</div>
+              <button class="endpoint-btn" onclick="loadEndpoint('POST', '/partners/v2/partner-locations', {zipcode:'10001',locationType:'appointment',max_results:5,radius:10})">Search Locations</button>
+              <button class="endpoint-btn" onclick="loadEndpoint('GET', '/partners/v2/partner-locations/3z-wpe', null)">Location Details</button>
+              <button class="endpoint-btn" onclick="loadEndpoint('POST', '/partners/v2/partner-locations/3z-wpe/time-slots', {number_of_days:7})">Get Timeslots</button>
+            </div>
+            <div class="endpoint-group">
+              <div class="endpoint-group-title">Users</div>
+              <button class="endpoint-btn" onclick="loadEndpoint('POST', '/partners/v2/partner-api/users', {email:'test@example.com',first_name:'Test',last_name:'User',zipcode:'10001'})">Create User</button>
+              <button class="endpoint-btn" onclick="loadEndpoint('GET', '/partners/v1/partner-users/816280', null)">Get User</button>
+              <button class="endpoint-btn" onclick="loadEndpoint('POST', '/partners/v1/partner-users/816280/service-request-link', {dayDuration:7})">SSO Link</button>
+            </div>
+            <div class="endpoint-group">
+              <div class="endpoint-group-title">Subscriptions</div>
+              <button class="endpoint-btn" onclick="loadEndpoint('GET', '/partners/v2/partner-api/subscriptions/user/816280', null)">Get Subscriptions</button>
+            </div>
+            <div class="endpoint-group">
+              <div class="endpoint-group-title">Appointments</div>
+              <button class="endpoint-btn" onclick="loadEndpoint('GET', '/partners/v2/partner-api/appointments', {user_id:816280,page:1,per_page:10})">Get Appointments</button>
+            </div>
+          </div>
+        </div>
+        <div class="explorer-main">
+          <div class="explorer-request">
+            <div class="request-line">
+              <select id="explorerMethod" class="method-select">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>DELETE</option>
+              </select>
+              <input type="text" id="explorerEndpoint" class="endpoint-input" placeholder="/partners/v2/partner-api/services">
+            </div>
+            <div class="request-body-section">
+              <label class="form-label">Request Body (JSON)</label>
+              <textarea id="explorerBody" class="code-editor" rows="8" placeholder="null (no body for GET requests)"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="runExplorer()">Send Request</button>
+          </div>
+          <div class="explorer-response" id="explorerResponse" style="display:none">
+            <div class="response-header">
+              <span class="response-label">Response</span>
+              <span id="responseStatus" class="response-status"></span>
+            </div>
+            <pre id="responseBody" class="response-body"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <strong>Openbay Partner API Demo</strong>
+          <p>Built for Drive Service Network · Partner ID: 116 · Staging Environment</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://services-staging.openbay.com/partner-docs/" target="_blank" class="footer-link">API Documentation</a>
+          <a href="https://staging.openbay.com" target="_blank" class="footer-link">Openbay Staging</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

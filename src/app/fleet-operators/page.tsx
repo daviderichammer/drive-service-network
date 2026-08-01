@@ -16,7 +16,7 @@ const segments = [
     name: "Turo Hosts",
     icon: "🚗",
     description:
-      "Managing a Turo fleet means every day of downtime is lost revenue. DSN gives you the tools to minimize that downtime with fast scheduling, commercial pricing, and nationwide coverage.",
+      "Managing a Turo fleet means every day of downtime is lost revenue. Drive Service Network gives you the tools to minimize that downtime with fast scheduling, commercial pricing, and nationwide coverage.",
     challenges: [
       "Unexpected repairs disrupting rental income",
       "Finding trustworthy shops in unfamiliar markets",
@@ -37,7 +37,7 @@ const segments = [
     name: "Rental Operators",
     icon: "🏢",
     description:
-      "Professional rental operators managing 20+ vehicles across multiple markets need a platform that scales with their operation. DSN delivers consistency, commercial pricing, and centralized management.",
+      "Professional rental operators managing 20+ vehicles across multiple markets need a platform that scales with their operation. Drive Service Network delivers consistency, commercial pricing, and centralized management.",
     challenges: [
       "Coordinating repairs across multiple markets",
       "Inconsistent vendor quality and pricing",
@@ -58,7 +58,7 @@ const segments = [
     name: "Commercial Fleets",
     icon: "🚛",
     description:
-      "Corporate fleet managers and commercial operators need enterprise-grade tools, compliance support, and maximum pricing leverage. DSN Enterprise delivers all of it.",
+      "Corporate fleet managers and commercial operators need enterprise-grade tools, compliance support, and maximum pricing leverage. Drive Service Network Enterprise delivers all of it.",
     challenges: [
       "DOT compliance and inspection management",
       "Vendor management across multiple providers",
@@ -81,7 +81,7 @@ const keyBenefits = [
     icon: TrendingDown,
     title: "Commercial Pricing",
     description:
-      "DSN negotiates commercial rates with our network partners. Subscribers receive pricing tiers unavailable to the general public — typically 15-25% below standard retail.",
+      "Drive Service Network negotiates commercial rates with our network partners. Subscribers receive pricing tiers unavailable to the general public — typically 15-25% below standard retail.",
     color: "text-teal",
     bg: "bg-teal/10",
   },
@@ -121,14 +121,14 @@ const keyBenefits = [
     icon: Shield,
     title: "Compliance Ready",
     description:
-      "State inspections, emissions testing, DOT compliance, and commercial vehicle certifications — all available through the DSN network with documentation.",
+      "State inspections, emissions testing, DOT compliance, and commercial vehicle certifications — all available through the Drive Service Network network with documentation.",
     color: "text-navy",
     bg: "bg-navy/10",
   },
 ];
 
 const fleetStats = [
-  { value: "220+", label: "Vehicles in our founding fleet" },
+  { value: "40,000", label: "U.S. Repair Facilities in Network" },
   { value: "15-25%", label: "Average cost reduction" },
   { value: "5 min", label: "Average booking time" },
   { value: "50", label: "States covered" },
@@ -251,7 +251,7 @@ export default function FleetOperatorsPage() {
                   {/* Right */}
                   <div className="p-8 lg:p-10 bg-navy/5 border-l border-gray-100">
                     <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-wide mb-4">
-                      DSN Solutions
+                      Drive Service Network Solutions
                     </p>
                     <ul className="space-y-3">
                       {segment.solutions.map((solution) => (

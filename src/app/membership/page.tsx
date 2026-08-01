@@ -18,7 +18,7 @@ const tiers = [
     period: "per month",
     annualPrice: "39",
     description:
-      "Essential access to the DSN network for individual vehicle owners and small Turo hosts.",
+      "Essential access to the Drive Service Network network for individual vehicle owners and small Turo hosts.",
     badge: null,
     badgeColor: "",
     features: [
@@ -33,7 +33,7 @@ const tiers = [
       { text: "Dedicated account manager", included: false },
       { text: "Commercial account pricing", included: false },
     ],
-    cta: "Start Basic",
+    cta: "Join Now for Free",
     ctaVariant: "outline" as const,
     highlight: false,
   },
@@ -59,7 +59,7 @@ const tiers = [
       { text: "Dedicated account manager", included: false },
       { text: "Commercial account pricing", included: false },
     ],
-    cta: "Start Professional",
+    cta: "Subscribe Now & Save",
     ctaVariant: "secondary" as const,
     highlight: true,
   },
@@ -95,7 +95,7 @@ const memberBenefits = [
   {
     title: "Commercial Pricing",
     description:
-      "Access pricing tiers unavailable to the general public. DSN negotiates commercial rates with our network partners on behalf of all members.",
+      "Access pricing tiers unavailable to the general public. Drive Service Network negotiates commercial rates with our network partners on behalf of all members.",
     icon: "💰",
   },
   {
@@ -132,7 +132,7 @@ const memberBenefits = [
 
 const faqs = [
   {
-    question: "How quickly can I start using DSN after signing up?",
+    question: "How quickly can I start using Drive Service Network after signing up?",
     answer:
       "Immediately. Once your subscription is active, you can search for shops, view availability, and book appointments right away. No waiting period, no approval process.",
   },
@@ -144,7 +144,7 @@ const faqs = [
   {
     question: "How much can I save with commercial pricing?",
     answer:
-      "Savings vary by service type and market, but DSN subscribers typically save 15-25% compared to standard retail pricing. On major repairs, the savings often exceed the annual subscription cost.",
+      "Savings vary by service type and market, but Drive Service Network subscribers typically save 15-25% compared to standard retail pricing. On major repairs, the savings often exceed the annual subscription cost.",
   },
   {
     question: "Is there a contract or long-term commitment?",
@@ -154,12 +154,12 @@ const faqs = [
   {
     question: "What if I need service in a market where I don't have a regular shop?",
     answer:
-      "That's exactly what DSN was built for. Our nationwide network means you can find certified shops in any market, with the same commercial pricing and booking experience regardless of location.",
+      "That's exactly what Drive Service Network was built for. Our nationwide network means you can find certified shops in any market, with the same commercial pricing and booking experience regardless of location.",
   },
   {
     question: "How does the Openbay integration work?",
     answer:
-      "Drive Service Network is powered by Openbay's marketplace infrastructure. When you search for shops and book appointments, you're accessing Openbay's network of certified providers — all through the DSN experience with your commercial pricing applied automatically.",
+      "Drive Service Network is powered by Openbay's marketplace infrastructure. When you search for shops and book appointments, you're accessing Openbay's network of certified providers — all through the Drive Service Network experience with your commercial pricing applied automatically.",
   },
 ];
 
@@ -178,9 +178,8 @@ export default function MembershipPage() {
               <span className="text-gold">Nationwide Access.</span>
             </h1>
             <p className="font-opensans text-white/80 text-lg md:text-xl leading-relaxed">
-              Drive Service Network subscription delivers the commercial tools,
-              pricing, and support that vehicle operators need to reduce costs
-              and simplify maintenance — at every scale.
+              Whether you operate 1 vehicle or 500, Drive Service Network offers
+              several Subscription Plan options to save you money.
             </p>
           </div>
         </div>
@@ -353,7 +352,7 @@ export default function MembershipPage() {
             </div>
             <blockquote className="font-opensans text-white/80 text-xl leading-relaxed mb-8 italic">
               &ldquo;The savings on our first major repair paid for an entire year
-              of Professional membership. DSN isn&apos;t a cost — it&apos;s an
+              of Professional membership. Drive Service Network isn&apos;t a cost — it&apos;s an
               investment that pays for itself every month.&rdquo;
             </blockquote>
             <div>

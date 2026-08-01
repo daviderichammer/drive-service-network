@@ -297,8 +297,8 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild>
-                <Link href="/membership">
-                  <span className="text-navy">Join the Network</span>
+                <Link href="/membership/join">
+                  <span className="text-navy font-bold">Join the Network</span>
                   <ArrowRight className="w-5 h-5 text-navy" />
                 </Link>
               </Button>

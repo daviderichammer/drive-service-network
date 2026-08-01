@@ -26,16 +26,16 @@ const footerLinks = {
   ecosystem: {
     title: "GDH Ecosystem",
     links: [
-      { href: "#", label: "Drive Protection" },
-      { href: "#", label: "Drive Parts Network" },
-      { href: "#", label: "Drive KeZ" },
-      { href: "#", label: "Drive Cloud" },
-      { href: "#", label: "Drive Connect" },
-      { href: "#", label: "Drive Growth Partners Network" },
-      { href: "https://globaldriveHoldings.com", label: "Global Drive Holdings" },
-      { href: "#", label: "Drive Commerce" },
-      { href: "#", label: "Drive Financial" },
-      { href: "#", label: "Drive Management" },
+      { href: "https://globaldriveholdings.com", label: "Global Drive Holdings" },
+      { href: "https://drivecommercegroup.com", label: "Drive Commerce" },
+      { href: "https://drivecloudgroup.com", label: "Drive Cloud" },
+      { href: "https://trustdriveconnect.com", label: "Drive Connect" },
+      { href: "https://drivefinancialgroup.com", label: "Drive Financial" },
+      { href: "https://drivekez.com", label: "Drive KeZ" },
+      { href: "https://drivemanagement.com", label: "Drive Management" },
+      { href: "https://drivepartsnetwork.com", label: "Drive Parts Network" },
+      { href: "https://driveprotectiongroup.com", label: "Drive Protection" },
+      { href: "https://driveservicenetwork.com", label: "Drive Service Network" },
     ],
   },
   legal: {
@@ -68,10 +68,10 @@ export function Footer() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
               <Link
-                href="/membership"
+                href="/membership/join"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-navy font-montserrat font-bold text-sm rounded-lg hover:bg-gold-600 transition-all duration-200"
               >
-                Get Started Today
+                Join Now for Free
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
@@ -122,11 +122,11 @@ export function Footer() {
             {/* Contact Info */}
             <div className="space-y-2.5">
               <a
-                href="tel:+18005551234"
+                href="tel:+17867663577"
                 className="flex items-center gap-2.5 text-white/60 hover:text-gold transition-colors duration-200 text-sm font-opensans"
               >
                 <Phone className="w-4 h-4 text-teal flex-shrink-0" />
-                (800) 555-1234
+                +1 (786) 766-3577
               </a>
               <a
                 href="mailto:info@driveservicenetwork.com"
@@ -137,7 +137,7 @@ export function Footer() {
               </a>
               <div className="flex items-start gap-2.5 text-white/60 text-sm font-opensans">
                 <MapPin className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" />
-                <span>Florida, United States</span>
+                <span>Miami Beach, FL, United States</span>
               </div>
             </div>
           </div>

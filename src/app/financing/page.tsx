@@ -19,7 +19,7 @@ import { FinancingPreQualForm } from "@/components/financing/FinancingPreQualFor
 export const metadata: Metadata = {
   title: "Fleet Financing — Drive Service Network",
   description:
-    "DSN financing is a business tool, not just a payment option. Repair financing, maintenance financing, and commercial fleet financing designed for operators.",
+    "Drive Service Network financing is a business tool, not just a payment option. Repair financing, maintenance financing, and commercial fleet financing designed for operators.",
 };
 
 const financingTypes = [
@@ -27,7 +27,7 @@ const financingTypes = [
     icon: Wrench,
     title: "Repair Financing",
     description:
-      "When an unexpected repair threatens your cash flow, DSN financing keeps your vehicles on the road without draining your operating capital. Finance individual repairs from $500 to $50,000 with flexible terms.",
+      "When an unexpected repair threatens your cash flow, Drive Service Network financing keeps your vehicles on the road without draining your operating capital. Finance individual repairs from $500 to $50,000 with flexible terms.",
     benefits: [
       "Same-day approval decisions",
       "Finance repairs across our entire network",
@@ -66,7 +66,7 @@ const financingTypes = [
     icon: BarChart3,
     title: "Payment Plans",
     description:
-      "For operators who prefer structured payment schedules, DSN offers customized payment plans that align with your revenue cycles. Pay when your vehicles are earning.",
+      "For operators who prefer structured payment schedules, Drive Service Network offers customized payment plans that align with your revenue cycles. Pay when your vehicles are earning.",
     benefits: [
       "Flexible payment schedules",
       "Revenue-aligned payment timing",
@@ -130,31 +130,31 @@ const approvalProcess = [
     step: "4",
     title: "Book & Finance",
     description:
-      "Once approved, use your financing line to book services across the DSN network at commercial pricing.",
+      "Once approved, use your financing line to book services across the Drive Service Network network at commercial pricing.",
     time: "Immediate",
   },
 ];
 
 const faqs = [
   {
-    question: "Is DSN financing a loan or a line of credit?",
+    question: "Is Drive Service Network financing a loan or a line of credit?",
     answer:
-      "DSN financing is structured as a revolving commercial credit line for fleet operators, or as individual installment financing for single-vehicle repairs. The right structure depends on your fleet size and usage patterns — our team will recommend the best fit during the pre-qualification process.",
+      "Drive Service Network financing is structured as a revolving commercial credit line for fleet operators, or as individual installment financing for single-vehicle repairs. The right structure depends on your fleet size and usage patterns — our team will recommend the best fit during the pre-qualification process.",
   },
   {
     question: "What credit score is required?",
     answer:
-      "We evaluate applications holistically, considering business history, fleet size, and revenue — not just personal credit scores. Many fleet operators with complex credit histories qualify for DSN financing. We encourage all operators to apply.",
+      "We evaluate applications holistically, considering business history, fleet size, and revenue — not just personal credit scores. Many fleet operators with complex credit histories qualify for Drive Service Network financing. We encourage all operators to apply.",
   },
   {
-    question: "Can I finance services at any DSN network shop?",
+    question: "Can I finance services at any Drive Service Network network shop?",
     answer:
-      "Yes. Once approved, your DSN financing is accepted at all participating shops in our nationwide network. You book through DSN, receive commercial pricing, and your financing handles the payment directly.",
+      "Yes. Once approved, your Drive Service Network financing is accepted at all participating shops in our nationwide network. You book through Drive Service Network, receive commercial pricing, and your financing handles the payment directly.",
   },
   {
     question: "Are there prepayment penalties?",
     answer:
-      "No. DSN financing has no prepayment penalties. If you want to pay off your balance early, you can do so at any time without additional fees.",
+      "No. Drive Service Network financing has no prepayment penalties. If you want to pay off your balance early, you can do so at any time without additional fees.",
   },
   {
     question: "How does fleet financing differ from individual repair financing?",
@@ -197,7 +197,7 @@ export default function FinancingPage() {
               <span className="text-gold">Keep Your Capital Working.</span>
             </h1>
             <p className="font-opensans text-white/80 text-lg leading-relaxed mb-10">
-              DSN financing isn&apos;t just a payment option — it&apos;s a strategic business tool.
+              Drive Service Network financing isn&apos;t just a payment option — it&apos;s a strategic business tool.
               Operators who finance their maintenance preserve working capital, protect fleet
               value, and grow faster than those who pay out of pocket.
             </p>
@@ -266,7 +266,7 @@ export default function FinancingPage() {
               <span className="text-teal">Every Operator</span>
             </h2>
             <p className="font-opensans text-gray-500 text-lg max-w-2xl mx-auto">
-              Whether you have one vehicle or one hundred, DSN has a financing
+              Whether you have one vehicle or one hundred, Drive Service Network has a financing
               structure designed for your operation.
             </p>
           </div>
@@ -379,16 +379,16 @@ export default function FinancingPage() {
             {faqs.map((faq) => (
               <details
                 key={faq.question}
-                className="bg-white rounded-xl border border-gray-100 shadow-card group"
+                className="bg-white rounded-xl border border-gray-200 shadow-card group"
               >
-                <summary className="flex items-center justify-between px-6 py-5 cursor-pointer list-none">
-                  <h3 className="font-montserrat font-bold text-navy text-sm pr-4">
+                <summary className="flex items-center justify-between px-6 py-5 cursor-pointer list-none hover:bg-gray-50 rounded-xl transition-colors">
+                  <h3 className="font-montserrat font-bold text-navy text-base pr-4">
                     {faq.question}
                   </h3>
-                  <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0 group-open:rotate-180 transition-transform" />
+                  <ChevronDown className="w-5 h-5 text-navy/50 flex-shrink-0 group-open:rotate-180 transition-transform" />
                 </summary>
-                <div className="px-6 pb-5">
-                  <p className="font-opensans text-gray-500 text-sm leading-relaxed">
+                <div className="px-6 pb-6 border-t border-gray-100">
+                  <p className="font-opensans text-gray-700 text-sm leading-relaxed pt-4">
                     {faq.answer}
                   </p>
                 </div>

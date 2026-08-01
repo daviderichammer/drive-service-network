@@ -13,7 +13,7 @@ const heroStats = [
 
 const heroTrustPoints = [
   "No hidden fees or markups",
-  "Commercial Fleet Pricing for all subscribers",
+  "Instant quotes & commercial fleet pricing for all subscribers",
   "Nationwide certified shop network",
   "Up to 25% Discounts Available",
 ];
@@ -77,7 +77,7 @@ export function HeroSection() {
                 </Link>
               </Button>
               <Button variant="gold" size="lg" asChild>
-                <Link href="/membership">
+                <Link href="/membership/join">
                   Start Saving Today
                 </Link>
               </Button>

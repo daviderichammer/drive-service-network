@@ -19,12 +19,16 @@ const navLinks = [
 ];
 
 const ecosystemLinks = [
-  { href: "#", label: "Drive Protection", description: "Vehicle protection plans" },
-  { href: "#", label: "Drive Parts Network", description: "OEM & aftermarket parts" },
-  { href: "#", label: "Drive KeZ", description: "Key management solutions" },
-  { href: "#", label: "Drive Cloud", description: "Fleet data & analytics" },
-  { href: "#", label: "Drive Connect", description: "Telematics & connectivity" },
-  { href: "#", label: "Drive Growth Partners", description: "Business growth resources" },
+  { href: "https://globaldriveholdings.com", label: "Global Drive Holdings", description: "Parent company" },
+  { href: "https://drivecommercegroup.com", label: "Drive Commerce", description: "Automotive commerce & infrastructure" },
+  { href: "https://drivecloudgroup.com", label: "Drive Cloud", description: "Fleet data & analytics" },
+  { href: "https://trustdriveconnect.com", label: "Drive Connect", description: "Telematics & connectivity" },
+  { href: "https://drivefinancialgroup.com", label: "Drive Financial", description: "Fleet financing solutions" },
+  { href: "https://drivekez.com", label: "Drive KeZ", description: "Key management solutions" },
+  { href: "https://drivemanagement.com", label: "Drive Management", description: "Fleet management platform" },
+  { href: "https://drivepartsnetwork.com", label: "Drive Parts Network", description: "OEM & aftermarket parts" },
+  { href: "https://driveprotectiongroup.com", label: "Drive Protection", description: "Vehicle protection plans" },
+  { href: "https://driveservicenetwork.com", label: "Drive Service Network", description: "National service infrastructure" },
 ];
 
 export function Navigation() {
@@ -124,9 +128,9 @@ export function Navigation() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
-            <a href="tel:+18005551234" className="flex items-center gap-2 text-white/70 hover:text-white text-sm font-opensans transition-colors duration-200">
+            <a href="tel:+17867663577" className="flex items-center gap-2 text-white/70 hover:text-white text-sm font-opensans transition-colors duration-200">
               <Phone className="w-4 h-4" />
-              <span>(800) 555-1234</span>
+              <span>+1 (786) 766-3577</span>
             </a>
 
             {status === "loading" ? null : session ? (

@@ -62,6 +62,9 @@ const categories = [
   },
 ];
 
+// Alternating card backgrounds: white and light blue-gray (#EEF4FB)
+const cardBgs = ["bg-white", "bg-[#EEF4FB]"];
+
 export function ServiceCategories() {
   return (
     <section className="section-padding bg-white">
@@ -83,45 +86,48 @@ export function ServiceCategories() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {categories.map((category) => (
-            <div
-              key={category.name}
-              className="group bg-white border border-gray-100 rounded-xl p-6 hover:border-teal/40 hover:shadow-card-hover transition-all duration-300 cursor-pointer"
-            >
-              {/* Icon */}
-              <div className="text-3xl mb-4">{category.icon}</div>
+          {categories.map((category, index) => {
+            const cardBg = cardBgs[index % 2];
+            return (
+              <div
+                key={category.name}
+                className={`group ${cardBg} border border-gray-100 rounded-xl p-6 hover:border-teal/40 hover:shadow-card-hover transition-all duration-300 cursor-pointer`}
+              >
+                {/* Icon */}
+                <div className="text-3xl mb-4">{category.icon}</div>
 
-              {/* Category Name */}
-              <h3 className="font-montserrat font-bold text-navy text-base mb-2 group-hover:text-teal transition-colors duration-200">
-                {category.name}
-              </h3>
+                {/* Category Name */}
+                <h3 className="font-montserrat font-bold text-navy text-base mb-2 group-hover:text-teal transition-colors duration-200">
+                  {category.name}
+                </h3>
 
-              {/* Description */}
-              <p className="font-opensans text-gray-500 text-xs leading-relaxed mb-4">
-                {category.description}
-              </p>
+                {/* Description */}
+                <p className="font-opensans text-gray-500 text-xs leading-relaxed mb-4">
+                  {category.description}
+                </p>
 
-              {/* Service Tags */}
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {category.services.slice(0, 3).map((service) => (
-                  <span
-                    key={service}
-                    className="inline-block px-2 py-0.5 bg-gray-50 text-gray-600 text-xs font-opensans rounded-md border border-gray-100"
-                  >
-                    {service}
+                {/* Service Tags */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {category.services.slice(0, 3).map((service) => (
+                    <span
+                      key={service}
+                      className="inline-block px-2 py-0.5 bg-gray-50 text-gray-600 text-xs font-opensans rounded-md border border-gray-100"
+                    >
+                      {service}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Count */}
+                <div className="flex items-center justify-between">
+                  <span className="font-montserrat font-semibold text-teal text-xs">
+                    {category.count}
                   </span>
-                ))}
+                  <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-teal group-hover:translate-x-1 transition-all duration-200" />
+                </div>
               </div>
-
-              {/* Count */}
-              <div className="flex items-center justify-between">
-                <span className="font-montserrat font-semibold text-teal text-xs">
-                  {category.count}
-                </span>
-                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-teal group-hover:translate-x-1 transition-all duration-200" />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* CTA */}

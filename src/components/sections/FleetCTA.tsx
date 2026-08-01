@@ -59,9 +59,16 @@ export function FleetCTA() {
             <h3 className="font-montserrat font-bold text-white text-lg mb-6">
               Fleet Subscription Includes
             </h3>
-            <ul className="space-y-3">
-              {benefits.map((benefit) => (
-                <li key={benefit} className="flex items-center gap-3">
+            <ul className="space-y-2">
+              {benefits.map((benefit, index) => (
+                <li
+                  key={benefit}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                    index % 2 === 0
+                      ? "bg-white/5"
+                      : "bg-[#c8a84b]/10"
+                  }`}
+                >
                   <CheckCircle className="w-5 h-5 text-teal flex-shrink-0" />
                   <span className="font-opensans text-white/80 text-sm">
                     {benefit}

@@ -52,6 +52,9 @@ const signals = [
   },
 ];
 
+// Alternating card backgrounds: white and light blue-gray
+const cardBgs = ["bg-white", "bg-[#EEF4FB]"];
+
 export function TrustSignals() {
   return (
     <section className="bg-white section-padding-sm border-b border-gray-100">
@@ -72,12 +75,13 @@ export function TrustSignals() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {signals.map((signal) => {
+          {signals.map((signal, index) => {
             const Icon = signal.icon;
+            const cardBg = cardBgs[index % 2];
             return (
               <div
                 key={signal.label}
-                className="flex items-start gap-4 p-5 rounded-xl border border-gray-100 hover:border-teal/30 hover:shadow-card transition-all duration-300 bg-white group"
+                className={`flex items-start gap-4 p-5 rounded-xl border border-gray-100 hover:border-teal/30 hover:shadow-card transition-all duration-300 ${cardBg} group`}
               >
                 <div
                   className={`w-12 h-12 ${signal.bg} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}

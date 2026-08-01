@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Search, CalendarCheck, Wrench, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+
 const steps = [
   {
     number: "01",
@@ -37,6 +38,14 @@ const steps = [
     iconBg: "bg-teal/20",
   },
 ];
+
+// Alternating step card backgrounds on navy: semi-transparent white vs gold-tinted
+const stepCardBgs = [
+  "bg-white/10 border-white/20",
+  "bg-[#c8a84b]/10 border-[#c8a84b]/25",
+  "bg-white/10 border-white/20",
+];
+
 export function HowItWorksPreview() {
   return (
     <section className="section-padding bg-navy">
@@ -61,10 +70,11 @@ export function HowItWorksPreview() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
             {steps.map((step, index) => {
               const Icon = step.icon;
+              const cardStyle = stepCardBgs[index % stepCardBgs.length];
               return (
                 <div key={step.number} className="relative">
                   {/* Step Card */}
-                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 h-full flex flex-col">
+                  <div className={`backdrop-blur-sm border rounded-2xl p-8 hover:brightness-110 transition-all duration-300 h-full flex flex-col ${cardStyle}`}>
                     {/* Step Number + Icon */}
                     <div className="flex items-center gap-4 mb-6">
                       <div

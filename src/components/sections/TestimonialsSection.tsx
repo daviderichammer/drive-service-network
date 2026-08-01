@@ -28,6 +28,14 @@ const testimonials = [
   },
 ];
 
+// Alternating testimonial card backgrounds on navy:
+// odd cards: semi-transparent white; even cards: gold-tinted
+const cardBgs = [
+  "bg-white/8 border-white/15",
+  "bg-[#c8a84b]/12 border-[#c8a84b]/30",
+  "bg-white/8 border-white/15",
+];
+
 export function TestimonialsSection() {
   return (
     <section className="section-padding bg-navy">
@@ -47,43 +55,46 @@ export function TestimonialsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="bg-white/5 border border-white/10 rounded-2xl p-7 hover:bg-white/10 transition-all duration-300 flex flex-col"
-            >
-              {/* Quote Icon */}
-              <Quote className="w-8 h-8 text-teal/40 mb-4 flex-shrink-0" />
+          {testimonials.map((testimonial, index) => {
+            const cardStyle = cardBgs[index % cardBgs.length];
+            return (
+              <div
+                key={index}
+                className={`border rounded-2xl p-7 hover:brightness-110 transition-all duration-300 flex flex-col ${cardStyle}`}
+              >
+                {/* Quote Icon */}
+                <Quote className="w-8 h-8 text-teal/40 mb-4 flex-shrink-0" />
 
-              {/* Rating */}
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 text-gold fill-gold"
-                  />
-                ))}
+                {/* Rating */}
+                <div className="flex gap-1 mb-4">
+                  {Array.from({ length: testimonial.rating }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 text-gold fill-gold"
+                    />
+                  ))}
+                </div>
+
+                {/* Quote */}
+                <p className="font-opensans text-white/80 text-sm leading-relaxed flex-1 mb-6">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+
+                {/* Author */}
+                <div className="border-t border-white/10 pt-4">
+                  <div className="font-montserrat font-bold text-white text-sm">
+                    {testimonial.author}
+                  </div>
+                  <div className="font-opensans text-teal text-xs mt-0.5">
+                    {testimonial.role}
+                  </div>
+                  <div className="font-opensans text-white/40 text-xs mt-0.5">
+                    {testimonial.fleet}
+                  </div>
+                </div>
               </div>
-
-              {/* Quote */}
-              <p className="font-opensans text-white/80 text-sm leading-relaxed flex-1 mb-6">
-                &ldquo;{testimonial.quote}&rdquo;
-              </p>
-
-              {/* Author */}
-              <div className="border-t border-white/10 pt-4">
-                <div className="font-montserrat font-bold text-white text-sm">
-                  {testimonial.author}
-                </div>
-                <div className="font-opensans text-teal text-xs mt-0.5">
-                  {testimonial.role}
-                </div>
-                <div className="font-opensans text-white/40 text-xs mt-0.5">
-                  {testimonial.fleet}
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
+
 const ecosystemProducts = [
   {
     name: "Drive Service Network",
@@ -69,6 +70,11 @@ const ecosystemProducts = [
     href: "#",
   },
 ];
+
+// Alternating card backgrounds on navy:
+// even index: semi-transparent white; odd index: gold-tinted
+const cardBgs = ["bg-white/8", "bg-[#c8a84b]/10"];
+
 export function EcosystemCrossSell() {
   return (
     <section className="section-padding bg-navy">
@@ -86,40 +92,43 @@ export function EcosystemCrossSell() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {ecosystemProducts.map((product) => (
-            <Link
-              key={product.name}
-              href={product.href}
-              className={`group bg-white/5 border-2 ${product.color} rounded-xl p-6 transition-all duration-300 hover:bg-white/10 hover:shadow-card-hover block`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-3xl">{product.icon}</div>
-                <div className="flex items-center gap-2">
-                  {product.badge && (
-                    <span
-                      className={`${product.badgeColor} text-xs font-montserrat font-semibold px-2.5 py-1 rounded-full`}
-                    >
-                      {product.badge}
-                    </span>
-                  )}
-                  <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-teal transition-colors duration-200" />
+          {ecosystemProducts.map((product, index) => {
+            const cardBg = cardBgs[index % 2];
+            return (
+              <Link
+                key={product.name}
+                href={product.href}
+                className={`group ${cardBg} border-2 ${product.color} rounded-xl p-6 transition-all duration-300 hover:brightness-110 hover:shadow-card-hover block`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="text-3xl">{product.icon}</div>
+                  <div className="flex items-center gap-2">
+                    {product.badge && (
+                      <span
+                        className={`${product.badgeColor} text-xs font-montserrat font-semibold px-2.5 py-1 rounded-full`}
+                      >
+                        {product.badge}
+                      </span>
+                    )}
+                    <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-teal transition-colors duration-200" />
+                  </div>
                 </div>
-              </div>
-              <h3 className="font-montserrat font-bold text-white text-base mb-0.5 group-hover:text-teal transition-colors duration-200">
-                {product.name}
-              </h3>
-              <p className="font-montserrat font-medium text-teal text-xs mb-3">
-                {product.tagline}
-              </p>
-              <p className="font-opensans text-white/60 text-sm leading-relaxed">
-                {product.description}
-              </p>
-              <div className="mt-4 flex items-center gap-1 text-teal text-xs font-montserrat font-semibold">
-                Learn More
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
-              </div>
-            </Link>
-          ))}
+                <h3 className="font-montserrat font-bold text-white text-base mb-0.5 group-hover:text-teal transition-colors duration-200">
+                  {product.name}
+                </h3>
+                <p className="font-montserrat font-medium text-teal text-xs mb-3">
+                  {product.tagline}
+                </p>
+                <p className="font-opensans text-white/60 text-sm leading-relaxed">
+                  {product.description}
+                </p>
+                <div className="mt-4 flex items-center gap-1 text-teal text-xs font-montserrat font-semibold">
+                  Learn More
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
+                </div>
+              </Link>
+            );
+          })}
         </div>
         {/* Bottom Note */}
         <div className="mt-10 text-center">

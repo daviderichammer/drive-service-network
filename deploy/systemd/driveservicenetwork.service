@@ -1,0 +1,20 @@
+[Unit]
+Description=Drive Service Network Next.js App
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/drive-service-network
+EnvironmentFile=/opt/drive-service-network/.env.production
+ExecStart=/usr/bin/pnpm run start
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=driveservicenetwork
+Environment=NODE_ENV=production
+Environment=PORT=3049
+
+[Install]
+WantedBy=multi-user.target

@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { Search, CalendarCheck, Wrench, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-
 const steps = [
   {
     number: "01",
@@ -13,7 +12,7 @@ const steps = [
     highlight: "A Nationwide Network since 2012",
     color: "bg-teal",
     iconColor: "text-teal",
-    iconBg: "bg-teal/10",
+    iconBg: "bg-teal/20",
   },
   {
     number: "02",
@@ -24,7 +23,7 @@ const steps = [
     highlight: "30-minute time slots, real-time availability",
     color: "bg-gold",
     iconColor: "text-gold",
-    iconBg: "bg-gold/10",
+    iconBg: "bg-gold/20",
   },
   {
     number: "03",
@@ -33,42 +32,39 @@ const steps = [
     description:
       "Drop off your vehicle and let the certified technicians handle the rest. Track service status, receive updates, and maintain your complete service history in one place.",
     highlight: "Full service history, all vehicles, one dashboard",
-    color: "bg-navy",
-    iconColor: "text-navy",
-    iconBg: "bg-navy/10",
+    color: "bg-teal",
+    iconColor: "text-teal",
+    iconBg: "bg-teal/20",
   },
 ];
-
 export function HowItWorksPreview() {
   return (
-    <section className="section-padding bg-gray-50">
+    <section className="section-padding bg-navy">
       <div className="section-container">
         <div className="text-center mb-14">
           <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
             Find. Book. Repaired.
           </p>
-          <h2 className="heading-lg text-navy">
+          <h2 className="heading-lg text-white">
             Service in{" "}
-            <span className="text-teal">3 Simple Steps</span>
+            <span className="text-gold">3 Simple Steps</span>
           </h2>
-          <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
+          <p className="body-lg text-white/70 mt-4 max-w-2xl mx-auto">
             We eliminated the complexity. What used to take 6 steps and multiple
             phone calls now takes minutes — from any device, anywhere.
           </p>
         </div>
-
         {/* Steps */}
         <div className="relative">
           {/* Connector Line (desktop) */}
-          <div className="hidden lg:block absolute top-16 left-1/2 -translate-x-1/2 w-2/3 h-0.5 bg-gradient-to-r from-teal via-gold to-navy opacity-20" />
-
+          <div className="hidden lg:block absolute top-16 left-1/2 -translate-x-1/2 w-2/3 h-0.5 bg-gradient-to-r from-teal via-gold to-teal opacity-30" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
                 <div key={step.number} className="relative">
                   {/* Step Card */}
-                  <div className="bg-white rounded-2xl p-8 shadow-card border border-gray-100 hover:shadow-card-hover transition-all duration-300 h-full flex flex-col">
+                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 h-full flex flex-col">
                     {/* Step Number + Icon */}
                     <div className="flex items-center gap-4 mb-6">
                       <div
@@ -77,32 +73,28 @@ export function HowItWorksPreview() {
                         <Icon className={`w-7 h-7 ${step.iconColor}`} />
                       </div>
                       <div
-                        className={`font-montserrat font-black text-5xl ${step.iconColor} opacity-20 leading-none`}
+                        className={`font-montserrat font-black text-5xl ${step.iconColor} opacity-40 leading-none`}
                       >
                         {step.number}
                       </div>
                     </div>
-
-                    <h3 className="font-montserrat font-bold text-navy text-xl mb-3">
+                    <h3 className="font-montserrat font-bold text-white text-xl mb-3">
                       {step.title}
                     </h3>
-
-                    <p className="font-opensans text-gray-500 text-sm leading-relaxed flex-1">
+                    <p className="font-opensans text-white/70 text-sm leading-relaxed flex-1">
                       {step.description}
                     </p>
-
                     {/* Highlight */}
-                    <div className={`mt-5 pt-4 border-t border-gray-100`}>
+                    <div className="mt-5 pt-4 border-t border-white/20">
                       <p className={`font-montserrat font-semibold text-xs ${step.iconColor} uppercase tracking-wide`}>
                         {step.highlight}
                       </p>
                     </div>
                   </div>
-
                   {/* Arrow between steps (mobile/tablet) */}
                   {index < steps.length - 1 && (
                     <div className="md:hidden flex justify-center my-2">
-                      <ArrowRight className="w-5 h-5 text-gray-300 rotate-90" />
+                      <ArrowRight className="w-5 h-5 text-white/30 rotate-90" />
                     </div>
                   )}
                 </div>
@@ -110,7 +102,6 @@ export function HowItWorksPreview() {
             })}
           </div>
         </div>
-
         {/* CTA */}
         <div className="text-center mt-12">
           <Button variant="secondary" size="lg" asChild>
@@ -119,7 +110,7 @@ export function HowItWorksPreview() {
               <ArrowRight className="w-5 h-5" />
             </Link>
           </Button>
-          <p className="mt-4 font-opensans text-gray-400 text-sm">
+          <p className="mt-4 font-opensans text-white/40 text-sm">
             No registration required to explore the platform
           </p>
         </div>

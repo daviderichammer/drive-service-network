@@ -44,9 +44,9 @@ const dsnPlusOptions = [
     id: "6month",
     name: "DSN+ 6-Month Prepaid",
     tagline: "Commit for 6 months, save vs. monthly",
-    price: "119",
+    price: "11.99",
     period: "per month",
-    billingNote: "Billed as $714 every 6 months",
+    billingNote: "Billed as $71.94 every 6 months",
     badge: null,
     badgeColor: "",
     highlight: false,
@@ -57,9 +57,9 @@ const dsnPlusOptions = [
     id: "12month",
     name: "DSN+ 12-Month Prepaid",
     tagline: "Best value — maximum annual savings",
-    price: "99",
+    price: "9.99",
     period: "per month",
-    billingNote: "Billed as $1,188 annually — save 20%",
+    billingNote: "Billed as $119.88 annually — save nearly 20%",
     badge: "Best Value",
     badgeColor: "bg-teal text-white",
     highlight: true,
@@ -70,7 +70,7 @@ const dsnPlusOptions = [
     id: "financed",
     name: "DSN+ Financed",
     tagline: "Monthly installments — DSN exclusive",
-    price: "149",
+    price: "14.99",
     period: "per month",
     billingNote: "Month-to-month financing — no prepay required",
     badge: "DSN Exclusive",
@@ -259,7 +259,7 @@ export default function MembershipPage() {
                 </p>
                 <div className="mb-6">
                   <div className="flex items-baseline gap-1">
-                    <span className="font-montserrat font-black text-navy text-4xl">From $99</span>
+                    <span className="font-montserrat font-black text-navy text-4xl">FROM $9.99</span>
                     <span className="font-opensans text-gray-400 text-sm">/mo</span>
                   </div>
                   <p className="font-opensans text-teal text-xs mt-1">

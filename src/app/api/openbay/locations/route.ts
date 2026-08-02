@@ -16,8 +16,8 @@ const searchSchema = z.object({
   zip: z.string().min(5).max(10),
   radius: z.coerce.number().min(1).max(100).optional().default(25),
   serviceType: z.enum(["appointment", "oil_change"]).optional().default("appointment"),
-  make: z.string().optional(),
-  serviceId: z.coerce.number().optional(),
+  make: z.string().nullable().optional().transform((v) => v ?? undefined),
+  serviceId: z.coerce.number().optional().nullable().transform((v) => v ?? undefined),
 });
 
 export async function GET(request: NextRequest) {
@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
 
   const parseResult = searchSchema.safeParse({
     zip: searchParams.get("zip"),
-    radius: searchParams.get("radius"),
-    serviceType: searchParams.get("serviceType"),
+    radius: searchParams.get("radius") || undefined,
+    serviceType: searchParams.get("serviceType") || undefined,
     make: searchParams.get("make"),
     serviceId: searchParams.get("serviceId"),
   });

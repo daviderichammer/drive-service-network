@@ -28,6 +28,7 @@ interface Timeslot {
   time: string;
   available: boolean;
   datetime?: string;
+  proposedTime?: string;
 }
 
 interface TimeslotGroup {
@@ -138,6 +139,7 @@ export default function AppointmentPage() {
   const [selectedTimeslotId, setSelectedTimeslotId] = useState("");
   const [selectedTimeslotDate, setSelectedTimeslotDate] = useState("");
   const [selectedTimeslotTime, setSelectedTimeslotTime] = useState("");
+  const [selectedTimeslotProposedTime, setSelectedTimeslotProposedTime] = useState("");
   const [activeDate, setActiveDate] = useState("");
   const [loadingTimeslots, setLoadingTimeslots] = useState(false);
   const [timeslotsError, setTimeslotsError] = useState<string | null>(null);
@@ -217,6 +219,8 @@ export default function AppointmentPage() {
     setSelectedTimeslotId(slot.id);
     setSelectedTimeslotDate(date);
     setSelectedTimeslotTime(slot.time);
+    // Store the ISO 8601 proposed_time for the Openbay API (requires RFC3339 with timezone offset)
+    setSelectedTimeslotProposedTime(slot.proposedTime || slot.datetime || "");
     if (errors.timeslot) setErrors((e) => ({ ...e, timeslot: "" }));
   }
 
@@ -267,7 +271,8 @@ export default function AppointmentPage() {
           shopId: bookingState.selectedShopId,
           serviceId: bookingState.selectedServiceId,
           timeslotId: selectedTimeslotId,
-          scheduledTime: selectedTimeslotId, // proposed_time key from Openbay
+          // Use the ISO 8601 proposedTime (e.g. "2026-08-04T11:00:00-04:00") — Openbay requires RFC3339 with timezone offset
+          scheduledTime: selectedTimeslotProposedTime || selectedTimeslotId,
           vehicleYear: vehicleYear,
           vehicleMake: vehicleMake,
           vehicleModel: vehicleModel,

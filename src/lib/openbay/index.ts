@@ -60,8 +60,24 @@ export async function safeOpenbayCall<T>(
     const data = await fn();
     return { data, error: null };
   } catch (err) {
-    const error = err as { message?: string; code?: string };
-    console.error("[Openbay] API call failed:", error.message || "Unknown error");
-    return { data: fallback, error: error.message || "Service temporarily unavailable" };
+    // Log the full error server-side for debugging
+    console.error("[Openbay] API call failed (full error):", JSON.stringify(err, null, 2));
+
+    // Extract a human-readable message from the error
+    let message = "Service temporarily unavailable";
+    if (err instanceof Error) {
+      message = err.message;
+    } else if (err && typeof err === "object") {
+      const e = err as Record<string, unknown>;
+      if (typeof e.message === "string" && e.message) {
+        message = e.message;
+      } else if (typeof e.code === "string" && e.code) {
+        message = e.code;
+      }
+    } else if (typeof err === "string" && err) {
+      message = err;
+    }
+
+    return { data: fallback, error: message };
   }
 }

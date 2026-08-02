@@ -279,13 +279,27 @@ class OpenbayClient {
 
         if (error.response?.data) {
           const data = error.response.data as Record<string, unknown>;
-          apiError.message = (data.message as string) || apiError.message;
-          apiError.code = (data.code as string) || apiError.code;
+          // Handle Openbay's nested errors object:
+          // { errors: { message: "...", error: "Unprocessable Entity", statusCode: 422 } }
+          const nested = data.errors as Record<string, unknown> | undefined;
+          if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+            apiError.message =
+              (nested.message as string) ||
+              (nested.error as string) ||
+              apiError.message;
+            apiError.code = (nested.code as string) || (nested.error as string) || apiError.code;
+          } else {
+            apiError.message = (data.message as string) || apiError.message;
+            apiError.code = (data.code as string) || apiError.code;
+          }
         }
 
-        if (process.env.NODE_ENV === "development") {
-          console.error("[Openbay Error]", apiError);
-        }
+        // Always log errors server-side for debugging
+        console.error("[Openbay] API error:", {
+          status: apiError.statusCode,
+          message: apiError.message,
+          url: error.config?.url,
+        });
 
         return Promise.reject(apiError);
       }

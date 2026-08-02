@@ -13,50 +13,51 @@ import {
   Zap,
   Users,
   BarChart3,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Join DSN Subscription — Free Enrollment",
+  title: "Join DSN Free — Free Enrollment | Drive Service Network",
   description:
-    "Become a Drive Service Network member and unlock commercial pricing, fleet records, vehicle history, and priority service access. Free enrollment — no credit card required.",
+    "Join Drive Service Network for free. Search 40,000+ shops, book services, and manage your vehicles at no cost. Upgrade to DSN+ for commercial fleet pricing and advanced tools.",
 };
 
 const comparisonFeatures = [
   {
     category: "Pricing & Savings",
     features: [
-      { name: "Commercial pricing on all repairs", subscriber: true, nonSubscriber: false },
-      { name: "Fleet volume discounts", subscriber: true, nonSubscriber: false },
-      { name: "Parts pricing transparency", subscriber: true, nonSubscriber: false },
-      { name: "Labor rate benchmarks", subscriber: true, nonSubscriber: false },
+      { name: "Commercial pricing on all repairs", dsnFree: false, dsnPlus: true },
+      { name: "Fleet volume discounts", dsnFree: false, dsnPlus: true },
+      { name: "Parts pricing transparency", dsnFree: false, dsnPlus: true },
+      { name: "Labor rate benchmarks", dsnFree: false, dsnPlus: true },
     ],
   },
   {
     category: "Vehicle & Fleet Records",
     features: [
-      { name: "Vehicle service history tracking", subscriber: true, nonSubscriber: false },
-      { name: "Multi-vehicle management", subscriber: true, nonSubscriber: false },
-      { name: "Maintenance schedule reminders", subscriber: true, nonSubscriber: false },
-      { name: "VIN-based vehicle profiles", subscriber: true, nonSubscriber: false },
+      { name: "Vehicle service history tracking", dsnFree: "Up to 3 vehicles", dsnPlus: "Unlimited" },
+      { name: "Multi-vehicle management", dsnFree: false, dsnPlus: true },
+      { name: "Maintenance schedule reminders", dsnFree: false, dsnPlus: true },
+      { name: "VIN-based vehicle profiles", dsnFree: true, dsnPlus: true },
     ],
   },
   {
     category: "Booking & Service",
     features: [
-      { name: "Online service booking", subscriber: true, nonSubscriber: true },
-      { name: "Priority booking access", subscriber: true, nonSubscriber: false },
-      { name: "Booking history & records", subscriber: true, nonSubscriber: false },
-      { name: "Appointment reminders", subscriber: true, nonSubscriber: false },
+      { name: "Online service booking", dsnFree: true, dsnPlus: true },
+      { name: "Priority booking access", dsnFree: false, dsnPlus: true },
+      { name: "Booking history & records", dsnFree: false, dsnPlus: true },
+      { name: "Appointment reminders", dsnFree: false, dsnPlus: true },
     ],
   },
   {
     category: "Support & Resources",
     features: [
-      { name: "Dedicated subscriber support", subscriber: true, nonSubscriber: false },
-      { name: "Fleet operator resources", subscriber: true, nonSubscriber: false },
-      { name: "Financing access", subscriber: true, nonSubscriber: false },
-      { name: "Standard customer support", subscriber: true, nonSubscriber: true },
+      { name: "Dedicated account manager", dsnFree: false, dsnPlus: true },
+      { name: "Fleet operator resources", dsnFree: false, dsnPlus: true },
+      { name: "Financing access", dsnFree: false, dsnPlus: true },
+      { name: "Standard customer support", dsnFree: true, dsnPlus: true },
     ],
   },
 ];
@@ -66,7 +67,7 @@ const memberBenefits = [
     icon: TrendingDown,
     title: "Commercial Savings",
     description:
-      "Access negotiated commercial rates across our nationwide network. Subscribers consistently save 15–35% compared to retail pricing on repairs and maintenance.",
+      "Access negotiated commercial rates across our nationwide network. DSN+ subscribers consistently save 15–35% compared to retail pricing on repairs and maintenance.",
     stat: "Up to 35% savings",
   },
   {
@@ -87,56 +88,40 @@ const memberBenefits = [
     icon: Zap,
     title: "Future Features",
     description:
-      "Subscribers get early access to upcoming features: telematics integration, predictive maintenance alerts, commercial financing, and enterprise reporting.",
+      "DSN+ subscribers get early access to upcoming features: telematics integration, predictive maintenance alerts, commercial financing, and enterprise reporting.",
     stat: "Early access",
   },
 ];
 
-const futureTiers = [
+const dsnPlusOptions = [
   {
-    name: "Basic",
-    price: "Coming Soon",
-    description: "For individual operators and small fleets",
-    features: ["Up to 5 vehicles", "Basic reporting", "Email support", "Commercial pricing"],
-    color: "border-gray-200",
+    name: "DSN+ 6-Month Prepaid",
+    price: "$119/mo",
+    note: "Billed as $714 every 6 months",
     badge: null,
+    color: "border-gray-200",
   },
   {
-    name: "Professional",
-    price: "Coming Soon",
-    description: "For growing fleets and serious operators",
-    features: [
-      "Up to 25 vehicles",
-      "Advanced analytics",
-      "Priority support",
-      "Commercial pricing",
-      "Fleet dashboards",
-      "Multi-user access",
-    ],
-    color: "border-teal",
-    badge: "Most Popular",
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    description: "For large commercial fleets and organizations",
-    features: [
-      "Unlimited vehicles",
-      "Enterprise reporting",
-      "Dedicated account manager",
-      "Commercial financing",
-      "API access",
-      "Custom integrations",
-    ],
-    color: "border-gold",
+    name: "DSN+ 12-Month Prepaid",
+    price: "$99/mo",
+    note: "Billed as $1,188 annually — save 20%",
     badge: "Best Value",
+    color: "border-teal",
+  },
+  {
+    name: "DSN+ Financed",
+    price: "$149/mo",
+    note: "Month-to-month — no prepay required",
+    badge: "DSN Exclusive",
+    color: "border-gold",
   },
 ];
 
 const enrollmentSteps = [
-  { step: "1", title: "Create Account", description: "Fill in your name, email, and create a password" },
-  { step: "2", title: "Add Your Vehicles", description: "Add your vehicles to start tracking service history" },
-  { step: "3", title: "Book Your First Service", description: "Access commercial pricing immediately" },
+  { step: "1", title: "Create Free Account", description: "Fill in your name, email, and create a password — no credit card needed" },
+  { step: "2", title: "Add Your Vehicles", description: "Add your vehicles to start tracking service history immediately" },
+  { step: "3", title: "Book Your First Service", description: "Search shops, get quotes, and book — right away" },
+  { step: "4", title: "Upgrade to DSN+ (Optional)", description: "When you're ready for commercial pricing and advanced tools, upgrade in one click" },
 ];
 
 export default function MembershipJoinPage() {
@@ -153,22 +138,21 @@ export default function MembershipJoinPage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold/20 rounded-full border border-gold/30 mb-6">
               <Star className="w-4 h-4 text-gold" />
               <span className="font-montserrat font-semibold text-gold text-sm">
-                Free Enrollment — No Credit Card Required
+                DSN Free — No Credit Card Required
               </span>
             </div>
             <h1 className="font-montserrat font-bold text-4xl md:text-5xl text-white mb-6 leading-tight">
-              Subscription That{" "}
-              <span className="text-gold">Pays for Itself</span>
+              Join DSN Free.{" "}
+              <span className="text-gold">Start Saving Today.</span>
             </h1>
             <p className="font-opensans text-white/80 text-lg leading-relaxed mb-10">
-              DSN subscribership isn&apos;t a cost — it&apos;s an investment. Commercial pricing,
-              complete vehicle records, and fleet management tools that save operators
-              thousands every year. Start free today.
+              Create your free account in seconds. Search 40,000+ shops, book services, and manage your vehicles at no cost.
+              Upgrade to DSN+ when you&apos;re ready for commercial fleet pricing and advanced tools.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="xl" asChild>
-                <Link href="/auth/register">
-                  Become a Subscriber — It&apos;s Free
+                <Link href="/auth/register?plan=free">
+                  Join DSN Free
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
@@ -185,111 +169,144 @@ export default function MembershipJoinPage() {
         </div>
       </section>
 
-      {/* Value Props */}
+      {/* How Enrollment Works */}
       <section className="section-padding bg-white">
+        <div className="section-container">
+          <div className="text-center mb-12">
+            <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
+              How It Works
+            </p>
+            <h2 className="heading-lg text-navy">
+              Four Steps to{" "}
+              <span className="text-teal">Full Access</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {enrollmentSteps.map((step) => (
+              <div key={step.step} className="text-center">
+                <div className="w-12 h-12 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="font-montserrat font-black text-teal text-lg">{step.step}</span>
+                </div>
+                <h3 className="font-montserrat font-bold text-navy text-sm mb-2">{step.title}</h3>
+                <p className="font-opensans text-gray-500 text-xs leading-relaxed">{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Value Props */}
+      <section className="section-padding bg-gray-50">
         <div className="section-container">
           <div className="text-center mb-14">
             <h2 className="heading-lg text-navy mb-4">
-              Why Operators Choose{" "}
-              <span className="text-teal">DSN Subscription</span>
+              Why Upgrade to{" "}
+              <span className="text-teal">DSN+</span>
             </h2>
             <p className="font-opensans text-gray-500 text-lg max-w-2xl mx-auto">
-              We built DSN because operators deserve the same commercial advantages
-              that large fleets have always had. Membership levels the playing field.
+              DSN Free gets you started. DSN+ gives you the commercial tools that operators running profitable fleets rely on.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {memberBenefits.map((benefit) => (
-              <div
-                key={benefit.title}
-                className="flex gap-6 p-6 bg-gray-50 rounded-2xl border border-gray-100 hover:border-teal/30 hover:shadow-card transition-all duration-300"
-              >
-                <div className="w-14 h-14 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <benefit.icon className="w-7 h-7 text-teal" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-montserrat font-bold text-navy text-lg">
-                      {benefit.title}
-                    </h3>
-                    <span className="font-montserrat font-bold text-teal text-sm bg-teal/10 px-3 py-1 rounded-full">
-                      {benefit.stat}
-                    </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {memberBenefits.map((benefit) => {
+              const Icon = benefit.icon;
+              return (
+                <div
+                  key={benefit.title}
+                  className="bg-white rounded-xl p-6 border border-gray-100 shadow-card hover:shadow-card-hover transition-all duration-300"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-teal" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-montserrat font-bold text-navy text-base">
+                          {benefit.title}
+                        </h3>
+                        <span className="bg-teal/10 text-teal text-xs font-montserrat font-semibold px-2 py-0.5 rounded-full">
+                          {benefit.stat}
+                        </span>
+                      </div>
+                      <p className="font-opensans text-gray-500 text-sm leading-relaxed">
+                        {benefit.description}
+                      </p>
+                    </div>
                   </div>
-                  <p className="font-opensans text-gray-500 text-sm leading-relaxed">
-                    {benefit.description}
-                  </p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Comparison Table */}
-      <section id="comparison" className="section-padding bg-gray-50">
+      <section className="section-padding bg-white" id="comparison">
         <div className="section-container">
-          <div className="text-center mb-14">
-            <h2 className="heading-lg text-navy mb-4">
-              Subscriber vs.{" "}
-              <span className="text-teal">Non-Subscriber</span>
+          <div className="text-center mb-12">
+            <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
+              Feature Comparison
+            </p>
+            <h2 className="heading-lg text-navy">
+              DSN Free vs.{" "}
+              <span className="text-teal">DSN+</span>
             </h2>
-            <p className="font-opensans text-gray-500 text-lg max-w-2xl mx-auto">
-              The difference is clear. DSN subscribers get access to tools and pricing
-              that non-subscribers simply cannot access.
+            <p className="font-opensans text-gray-500 mt-4 max-w-2xl mx-auto">
+              The difference is clear. DSN+ subscribers get access to tools and pricing
+              that DSN Free members can unlock at any time.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            {/* Table Header */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="max-w-3xl mx-auto">
+            {/* Header */}
+            <div className="grid grid-cols-3 gap-4 mb-4 px-4">
               <div className="col-span-1" />
-              <div className="bg-teal rounded-xl p-4 text-center shadow-lg">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Shield className="w-5 h-5 text-white" />
-                  <span className="font-montserrat font-bold text-white text-base">
-                    DSN Subscriber
-                  </span>
-                </div>
-                <span className="font-opensans text-teal-100 text-sm">Free to join</span>
+              <div className="text-center">
+                <span className="font-montserrat font-bold text-navy text-sm">DSN Free</span>
+                <div className="font-opensans text-gray-400 text-xs mt-0.5">$0/forever</div>
               </div>
-              <div className="bg-gray-200 rounded-xl p-4 text-center">
-                <span className="font-montserrat font-bold text-gray-600 text-base">
-                  Non-Subscriber
-                </span>
-                <p className="font-opensans text-gray-500 text-sm mt-1">Standard access</p>
+              <div className="text-center">
+                <span className="font-montserrat font-bold text-teal text-sm">DSN+</span>
+                <div className="font-opensans text-teal text-xs mt-0.5">From $99/mo</div>
               </div>
             </div>
 
-            {/* Feature Categories */}
-            {comparisonFeatures.map((category) => (
-              <div key={category.category} className="mb-6">
-                <div className="bg-navy/5 rounded-lg px-4 py-2 mb-2">
-                  <span className="font-montserrat font-bold text-navy text-sm uppercase tracking-wide">
-                    {category.category}
+            {comparisonFeatures.map((group) => (
+              <div key={group.category} className="mb-6">
+                <div className="bg-gray-50 rounded-lg px-4 py-2 mb-2">
+                  <span className="font-montserrat font-semibold text-navy text-xs uppercase tracking-wide">
+                    {group.category}
                   </span>
                 </div>
                 <div className="space-y-1">
-                  {category.features.map((feature) => (
+                  {group.features.map((feature) => (
                     <div
                       key={feature.name}
-                      className="grid grid-cols-3 gap-4 items-center px-4 py-3 bg-white rounded-lg border border-gray-100"
+                      className="grid grid-cols-3 gap-4 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      <span className="font-opensans text-sm text-gray-700 col-span-1">
+                      <div className="col-span-1 font-opensans text-gray-700 text-sm">
                         {feature.name}
-                      </span>
-                      <div className="flex justify-center">
-                        {feature.subscriber ? (
+                      </div>
+                      <div className="flex justify-center items-center">
+                        {feature.dsnFree === true ? (
                           <CheckCircle2 className="w-5 h-5 text-teal" />
-                        ) : (
+                        ) : feature.dsnFree === false ? (
                           <XCircle className="w-5 h-5 text-gray-300" />
+                        ) : (
+                          <span className="font-opensans text-gray-500 text-xs text-center">
+                            {feature.dsnFree}
+                          </span>
                         )}
                       </div>
-                      <div className="flex justify-center">
-                        {feature.nonSubscriber ? (
-                          <CheckCircle2 className="w-5 h-5 text-gray-400" />
-                        ) : (
+                      <div className="flex justify-center items-center">
+                        {feature.dsnPlus === true ? (
+                          <CheckCircle2 className="w-5 h-5 text-teal" />
+                        ) : feature.dsnPlus === false ? (
                           <XCircle className="w-5 h-5 text-gray-300" />
+                        ) : (
+                          <span className="font-opensans text-teal text-xs font-semibold text-center">
+                            {feature.dsnPlus}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -297,182 +314,88 @@ export default function MembershipJoinPage() {
                 </div>
               </div>
             ))}
-
-            {/* CTA Row */}
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="col-span-1" />
-              <div className="text-center">
-                <Button variant="gold" size="lg" asChild className="w-full">
-                  <Link href="/auth/register">
-                    Join Free
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </Button>
-              </div>
-              <div className="text-center">
-                <Button variant="outline" size="lg" asChild className="w-full">
-                  <Link href="/book">Book Without Account</Link>
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Enrollment Steps */}
-      <section className="section-padding bg-white">
+      {/* DSN+ Options — gated behind free account */}
+      <section className="section-padding bg-gray-50">
         <div className="section-container">
-          <div className="text-center mb-14">
-            <h2 className="heading-lg text-navy mb-4">
-              Get Started in{" "}
-              <span className="text-teal">3 Simple Steps</span>
+          <div className="text-center mb-12">
+            <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
+              DSN+ Upgrade Options
+            </p>
+            <h2 className="heading-lg text-navy">
+              Three Ways to{" "}
+              <span className="text-teal">Subscribe to DSN+</span>
             </h2>
-          </div>
-          <div className="max-w-3xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {enrollmentSteps.map((step, index) => (
-                <div key={step.step} className="text-center relative">
-                  {index < enrollmentSteps.length - 1 && (
-                    <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-gray-200 z-0" />
-                  )}
-                  <div className="relative z-10">
-                    <div className="w-16 h-16 bg-teal rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <span className="font-montserrat font-bold text-white text-xl">
-                        {step.step}
-                      </span>
-                    </div>
-                    <h3 className="font-montserrat font-bold text-navy text-base mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="font-opensans text-gray-500 text-sm leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="text-center mt-12">
-              <Button variant="gold" size="xl" asChild>
-                <Link href="/auth/register">
-                  Create My Free Account
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </Button>
-              <p className="font-opensans text-gray-400 text-sm mt-4">
-                No credit card required. No commitment. Cancel anytime.
+            <div className="mt-4 inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2">
+              <Lock className="w-4 h-4 text-amber-600 flex-shrink-0" />
+              <p className="font-opensans text-amber-700 text-sm">
+                <strong>Create your free account first.</strong> DSN+ pricing is revealed after free enrollment.
               </p>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Future Tiers Preview */}
-      <section className="section-padding bg-navy">
-        <div className="section-container">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold/20 rounded-full border border-gold/30 mb-6">
-              <Zap className="w-4 h-4 text-gold" />
-              <span className="font-montserrat font-semibold text-gold text-sm">
-                Coming Soon — Tiered Membership
-              </span>
-            </div>
-            <h2 className="heading-lg text-white mb-4">
-              Paid Tiers Are{" "}
-              <span className="text-gold">On the Way</span>
-            </h2>
-            <p className="font-opensans text-white/70 text-lg max-w-2xl mx-auto">
-              We&apos;re building out Professional and Enterprise tiers with advanced fleet
-              dashboards, multi-user accounts, and enterprise reporting. Join free now
-              and be first in line.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {futureTiers.map((tier) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {dsnPlusOptions.map((option) => (
               <div
-                key={tier.name}
-                className={`bg-white/5 backdrop-blur-sm rounded-2xl p-6 border-2 ${tier.color} relative`}
+                key={option.name}
+                className={`bg-white rounded-xl border-2 ${option.color} p-6 shadow-card relative`}
               >
-                {tier.badge && (
+                {option.badge && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-gold text-navy font-montserrat font-bold text-xs px-3 py-1 rounded-full">
-                      {tier.badge}
+                    <span className={`${option.badge === "Best Value" ? "bg-teal text-white" : "bg-gold text-navy"} text-xs font-montserrat font-bold px-3 py-1 rounded-full`}>
+                      {option.badge}
                     </span>
                   </div>
                 )}
-                <div className="mb-4">
-                  <h3 className="font-montserrat font-bold text-white text-xl mb-1">
-                    {tier.name}
-                  </h3>
-                  <p className="font-opensans text-white/60 text-sm">{tier.description}</p>
-                  <div className="mt-3">
-                    <span className="font-montserrat font-bold text-gold text-2xl">
-                      {tier.price}
-                    </span>
-                  </div>
+                <h3 className="font-montserrat font-bold text-navy text-base mb-1 mt-2">
+                  {option.name}
+                </h3>
+                <div className="font-montserrat font-black text-teal text-2xl mb-1">
+                  {option.price}
                 </div>
-                <ul className="space-y-2">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-teal flex-shrink-0" />
-                      <span className="font-opensans text-white/80 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="font-opensans text-gray-400 text-xs mb-4">{option.note}</p>
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Lock className="w-3 h-3" />
+                  <span className="font-opensans text-xs">Available after free enrollment</span>
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-teal" />
-                <span className="font-opensans text-white/70 text-sm">Multi-user accounts</span>
-              </div>
-              <span className="text-white/30">•</span>
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-teal" />
-                <span className="font-opensans text-white/70 text-sm">Enterprise reporting</span>
-              </div>
-              <span className="text-white/30">•</span>
-              <div className="flex items-center gap-2">
-                <Truck className="w-5 h-5 text-teal" />
-                <span className="font-opensans text-white/70 text-sm">Fleet dashboards</span>
-              </div>
-            </div>
-            <div className="mt-8">
-              <Button variant="gold" size="xl" asChild>
-                <Link href="/auth/register">
-                  Join Free — Upgrade Later
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </Button>
-            </div>
+          <div className="text-center mt-10">
+            <p className="font-opensans text-gray-500 text-sm mb-6">
+              Start with DSN Free — upgrade to DSN+ at any time from your account dashboard.
+            </p>
+            <Button variant="gold" size="lg" asChild>
+              <Link href="/auth/register?plan=free">
+                Join DSN Free — It&apos;s Free
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* Trust Section */}
-      <section className="py-12 bg-gray-50 border-t border-gray-100">
+      {/* Social proof */}
+      <section className="section-padding bg-navy">
         <div className="section-container">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-center">
-            <div className="flex items-center gap-3">
-              <Shield className="w-6 h-6 text-teal" />
-              <span className="font-opensans text-gray-600 text-sm">
-                Your data is never sold
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-6 h-6 text-teal" />
-              <span className="font-opensans text-gray-600 text-sm">
-                Cancel anytime, no fees
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Star className="w-6 h-6 text-gold" />
-              <span className="font-opensans text-gray-600 text-sm">
-                Trusted by fleet operators nationwide
-              </span>
+          <div className="max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <div>
+                <div className="font-montserrat font-black text-gold text-4xl mb-2">40,000+</div>
+                <div className="font-opensans text-white/60 text-sm">U.S. Repair Facilities</div>
+              </div>
+              <div>
+                <div className="font-montserrat font-black text-gold text-4xl mb-2">Up to 25%</div>
+                <div className="font-opensans text-white/60 text-sm">Commercial Savings (DSN+)</div>
+              </div>
+              <div>
+                <div className="font-montserrat font-black text-gold text-4xl mb-2">515+</div>
+                <div className="font-opensans text-white/60 text-sm">Services Available</div>
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Award, Users, MapPin, Wrench, TrendingDown, Clock } from "lucide-react";
 
 const signals = [
@@ -6,7 +7,7 @@ const signals = [
     icon: Award,
     value: "40,000",
     label: "U.S. Repair Facilities in Network",
-    description: "Real-world fleet experience behind every decision",
+    description: "Vetted shops spanning every major market nationwide",
     color: "text-gold",
     bg: "bg-gold/10",
   },
@@ -64,16 +65,16 @@ export function TrustSignals() {
             Why Operators Choose Drive Service Network
           </p>
           <h2 className="heading-lg text-navy">
-            The Platform Built From{" "}
-            <span className="text-teal">Real Experience</span>
+            The Numbers That{" "}
+            <span className="text-teal">Speak for Themselves</span>
           </h2>
           <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
-            Drive Service Network was created after managing a 220+ car rental fleet,
-            operating 31 auto parts stores with 55,000 SKUs and repair facilities with 450+ service bays.
-            We built the solution we wished existed.
+            A nationwide platform built from real operational experience — not a whiteboard.{" "}
+            <Link href="/about" className="text-teal hover:underline font-semibold">
+              Read our story &rarr;
+            </Link>
           </p>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {signals.map((signal, index) => {
             const Icon = signal.icon;

@@ -10,6 +10,7 @@ const footerLinks = {
       { href: "/how-it-works", label: "How It Works" },
       { href: "/membership", label: "Subscription" },
       { href: "/fleet-operators", label: "For Fleet Operators" },
+      { href: "/fleet-accounts", label: "Fleet Accounts" },
       { href: "/contact", label: "Contact Us" },
     ],
   },
@@ -71,7 +72,7 @@ export function Footer() {
                 href="/membership/join"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-navy font-montserrat font-bold text-sm rounded-lg hover:bg-gold-600 transition-all duration-200"
               >
-                Join Now for Free
+                Join DSN Free
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link

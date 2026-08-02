@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { CheckCircle } from "lucide-react";
@@ -10,10 +9,11 @@ interface Step {
   sublabel: string;
 }
 
+// Sequential enrollment flow: search → view shops → create free account → DSN+ upsell → book
 const STEPS: Step[] = [
-  { number: 1, label: "What do you need?", sublabel: "Service & Location" },
-  { number: 2, label: "Choose your shop", sublabel: "Shop & Availability" },
-  { number: 3, label: "Book your appointment", sublabel: "Vehicle & Timeslot" },
+  { number: 1, label: "Find a Service", sublabel: "Service & Location" },
+  { number: 2, label: "View Shops", sublabel: "Shop & Availability" },
+  { number: 3, label: "Book Appointment", sublabel: "Vehicle & Timeslot" },
 ];
 
 interface BookingStepIndicatorProps {
@@ -47,21 +47,27 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
               </span>
             </div>
           </Link>
-          <Link
-            href="/"
-            className="text-white/60 hover:text-white text-sm font-opensans transition-colors"
-          >
-            ← Back to site
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/auth/register?plan=free"
+              className="text-gold hover:text-yellow-300 text-xs font-montserrat font-semibold transition-colors hidden sm:block"
+            >
+              Join DSN Free →
+            </Link>
+            <Link
+              href="/"
+              className="text-white/60 hover:text-white text-sm font-opensans transition-colors"
+            >
+              ← Back to site
+            </Link>
+          </div>
         </div>
-
         {/* Step Indicator */}
         <div className="flex items-center justify-center gap-0">
           {STEPS.map((step, index) => {
             const isCompleted = step.number < currentStep;
             const isActive = step.number === currentStep;
             const isUpcoming = step.number > currentStep;
-
             return (
               <div key={step.number} className="flex items-center">
                 {/* Step */}
@@ -103,7 +109,6 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
                     </div>
                   </div>
                 </div>
-
                 {/* Connector line */}
                 {index < STEPS.length - 1 && (
                   <div
@@ -117,6 +122,21 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
             );
           })}
         </div>
+
+        {/* Enrollment nudge banner */}
+        {currentStep >= 2 && (
+          <div className="mt-4 flex items-center justify-center gap-3 bg-white/5 border border-white/10 rounded-lg px-4 py-2.5">
+            <span className="font-opensans text-white/60 text-xs">
+              Want commercial pricing on this service?
+            </span>
+            <Link
+              href="/auth/register?plan=free"
+              className="font-montserrat font-bold text-gold text-xs hover:text-yellow-300 transition-colors"
+            >
+              Join DSN Free →
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

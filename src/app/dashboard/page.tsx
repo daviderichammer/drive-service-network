@@ -287,10 +287,10 @@ export default async function DashboardPage() {
         <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-6 flex items-center justify-between gap-4">
           <div>
             <h3 className="font-montserrat font-bold text-white text-base mb-1">
-              Unlock More with a Paid Subscription
+              Unlock More with DSN+
             </h3>
             <p className="font-opensans text-white/70 text-sm">
-              Professional and Enterprise tiers with fleet dashboards, multi-user accounts, and enterprise reporting are coming soon.
+              DSN+ unlocks commercial fleet pricing, priority scheduling, unlimited vehicle tracking, and the full fleet dashboard.
             </p>
           </div>
           <Button variant="gold" size="md" asChild className="flex-shrink-0">

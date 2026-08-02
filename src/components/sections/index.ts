@@ -6,3 +6,5 @@ export { TestimonialsSection } from "./TestimonialsSection";
 export { EcosystemCrossSell } from "./EcosystemCrossSell";
 export { FleetCTA } from "./FleetCTA";
 export { ContactForm } from "./ContactForm";
+export { NetworkBrandBar } from "./NetworkBrandBar";
+export { HomepageFAQ } from "./HomepageFAQ";

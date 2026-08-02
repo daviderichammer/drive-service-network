@@ -103,7 +103,7 @@ export default function AboutPage() {
             </h1>
             <p className="font-opensans text-white/80 text-lg md:text-xl leading-relaxed">
               Drive Service Network was created after managing a 220+ car rental fleet,
-              operating 31 auto parts stores with 55,000 SKUs and repair facilities with 450+ service bays.
+              operating 31 auto parts stores with 55,000 SKUs and repair facilities with 450+ service bays. A nationwide network since 2012.
             </p>
           </div>
         </div>
@@ -298,7 +298,7 @@ export default function AboutPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="gold" size="lg" asChild>
                 <Link href="/membership/join">
-                  <span className="text-navy font-bold">Join the Network</span>
+                  <span className="text-navy font-bold">Join DSN Free</span>
                   <ArrowRight className="w-5 h-5 text-navy" />
                 </Link>
               </Button>

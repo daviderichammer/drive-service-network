@@ -28,7 +28,7 @@ const navItems = [
   { href: "/dashboard/vehicles", label: "My Vehicles", icon: Car },
   { href: "/dashboard/appointments", label: "Appointments", icon: Calendar },
   { href: "/dashboard/profile", label: "My Profile", icon: User },
-  { href: "/membership/join", label: "Upgrade Membership", icon: Star },
+  { href: "/membership/join", label: "Upgrade to DSN+", icon: Star },
 ];
 
 export function DashboardSidebar({ user }: DashboardSidebarProps) {

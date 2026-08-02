@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/how-it-works", label: "How It Works" },
   { href: "/membership", label: "Subscription" },
   { href: "/fleet-operators", label: "For Fleets" },
+  { href: "/fleet-accounts", label: "Fleet Accounts" },
   { href: "/financing", label: "Financing" },
   { href: "/contact", label: "Contact" },
 ];
@@ -183,7 +184,7 @@ export function Navigation() {
                   <Link href="/auth/login">Sign In</Link>
                 </Button>
                 <Button variant="gold" size="sm" asChild>
-                  <Link href="/membership/join">Become a Subscriber</Link>
+                  <Link href="/membership/join">Join DSN Free</Link>
                 </Button>
               </>
             )}
@@ -237,7 +238,7 @@ export function Navigation() {
                     <Link href="/auth/login">Sign In</Link>
                   </Button>
                   <Button variant="gold" size="md" className="w-full" asChild>
-                    <Link href="/membership/join">Become a Subscriber</Link>
+                    <Link href="/membership/join">Join DSN Free</Link>
                   </Button>
                 </>
               )}

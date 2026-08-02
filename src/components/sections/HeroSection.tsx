@@ -1,14 +1,16 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Shield, TrendingDown, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, CheckCircle, Search, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
 const heroStats = [
-  { value: "40,000", label: "U.S. Repair Facilities in Network" },
+  { value: "40,000", label: "U.S. Repair Facilities" },
   { value: "515+", label: "Services Available" },
-  { value: "50+", label: "States Covered" },
-  { value: "24/7", label: "Support Access" },
+  { value: "50 States", label: "Nationwide Coverage" },
+  { value: "Up to 25%", label: "Commercial Savings" },
 ];
 
 const heroTrustPoints = [
@@ -19,6 +21,18 @@ const heroTrustPoints = [
 ];
 
 export function HeroSection() {
+  const router = useRouter();
+  const [serviceQuery, setServiceQuery] = useState("");
+  const [zipCode, setZipCode] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (serviceQuery) params.set("service", serviceQuery);
+    if (zipCode) params.set("zip", zipCode);
+    router.push(`/book?${params.toString()}`);
+  };
+
   return (
     <section className="relative min-h-screen flex items-center bg-gradient-hero overflow-hidden">
       {/* Background Pattern */}
@@ -30,10 +44,8 @@ export function HeroSection() {
           }}
         />
       </div>
-
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-navy/40" />
-
       {/* Teal accent line */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal via-gold to-teal" />
 
@@ -44,19 +56,56 @@ export function HeroSection() {
             <Badge variant="teal" size="lg" className="mb-6">
               Built by Operators. Designed for Operators.
             </Badge>
-
             <h1 className="font-montserrat font-black text-white text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-6">
               One Network.{" "}
               <span className="text-gold">Every Vehicle.</span>{" "}
               Nationwide.
             </h1>
-
             <p className="font-opensans text-white/80 text-lg md:text-xl leading-relaxed mb-8 max-w-xl">
               Drive Service Network connects fleet operators with trusted repair
               and maintenance providers across the country — with commercial
               pricing, simplified scheduling, and real operational expertise
               behind every interaction.
             </p>
+
+            {/* Service Search Box */}
+            <form onSubmit={handleSearch} className="mb-8">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 shadow-hero">
+                <p className="font-montserrat font-semibold text-white text-sm mb-3 uppercase tracking-wide">
+                  Find a Service Near You
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Oil change, brakes, tires…"
+                      value={serviceQuery}
+                      onChange={(e) => setServiceQuery(e.target.value)}
+                      className="w-full pl-9 pr-4 py-3 bg-white rounded-lg text-sm font-opensans text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal border border-transparent"
+                    />
+                  </div>
+                  <div className="relative sm:w-40">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="ZIP Code"
+                      value={zipCode}
+                      onChange={(e) => setZipCode(e.target.value)}
+                      maxLength={10}
+                      className="w-full pl-9 pr-4 py-3 bg-white rounded-lg text-sm font-opensans text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal border border-transparent"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="flex items-center justify-center gap-2 px-5 py-3 bg-gold text-navy font-montserrat font-bold text-sm rounded-lg hover:bg-yellow-400 transition-all duration-200 flex-shrink-0"
+                  >
+                    Search
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </form>
 
             {/* Trust Points */}
             <ul className="space-y-2.5 mb-10">
@@ -70,22 +119,12 @@ export function HeroSection() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="primary" size="lg" asChild>
-                <Link href="/book" className="text-gold">
-                  Book a Service
-                  <ArrowRight className="w-5 h-5 text-gold" />
-                </Link>
-              </Button>
               <Button variant="gold" size="lg" asChild>
                 <Link href="/membership/join">
-                  Start Saving Today
+                  Join DSN Free
                 </Link>
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                asChild
-              >
+              <Button variant="outline" size="lg" asChild>
                 <Link href="/how-it-works" className="text-gold">
                   See How It Works
                 </Link>
@@ -98,66 +137,38 @@ export function HeroSection() {
             </p>
           </div>
 
-          {/* Right Column — Stats Card */}
+          {/* Right Column — Video Player */}
           <div className="lg:flex justify-end hidden">
             <div className="w-full max-w-md">
-              {/* Main Stats Card */}
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-hero">
-                <h3 className="font-montserrat font-bold text-white text-lg mb-6">
-                  Platform at a Glance
+              {/* Video Embed Card */}
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 shadow-hero">
+                <h3 className="font-montserrat font-bold text-white text-lg mb-4">
+                  See DSN in Action
                 </h3>
-
-                <div className="grid grid-cols-2 gap-6 mb-8">
-                  {heroStats.map((stat) => (
-                    <div key={stat.label}>
-                      <div className="stat-value">{stat.value}</div>
-                      <div className="stat-label">{stat.label}</div>
+                {/* REPLACE WITH DSN YOUTUBE EMBED URL */}
+                <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: "56.25%" }}>
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src="https://www.youtube.com/embed/videoseries?list=PLbpi6ZahtOH6Ar_3GPy3workBfFQ"
+                    title="Drive Service Network — Platform Overview"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                  {/* Placeholder overlay — remove when real URL is set */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-navy/80 rounded-xl">
+                    <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-3">
+                      <svg className="w-8 h-8 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
                     </div>
-                  ))}
-                </div>
-
-                {/* Feature Pills */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3">
-                    <div className="w-8 h-8 bg-teal/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <TrendingDown className="w-4 h-4 text-teal" />
-                    </div>
-                    <div>
-                      <div className="font-montserrat font-semibold text-white text-sm">
-                        Commercial Fleet Pricing
-                      </div>
-                      <div className="font-opensans text-white/60 text-xs">
-                        Exclusive pricing for operators
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3">
-                    <div className="w-8 h-8 bg-gold/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-4 h-4 text-gold" />
-                    </div>
-                    <div>
-                      <div className="font-montserrat font-semibold text-white text-sm">
-                        3-Step Booking
-                      </div>
-                      <div className="font-opensans text-white/60 text-xs">
-                        Schedule service in minutes
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3">
-                    <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Shield className="w-4 h-4 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-montserrat font-semibold text-white text-sm">
-                        Certified Network
-                      </div>
-                      <div className="font-opensans text-white/60 text-xs">
-                        Vetted shops, guaranteed quality
-                      </div>
-                    </div>
+                    <p className="font-montserrat font-bold text-white text-sm text-center px-4">
+                      DSN Platform Overview
+                    </p>
+                    <p className="font-opensans text-white/50 text-xs mt-1 text-center px-4">
+                      {/* REPLACE WITH DSN YOUTUBE EMBED URL */}
+                      Video coming soon
+                    </p>
                   </div>
                 </div>
               </div>
@@ -165,14 +176,14 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Mobile Stats Row */}
-        <div className="lg:hidden mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/* Stats Row — below hero, full width */}
+        <div className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-4">
           {heroStats.map((stat) => (
             <div
               key={stat.label}
               className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center"
             >
-              <div className="font-montserrat font-black text-gold text-2xl">{stat.value}</div>
+              <div className="font-montserrat font-black text-gold text-2xl md:text-3xl">{stat.value}</div>
               <div className="font-opensans text-white/60 text-xs mt-1">{stat.label}</div>
             </div>
           ))}

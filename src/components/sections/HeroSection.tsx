@@ -145,31 +145,15 @@ export function HeroSection() {
                 <h3 className="font-montserrat font-bold text-white text-lg mb-4">
                   See DSN in Action
                 </h3>
-                {/* REPLACE WITH DSN YOUTUBE EMBED URL */}
                 <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: "56.25%" }}>
                   <iframe
                     className="absolute inset-0 w-full h-full"
-                    src="https://www.youtube.com/embed/videoseries?list=PLbpi6ZahtOH6Ar_3GPy3workBfFQ"
+                    src="https://www.youtube.com/embed/GJunr8sRGR0"
                     title="Drive Service Network — Platform Overview"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
-                  {/* Placeholder overlay — remove when real URL is set */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-navy/80 rounded-xl">
-                    <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-3">
-                      <svg className="w-8 h-8 text-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                    <p className="font-montserrat font-bold text-white text-sm text-center px-4">
-                      DSN Platform Overview
-                    </p>
-                    <p className="font-opensans text-white/50 text-xs mt-1 text-center px-4">
-                      {/* REPLACE WITH DSN YOUTUBE EMBED URL */}
-                      Video coming soon
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

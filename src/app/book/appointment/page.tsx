@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Car,
   Calendar,
@@ -119,6 +119,7 @@ function formatTime(timeStr: string): string {
 
 export default function AppointmentPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [bookingState, setBookingState] = useState<BookingState | null>(null);
 
@@ -151,9 +152,56 @@ export default function AppointmentPage() {
   // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Load state from sessionStorage
+  // Load state from sessionStorage OR URL params (from instant quote widget)
   useEffect(() => {
     try {
+      // Check for URL params first (from instant quote widget direct booking)
+      const shopIdParam = searchParams.get("shopId");
+      const serviceIdParam = searchParams.get("serviceId");
+      const serviceNameParam = searchParams.get("serviceName");
+      const yearParam = searchParams.get("year");
+      const makeParam = searchParams.get("make");
+      const modelParam = searchParams.get("model");
+      const mileageParam = searchParams.get("mileage");
+      const zipParam = searchParams.get("zip");
+
+      if (shopIdParam && serviceIdParam) {
+        // Coming from instant quote widget — build state from URL params
+        const serviceId = parseInt(serviceIdParam, 10);
+        if (isNaN(serviceId)) { router.replace("/book"); return; }
+        const syntheticState: BookingState = {
+          zipCode: zipParam || "",
+          selectedServiceId: serviceId,
+          selectedServiceName: serviceNameParam || "",
+          selectedCategory: "",
+          selectedShopId: shopIdParam,
+          selectedShopName: "",
+          selectedShopAddress: "",
+          selectedShopCity: "",
+          selectedShopState: "",
+          selectedShopPhone: "",
+          selectedShopRating: null,
+          vehicle: {
+            year: yearParam || "",
+            make: makeParam || "",
+            model: modelParam || "",
+            mileage: mileageParam || "",
+          },
+        };
+        setBookingState(syntheticState);
+        if (yearParam) setVehicleYear(yearParam);
+        if (makeParam) setVehicleMake(makeParam);
+        if (modelParam) setVehicleModel(modelParam);
+        if (mileageParam) setVehicleMileage(mileageParam);
+        // Save to sessionStorage for continuity
+        sessionStorage.setItem("dsn_booking_flow", JSON.stringify({
+          ...syntheticState,
+          currentStep: 3,
+        }));
+        return;
+      }
+
+      // Fall back to sessionStorage
       const stored = sessionStorage.getItem("dsn_booking_flow");
       if (!stored) { router.replace("/book"); return; }
       const parsed: BookingState = JSON.parse(stored);
@@ -180,7 +228,7 @@ export default function AppointmentPage() {
     } catch {
       router.replace("/book");
     }
-  }, [router]);
+  }, [router, searchParams]);
 
   const fetchTimeslots = useCallback(async (state: BookingState) => {
     setLoadingTimeslots(true);

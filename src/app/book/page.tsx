@@ -129,12 +129,29 @@ export default function BookPage() {
   const [zipError, setZipError] = useState("");
   const [serviceError, setServiceError] = useState("");
 
-  // Pre-fill from URL params (from hero search box)
+  // Pre-fill from URL params (from hero search box or instant quote widget)
   useEffect(() => {
     const serviceParam = searchParams.get("service");
     const zipParam = searchParams.get("zip");
+    const serviceIdParam = searchParams.get("serviceId");
+    const serviceNameParam = searchParams.get("serviceName");
+    const yearParam = searchParams.get("year");
+    const makeParam = searchParams.get("make");
+    const modelParam = searchParams.get("model");
     if (serviceParam) setSearchQuery(serviceParam);
     if (zipParam) setZipCode(zipParam);
+    if (serviceNameParam) setSearchQuery(serviceNameParam);
+    if (serviceIdParam) {
+      const id = parseInt(serviceIdParam, 10);
+      if (!isNaN(id)) {
+        setSelectedServiceId(id);
+        setShowVehicleForm(true);
+      }
+    }
+    if (serviceNameParam) setSelectedServiceName(serviceNameParam);
+    if (yearParam) setVehicleYear(yearParam);
+    if (makeParam) setVehicleMake(makeParam);
+    if (modelParam) setVehicleModel(modelParam);
   }, [searchParams]);
 
   // Load services on mount

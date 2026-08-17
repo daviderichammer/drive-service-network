@@ -63,7 +63,7 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
           </div>
         </div>
         {/* Step Indicator */}
-        <div className="flex items-center justify-center gap-0">
+        <div className="flex items-center justify-center gap-0 overflow-hidden">
           {STEPS.map((step, index) => {
             const isCompleted = step.number < currentStep;
             const isActive = step.number === currentStep;
@@ -71,7 +71,7 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
             return (
               <div key={step.number} className="flex items-center">
                 {/* Step */}
-                <div className="flex flex-col items-center min-w-[100px] sm:min-w-[140px]">
+                <div className="flex flex-col items-center min-w-[72px] sm:min-w-[140px]">
                   <div
                     className={cn(
                       "w-9 h-9 rounded-full flex items-center justify-center font-montserrat font-bold text-sm transition-all duration-300",
@@ -113,7 +113,7 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
                 {index < STEPS.length - 1 && (
                   <div
                     className={cn(
-                      "h-0.5 w-12 sm:w-20 mx-1 transition-all duration-300",
+                      "h-0.5 w-8 sm:w-20 mx-1 transition-all duration-300",
                       step.number < currentStep ? "bg-teal" : "bg-white/15"
                     )}
                   />

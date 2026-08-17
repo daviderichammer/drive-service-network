@@ -66,13 +66,13 @@ export default async function DashboardPage() {
               Welcome back, {session.user.firstName}!
             </h1>
             <p className="font-opensans text-white/70 text-sm">
-              Your DSN subscriber dashboard — manage vehicles, track service history, and book appointments.
+              Manage vehicles, track service history and schedule service.
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 bg-white/10 rounded-xl px-4 py-2">
             <Star className="w-4 h-4 text-gold" />
             <span className="font-montserrat font-semibold text-white text-sm">
-              {session.user.membershipTier} Member
+              Drive Member
             </span>
           </div>
         </div>
@@ -282,19 +282,22 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Subscription Upgrade Banner (for FREE members) */}
+      {/* CHANGE 003-B / 011-C — membership is free; the nationwide discount
+          program is a separate optional subscription. */}
       {session.user.membershipTier === "FREE" && (
         <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-6 flex items-center justify-between gap-4">
           <div>
             <h3 className="font-montserrat font-bold text-white text-base mb-1">
-              Unlock More with DSN+
+              Save Up to 25% on Vehicle Service &amp; Repairs
             </h3>
             <p className="font-opensans text-white/70 text-sm">
-              DSN+ unlocks commercial fleet pricing, priority scheduling, unlimited vehicle tracking, and the full fleet dashboard.
+              Your Drive Membership is free. You may also subscribe to the optional
+              nationwide DSN discount program offering savings of up to 25% on
+              participating vehicle repairs and services.
             </p>
           </div>
           <Button variant="gold" size="md" asChild className="flex-shrink-0">
-            <Link href="/membership/join">
+            <Link href="/discount-program-faq">
               Learn More
               <ArrowRight className="w-4 h-4" />
             </Link>

@@ -9,7 +9,7 @@ interface Step {
   sublabel: string;
 }
 
-// Sequential enrollment flow: search → view shops → create free account → DSN+ upsell → book
+// Sequential flow: search → view shops → create FREE Drive Membership → book
 const STEPS: Step[] = [
   { number: 1, label: "Find a Service", sublabel: "Service & Location" },
   { number: 2, label: "View Shops", sublabel: "Shop & Availability" },
@@ -49,10 +49,10 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
           </Link>
           <div className="flex items-center gap-4">
             <Link
-              href="/auth/register?plan=free"
+              href="/auth/register"
               className="text-gold hover:text-yellow-300 text-xs font-montserrat font-semibold transition-colors hidden sm:block"
             >
-              Join DSN Free →
+              Join Free →
             </Link>
             <Link
               href="/"
@@ -130,10 +130,10 @@ export function BookingStepIndicator({ currentStep }: BookingStepIndicatorProps)
               Want commercial pricing on this service?
             </span>
             <Link
-              href="/auth/register?plan=free"
+              href="/auth/register"
               className="font-montserrat font-bold text-gold text-xs hover:text-yellow-300 transition-colors"
             >
-              Join DSN Free →
+              Join Free →
             </Link>
           </div>
         )}

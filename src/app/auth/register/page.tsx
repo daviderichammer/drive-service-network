@@ -16,6 +16,10 @@ const registerSchema = z
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Please enter a valid email address"),
     phone: z.string().optional(),
+    companyName: z.string().optional(),
+    operatorType: z.string().optional(),
+    vehicleCount: z.string().optional(),
+    primaryMarket: z.string().optional(),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -30,12 +34,23 @@ const registerSchema = z
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
+// CHANGE 003 — FREE Drive Membership: one registration, easy access.
 const membershipBenefits = [
-  "Commercial pricing on all services",
-  "Vehicle history & fleet records",
-  "Priority booking access",
-  "Dedicated support team",
+  "Vehicle maintenance, repairs and other services",
+  "Automotive parts",
+  "Vehicle protection, tracking and financing",
+  "Monthly Drive Newsletter",
 ];
+
+// CHANGE 003-E — basic member profile options.
+const OPERATOR_TYPES = [
+  "Turo Host",
+  "Car Rental Operator",
+  "Fleet",
+  "Other",
+];
+
+const VEHICLE_COUNTS = ["1-5", "6-25", "26-100", "101-500", "500+"];
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -63,6 +78,10 @@ export default function RegisterPage() {
           email: data.email,
           password: data.password,
           phone: data.phone,
+          companyName: data.companyName,
+          operatorType: data.operatorType,
+          vehicleCount: data.vehicleCount,
+          primaryMarket: data.primaryMarket,
         }),
       });
 
@@ -118,8 +137,11 @@ export default function RegisterPage() {
         </Link>
 
         <h2 className="text-center font-montserrat font-bold text-2xl text-navy">
-          Create your free DSN account
+          Create Your FREE Membership
         </h2>
+        <p className="mt-2 text-center font-opensans text-sm text-gray-500">
+          One Registration. Easy Access to the Drive Ecosystem. No membership fee.
+        </p>
         <p className="mt-2 text-center font-opensans text-sm text-gray-500">
           Already have an account?{" "}
           <Link
@@ -136,7 +158,7 @@ export default function RegisterPage() {
           {/* Benefits Banner */}
           <div className="mb-6 p-4 bg-navy/5 rounded-xl border border-navy/10">
             <p className="font-montserrat font-semibold text-navy text-sm mb-3">
-              Free membership includes:
+              Your FREE Drive Membership is your doorway to:
             </p>
             <div className="grid grid-cols-2 gap-2">
               {membershipBenefits.map((benefit) => (
@@ -212,18 +234,81 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div>
-              <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
-                Phone number{" "}
-                <span className="text-gray-400 font-normal">(optional)</span>
-              </label>
-              <input
-                type="tel"
-                autoComplete="tel"
-                {...register("phone")}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal transition-colors"
-                placeholder="(555) 000-0000"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
+                  Mobile phone{" "}
+                  <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  autoComplete="tel"
+                  {...register("phone")}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal transition-colors"
+                  placeholder="(555) 000-0000"
+                />
+              </div>
+              <div>
+                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
+                  Company/business name{" "}
+                  <span className="text-gray-400 font-normal">(if applicable)</span>
+                </label>
+                <input
+                  type="text"
+                  autoComplete="organization"
+                  {...register("companyName")}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal transition-colors"
+                  placeholder="Your company"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
+                  Type of operator
+                </label>
+                <select
+                  {...register("operatorType")}
+                  defaultValue=""
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 font-opensans text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal transition-colors bg-white"
+                >
+                  <option value="">Select</option>
+                  {OPERATOR_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
+                  Approximate vehicles
+                </label>
+                <select
+                  {...register("vehicleCount")}
+                  defaultValue=""
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 font-opensans text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal transition-colors bg-white"
+                >
+                  <option value="">Select</option>
+                  {VEHICLE_COUNTS.map((count) => (
+                    <option key={count} value={count}>
+                      {count}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
+                  Primary market
+                </label>
+                <input
+                  type="text"
+                  {...register("primaryMarket")}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal transition-colors"
+                  placeholder="City, ST"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -301,19 +386,15 @@ export default function RegisterPage() {
               className="w-full"
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Create Free Account
+              Create Your FREE Membership
             </Button>
 
+            {/* NOTE / FLAG — Terms of Service and Privacy Policy pages do not
+                exist on the site (both returned 404 before the revamp). Links
+                removed rather than left broken; see implementation report. */}
             <p className="font-opensans text-xs text-gray-400 text-center">
-              By creating an account, you agree to our{" "}
-              <Link href="/terms" className="text-teal hover:underline">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="text-teal hover:underline">
-                Privacy Policy
-              </Link>
-              .
+              By creating your FREE Drive Membership, you agree to the Drive
+              Service Network Terms of Service and Privacy Policy.
             </p>
           </form>
 

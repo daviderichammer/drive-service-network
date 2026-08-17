@@ -24,11 +24,13 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || "https://driveservicenetwork.com"
   ),
   title: {
-    default: "Drive Service Network — Built by Operators. Designed for Operators.",
+    default:
+      "Drive Service Network — One Nationwide Service Network for Your Fleet",
     template: "%s | Drive Service Network",
   },
+  // CHANGE 010 — customer-facing Openbay reference removed from metadata.
   description:
-    "Drive Service Network connects vehicle operators with trusted nationwide repair and maintenance providers. Commercial discounts, fleet management, and simplified scheduling — powered by Openbay.",
+    "Keep your vehicles maintained, repaired and on the road with access to thousands of service facilities nationwide — with commercial pricing and discounts up to 25%. Built for Turo Hosts. Car Rental Operators. Fleets.",
   keywords: [
     "fleet maintenance",
     "auto repair",
@@ -60,9 +62,10 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://driveservicenetwork.com",
     siteName: "Drive Service Network",
-    title: "Drive Service Network — Built by Operators. Designed for Operators.",
+    title:
+      "Drive Service Network — One Nationwide Service Network for Your Fleet",
     description:
-      "The trusted nationwide platform for vehicle operators seeking reliable repair, maintenance, commercial pricing, and fleet management resources.",
+      "Save Money. Save Hours. Reduce Downtime. Built for Turo Hosts. Car Rental Operators. Fleets.",
     images: [
       {
         url: "/images/og-image.jpg",
@@ -76,7 +79,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Drive Service Network",
     description:
-      "Built by Operators. Designed for Operators. Nationwide fleet services platform.",
+      "One Nationwide Service Network for Your Fleet. Save Money. Save Hours. Reduce Downtime.",
     images: ["/images/og-image.jpg"],
   },
   icons: {

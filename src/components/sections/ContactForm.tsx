@@ -14,7 +14,22 @@ const contactSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().optional(),
   company: z.string().optional(),
-  inquiryType: z.enum(["general", "membership", "fleet", "partnership", "support"]),
+  // CHANGE 004-A — "How Can We Help?" selection routed internally to the
+  // appropriate Drive company or team.
+  inquiryType: z.enum([
+    "maintenance-repairs",
+    "tires-glass-collision",
+    "parts",
+    "tracking-theft-protection",
+    "vehicle-protection",
+    "vehicle-acquisition",
+    "financing",
+    "private-rentals",
+    "growth-partner",
+    "technology",
+    "dsn-partnership",
+    "general",
+  ]),
   subject: z.string().min(1, "Subject is required"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
@@ -22,11 +37,21 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 const inquiryOptions = [
-  { value: "general", label: "General Inquiry" },
-  { value: "membership", label: "Subscription" },
-  { value: "fleet", label: "Fleet Solutions" },
-  { value: "partnership", label: "Partnership" },
-  { value: "support", label: "Support" },
+  { value: "maintenance-repairs", label: "Vehicle Maintenance & Repairs" },
+  { value: "tires-glass-collision", label: "Tires / Glass / Collision" },
+  { value: "parts", label: "Automotive Parts" },
+  {
+    value: "tracking-theft-protection",
+    label: "GPS / Smoke Detection / Theft Protection",
+  },
+  { value: "vehicle-protection", label: "Vehicle Protection / VSC / GAP" },
+  { value: "vehicle-acquisition", label: "Vehicle Acquisition" },
+  { value: "financing", label: "Automotive Business Financing" },
+  { value: "private-rentals", label: "Private Car Rentals" },
+  { value: "growth-partner", label: "Drive Growth Partner Opportunities" },
+  { value: "technology", label: "Technology / Software" },
+  { value: "dsn-partnership", label: "Drive Service Network Partnership" },
+  { value: "general", label: "General Question / Not Sure" },
 ];
 
 export function ContactForm() {
@@ -139,13 +164,13 @@ export function ContactForm() {
       {/* Company & Inquiry Type */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
-          label="Company / Fleet Name"
+          label="Company / Business Name"
           placeholder="Your company name"
           error={errors.company?.message}
           {...register("company")}
         />
         <Select
-          label="Inquiry Type"
+          label="How Can We Help?"
           options={inquiryOptions}
           error={errors.inquiryType?.message}
           {...register("inquiryType")}
@@ -164,7 +189,7 @@ export function ContactForm() {
       {/* Message */}
       <Textarea
         label="Message"
-        placeholder="Tell us about your fleet, your challenges, and how Drive Service Network can help..."
+        placeholder="Tell us what you need."
         required
         error={errors.message?.message}
         className="min-h-[140px]"

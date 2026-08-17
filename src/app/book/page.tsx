@@ -280,7 +280,7 @@ export default function BookPage() {
           <div className="mb-8">
             <h1 className="heading-lg text-navy mb-2">What do you need?</h1>
             <p className="text-gray-500 font-opensans">
-              Tell us your location and the service you need, and we&apos;ll find certified shops near you.
+              Tell us where the vehicle is located and what it needs, and we&apos;ll find participating service facilities nearby.
             </p>
           </div>
 
@@ -288,7 +288,7 @@ export default function BookPage() {
           <div className="bg-white rounded-xl shadow-card p-6 mb-6">
             <h2 className="font-montserrat font-semibold text-navy text-base mb-4 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-teal" />
-              Your Location
+              Vehicle Location
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input

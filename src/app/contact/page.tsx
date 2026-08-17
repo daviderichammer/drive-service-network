@@ -1,191 +1,164 @@
 import type { Metadata } from "next";
-import { Badge } from "@/components/ui/Badge";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { ContactForm } from "@/components/sections/ContactForm";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { ECOSYSTEM_ENTITIES } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Contact — Drive Service Network",
   description:
-    "Contact Drive Service Network for membership inquiries, fleet solutions, partnership opportunities, or general support. Our team responds within 1 business day.",
+    "Tell us what you need. Drive Service Network is part of a family of affiliated companies created to help Turo hosts, car rental operators and fleets solve the everyday challenges of operating vehicles.",
 };
 
-const contactInfo = [
+const CONTACT_INFO = [
   {
     icon: Phone,
     label: "Phone",
-    value: "(800) 555-1234",
-    href: "tel:+18005551234",
-    description: "Monday–Friday, 8am–6pm EST",
+    value: "+1 (786) 766-3577",
+    href: "tel:+17867663577",
   },
   {
     icon: Mail,
     label: "Email",
     value: "info@driveservicenetwork.com",
     href: "mailto:info@driveservicenetwork.com",
-    description: "We respond within 1 business day",
   },
   {
     icon: MapPin,
-    label: "Headquarters",
-    value: "Florida, United States",
+    label: "Location",
+    value: "Miami Beach, FL, United States",
     href: null,
-    description: "Serving operators nationwide",
   },
   {
     icon: Clock,
-    label: "Business Hours",
-    value: "Mon–Fri: 8am–6pm EST",
+    label: "Response Time",
+    value: "Within 1 business day",
     href: null,
-    description: "Emergency support available for Enterprise members",
-  },
-];
-
-const inquiryTypes = [
-  {
-    type: "membership",
-    title: "Subscription Inquiry",
-    description: "Questions about plans, pricing, and benefits",
-    icon: "🏆",
-  },
-  {
-    type: "fleet",
-    title: "Fleet Solutions",
-    description: "Enterprise fleet programs and commercial accounts",
-    icon: "🚗",
-  },
-  {
-    type: "partnership",
-    title: "Partnership",
-    description: "Shop network, vendor, or strategic partnerships",
-    icon: "🤝",
-  },
-  {
-    type: "support",
-    title: "Support",
-    description: "Technical support or account assistance",
-    icon: "💬",
   },
 ];
 
 export default function ContactPage() {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-gradient-hero pt-32 pb-20 md:pt-40 md:pb-24">
+      {/* CHANGE 004 — revised introductory language */}
+      <section className="bg-gradient-hero pt-28 pb-16 md:pt-36 md:pb-20">
         <div className="section-container">
-          <div className="max-w-2xl">
-            <Badge variant="teal" size="lg" className="mb-6">
-              Get In Touch
-            </Badge>
-            <h1 className="font-montserrat font-black text-white text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-6">
-              Let&apos;s Talk{" "}
-              <span className="text-gold">About Your Fleet.</span>
+          <div className="max-w-3xl">
+            <h1 className="font-montserrat text-4xl font-black leading-tight text-white md:text-5xl">
+              How Can We Help?
             </h1>
-            <p className="font-opensans text-white/80 text-lg leading-relaxed">
-              Whether you&apos;re exploring membership, managing a large fleet,
-              or looking to partner with Drive Service Network — our team is
-              ready to help. We respond to every inquiry within 1 business day.
+            <p className="mt-6 font-opensans text-lg leading-relaxed text-white/80">
+              Whether you need vehicle maintenance or repairs, parts, vehicle
+              acquisition, financing, protection products, GPS tracking and theft
+              protection, private rental capabilities — or simply have a question —
+              tell us what you need.
+            </p>
+            <p className="mt-4 font-opensans text-base leading-relaxed text-white/70">
+              Drive Service Network is part of a family of affiliated companies
+              created to help Turo hosts, car rental operators and fleets solve the
+              everyday challenges of operating vehicles.
+            </p>
+            <p className="mt-4 font-opensans text-base leading-relaxed text-white/70">
+              If another company within the Drive ecosystem can better help solve
+              your problem, we&apos;ll connect you with the right team.
+            </p>
+            <p className="mt-4 font-montserrat text-sm font-bold uppercase tracking-widest text-teal">
+              We respond to every inquiry within 1 business day.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="section-padding bg-gray-50">
+      {/* Form and contact details */}
+      <section className="bg-gray-50 py-16 md:py-20">
         <div className="section-container">
-          <div className="grid lg:grid-cols-3 gap-10">
-            {/* Left — Info */}
+          <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-1">
-              {/* Contact Info */}
-              <div className="bg-white rounded-2xl p-7 border border-gray-100 shadow-card mb-6">
-                <h2 className="font-montserrat font-bold text-navy text-lg mb-5">
+              <div className="rounded-2xl border border-gray-100 bg-white p-7 shadow-card">
+                <h2 className="font-montserrat text-lg font-bold text-navy">
                   Contact Information
                 </h2>
-                <div className="space-y-5">
-                  {contactInfo.map((info) => {
+                <div className="mt-5 space-y-5">
+                  {CONTACT_INFO.map((info) => {
                     const Icon = info.icon;
                     return (
                       <div key={info.label} className="flex items-start gap-3">
-                        <div className="w-9 h-9 bg-teal/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-4 h-4 text-teal" />
+                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-teal/10">
+                          <Icon className="h-4 w-4 text-teal" />
                         </div>
                         <div>
-                          <div className="font-montserrat font-semibold text-navy text-xs uppercase tracking-wide">
+                          <div className="font-montserrat text-xs font-semibold uppercase tracking-wide text-navy">
                             {info.label}
                           </div>
                           {info.href ? (
                             <a
                               href={info.href}
-                              className="font-opensans text-navy text-sm font-medium hover:text-teal transition-colors duration-200 block mt-0.5"
+                              className="mt-0.5 block font-opensans text-sm font-medium text-navy transition-colors hover:text-teal"
                             >
                               {info.value}
                             </a>
                           ) : (
-                            <div className="font-opensans text-navy text-sm font-medium mt-0.5">
+                            <div className="mt-0.5 font-opensans text-sm font-medium text-navy">
                               {info.value}
                             </div>
                           )}
-                          <div className="font-opensans text-gray-400 text-xs mt-0.5">
-                            {info.description}
-                          </div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
-
-              {/* Inquiry Types */}
-              <div className="bg-white rounded-2xl p-7 border border-gray-100 shadow-card">
-                <h2 className="font-montserrat font-bold text-navy text-lg mb-5">
-                  How Can We Help?
-                </h2>
-                <div className="space-y-3">
-                  {inquiryTypes.map((inquiry) => (
-                    <div
-                      key={inquiry.type}
-                      className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
-                    >
-                      <span className="text-xl flex-shrink-0">{inquiry.icon}</span>
-                      <div>
-                        <div className="font-montserrat font-semibold text-navy text-sm">
-                          {inquiry.title}
-                        </div>
-                        <div className="font-opensans text-gray-400 text-xs mt-0.5">
-                          {inquiry.description}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
 
-            {/* Right — Form */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-card">
-                <h2 className="font-montserrat font-bold text-navy text-xl mb-2">
-                  Send Us a Message
+              <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-card">
+                <h2 className="font-montserrat text-xl font-bold text-navy">
+                  Tell Us What You Need
                 </h2>
-                <p className="font-opensans text-gray-500 text-sm mb-7">
-                  Fill out the form below and a member of our team will respond
-                  within 1 business day.
+                <p className="mt-2 font-opensans text-sm text-gray-500">
+                  We respond to every inquiry within 1 business day.
                 </p>
-                <ContactForm />
+                <div className="mt-7">
+                  <ContactForm />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* GDH Note */}
-      <section className="section-padding-sm bg-navy">
+      {/* CHANGE 004-B — ecosystem message */}
+      <section className="bg-navy py-16 md:py-20">
         <div className="section-container">
-          <div className="text-center">
-            <p className="font-opensans text-white/50 text-sm">
-              Drive Service Network Inc. is a Global Drive Holdings Inc. company.
-              <br />
-              For inquiries about other GDH products, please specify in your message.
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="font-montserrat text-2xl font-bold text-white md:text-3xl">
+              One Contact. An Entire Network of Solutions.
+            </h2>
+            <p className="mt-4 font-opensans text-base leading-relaxed text-white/70">
+              You don&apos;t need to know which Drive company to contact. Tell us
+              what you need. We&apos;ll help connect you to the right solution.
+            </p>
+
+            <div className="mt-8 grid gap-2.5 text-left sm:grid-cols-2">
+              {ECOSYSTEM_ENTITIES.map((entity) => (
+                <a
+                  key={entity.name}
+                  href={entity.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:border-teal/40"
+                >
+                  <p className="font-montserrat text-sm font-semibold text-white">
+                    {entity.name}
+                  </p>
+                  <p className="mt-0.5 font-opensans text-xs text-white/50">
+                    {entity.description}
+                  </p>
+                </a>
+              ))}
+            </div>
+
+            <p className="mt-8 font-montserrat text-sm font-semibold uppercase tracking-widest text-gold">
+              More Products &amp; Services
             </p>
           </div>
         </div>

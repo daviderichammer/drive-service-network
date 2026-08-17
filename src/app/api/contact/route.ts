@@ -16,8 +16,23 @@ const contactSchema = z.object({
   company: z.string().optional(),
   subject: z.string().min(1, "Subject is required").max(200),
   message: z.string().min(10, "Message must be at least 10 characters").max(5000),
+  // CHANGE 004-A — "How Can We Help?" values used to route the inquiry
+  // internally to the appropriate Drive company or team.
   inquiryType: z
-    .enum(["general", "membership", "fleet", "partnership", "support"])
+    .enum([
+      "maintenance-repairs",
+      "tires-glass-collision",
+      "parts",
+      "tracking-theft-protection",
+      "vehicle-protection",
+      "vehicle-acquisition",
+      "financing",
+      "private-rentals",
+      "growth-partner",
+      "technology",
+      "dsn-partnership",
+      "general",
+    ])
     .optional()
     .default("general"),
 });

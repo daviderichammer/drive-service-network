@@ -221,9 +221,11 @@ export default function ConfirmationPage() {
             <p className="font-montserrat font-bold text-gold text-3xl tracking-wider">
               {confirmationCode}
             </p>
+            {/* CHANGE 010 — customer-facing Openbay identifier removed; the
+                underlying appointment reference is retained for support use. */}
             {data.appointment?.id && (
               <p className="text-white/40 font-opensans text-xs mt-1">
-                Openbay ID: {data.appointment.id}
+                Reference: {data.appointment.id}
               </p>
             )}
           </div>
@@ -372,16 +374,14 @@ export default function ConfirmationPage() {
                 href="/auth/register"
                 className="font-montserrat font-semibold text-teal text-sm hover:text-teal-600 transition-colors"
               >
-                Create Free Account →
+                Create Your FREE Membership →
               </Link>
             </div>
           )}
 
+          {/* CHANGE 010 — customer-facing Openbay branding removed. */}
           <p className="text-center text-xs text-gray-400 font-opensans mt-6">
-            Powered by{" "}
-            <span className="font-semibold">Drive Service Network</span> &amp;{" "}
-            <span className="font-semibold">Openbay</span> · Partner #{" "}
-            <span className="font-semibold">116</span>
+            <span className="font-semibold">Drive Service Network</span>
           </p>
         </div>
       </div>

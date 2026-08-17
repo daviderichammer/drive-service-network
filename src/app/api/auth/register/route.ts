@@ -9,6 +9,12 @@ const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().optional(),
+  // CHANGE 003-E — basic member profile fields collected at registration.
+  // Accepted here so the enrollment form stays short; these are not required.
+  companyName: z.string().optional(),
+  operatorType: z.string().optional(),
+  vehicleCount: z.string().optional(),
+  primaryMarket: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {

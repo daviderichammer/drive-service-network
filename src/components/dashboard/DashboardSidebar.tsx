@@ -28,7 +28,7 @@ const navItems = [
   { href: "/dashboard/vehicles", label: "My Vehicles", icon: Car },
   { href: "/dashboard/appointments", label: "Appointments", icon: Calendar },
   { href: "/dashboard/profile", label: "My Profile", icon: User },
-  { href: "/membership/join", label: "Upgrade to DSN+", icon: Star },
+  { href: "/discount-program-faq", label: "DSN Discount Program", icon: Star },
 ];
 
 export function DashboardSidebar({ user }: DashboardSidebarProps) {
@@ -65,7 +65,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         </div>
         <div className={cn("inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-montserrat font-bold", tierColors[user.membershipTier] || tierColors.FREE)}>
           <Star className="w-3 h-3" />
-          {user.membershipTier} Member
+          Drive Member
         </div>
       </div>
 

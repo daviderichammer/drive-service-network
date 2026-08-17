@@ -1,51 +1,39 @@
 import React from "react";
 import Link from "next/link";
 import { Phone, Mail, MapPin, ArrowRight } from "lucide-react";
+import { ECOSYSTEM_ENTITIES, QUOTE_URL } from "@/lib/content";
 
+/**
+ * CHANGE 009 — footer navigation aligned to the simplified architecture.
+ * "For Fleet Operators" and "Fleet Accounts" removed; "How It Works" retained.
+ * CHANGE 011-F — Drive Service Network FAQ and DSN Discount Program FAQ added.
+ * CHANGE 010 — customer-facing Openbay branding removed.
+ */
 const footerLinks = {
-  platform: {
-    title: "Platform",
+  network: {
+    title: "Drive Service Network",
     links: [
+      { href: QUOTE_URL, label: "Get an Instant Quote" },
       { href: "/services", label: "Services" },
       { href: "/how-it-works", label: "How It Works" },
-      { href: "/membership", label: "Subscription" },
-      { href: "/fleet-operators", label: "For Fleet Operators" },
-      { href: "/fleet-accounts", label: "Fleet Accounts" },
+      { href: "/membership", label: "FREE Drive Membership" },
+      { href: "/financing", label: "Financing" },
+    ],
+  },
+  help: {
+    title: "Customer Help",
+    links: [
+      { href: "/faq", label: "Drive Service Network FAQ" },
+      { href: "/discount-program-faq", label: "DSN Discount Program FAQ" },
       { href: "/contact", label: "Contact Us" },
     ],
   },
   company: {
     title: "Company",
     links: [
-      { href: "/about", label: "Our Story" },
-      { href: "/about#team", label: "Leadership" },
-      { href: "/about#mission", label: "Mission & Values" },
-      { href: "#", label: "Press & Media" },
-      { href: "#", label: "Careers" },
-    ],
-  },
-  ecosystem: {
-    title: "GDH Ecosystem",
-    links: [
-      { href: "https://globaldriveholdings.com", label: "Global Drive Holdings" },
-      { href: "https://drivecommercegroup.com", label: "Drive Commerce" },
-      { href: "https://drivecloudgroup.com", label: "Drive Cloud" },
-      { href: "https://trustdriveconnect.com", label: "Drive Connect" },
-      { href: "https://drivefinancialgroup.com", label: "Drive Financial" },
-      { href: "https://drivekez.com", label: "Drive KeZ" },
-      { href: "https://drivemanagement.com", label: "Drive Management" },
-      { href: "https://drivepartsnetwork.com", label: "Drive Parts Network" },
-      { href: "https://driveprotectiongroup.com", label: "Drive Protection" },
-      { href: "https://driveservicenetwork.com", label: "Drive Service Network" },
-    ],
-  },
-  legal: {
-    title: "Legal",
-    links: [
-      { href: "#", label: "Privacy Policy" },
-      { href: "#", label: "Terms of Service" },
-      { href: "#", label: "Cookie Policy" },
-      { href: "#", label: "Accessibility" },
+      { href: "/about", label: "About Drive Service Network" },
+      { href: "/membership/join", label: "Join Free" },
+      { href: "/auth/login", label: "Sign In" },
     ],
   },
 };
@@ -61,25 +49,25 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="font-montserrat font-bold text-white text-xl md:text-2xl">
-                Ready to simplify your fleet maintenance?
+                Keep Your Fleet Moving.
               </h3>
               <p className="font-opensans text-white/80 mt-1 text-sm md:text-base">
-                Join thousands of operators who trust Drive Service Network.
+                Save Money. Save Hours. Reduce Downtime.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
               <Link
-                href="/membership/join"
+                href={QUOTE_URL}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-navy font-montserrat font-bold text-sm rounded-lg hover:bg-gold-600 transition-all duration-200"
               >
-                Join DSN Free
+                Find Service
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/contact"
+                href="/membership/join"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/20 text-white font-montserrat font-semibold text-sm rounded-lg hover:bg-white/30 transition-all duration-200 border border-white/30"
               >
-                Talk to an Expert
+                Join Free
               </Link>
             </div>
           </div>
@@ -91,7 +79,6 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            {/* Logo */}
             <Link href="/" className="flex items-center gap-3 mb-5">
               <div className="w-9 h-9 bg-gold rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
@@ -115,12 +102,10 @@ export function Footer() {
             </Link>
 
             <p className="font-opensans text-white/60 text-sm leading-relaxed mb-6 max-w-xs">
-              The trusted nationwide platform for vehicle operators seeking
-              reliable repair, maintenance, commercial pricing, and fleet
-              management resources.
+              A nationwide vehicle service and repair network built for Turo hosts,
+              car rental operators and fleets.
             </p>
 
-            {/* Contact Info */}
             <div className="space-y-2.5">
               <a
                 href="tel:+17867663577"
@@ -163,27 +148,38 @@ export function Footer() {
               </ul>
             </div>
           ))}
+
+          {/* More Products & Services — CHANGE 002 */}
+          <div>
+            <h4 className="font-montserrat font-bold text-white text-sm uppercase tracking-wider mb-4">
+              More Products &amp; Services
+            </h4>
+            <ul className="space-y-2.5">
+              {ECOSYSTEM_ENTITIES.map((entity) => (
+                <li key={entity.name}>
+                  <a
+                    href={entity.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-opensans text-white/55 hover:text-gold text-sm transition-colors duration-200"
+                  >
+                    {entity.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="section-container py-5">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="font-opensans text-white/40 text-xs">
-              &copy; {currentYear} Drive Service Network Inc. All rights reserved.
-              A Global Drive Holdings Inc. company.
-            </p>
-            <div className="flex items-center gap-1">
-              <span className="font-opensans text-white/30 text-xs">
-                Powered by
-              </span>
-              <span className="font-montserrat font-semibold text-white/40 text-xs ml-1">
-                Openbay
-              </span>
-
-            </div>
-          </div>
+          <p className="font-opensans text-white/40 text-xs text-center sm:text-left">
+            &copy; {currentYear} Drive Service Network Inc. All rights reserved. A
+            Global Drive Holdings Inc. company. Service availability, participating
+            facilities and pricing vary by location.
+          </p>
         </div>
       </div>
     </footer>

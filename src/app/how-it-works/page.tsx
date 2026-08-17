@@ -1,338 +1,289 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Search, CalendarCheck, Wrench, CheckCircle, Clock, MapPin, Car } from "lucide-react";
+import { ArrowRight, Percent } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
+import { FaqAccordion, type FaqItem } from "@/components/sections/FaqAccordion";
+import {
+  AppointmentMock,
+  QuoteComparisonMock,
+  ServiceRequestMock,
+} from "@/components/sections/ExperienceMocks";
+import { QUOTE_URL } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "How It Works — 3-Step Service Booking",
+  title: "How It Works — Drive Service Network",
   description:
-    "Schedule vehicle service in 3 simple steps with Drive Service Network. Find a shop, book an appointment, and get your vehicle serviced — all in minutes.",
+    "See what actually happens when you use Drive Service Network: describe the service need, get and compare multiple nearby quotes, schedule the service and access the optional discount program.",
 };
 
-const steps = [
+/** CHANGE 007-G — In Case You're Wondering. */
+const WONDERING: FaqItem[] = [
   {
-    number: "01",
-    icon: Search,
-    title: "Get an Instant Quote & Find a Certified Shop",
-    description:
-      "Enter your ZIP code and select the service your vehicle needs. Our platform instantly surfaces certified repair shops in your area with real-time availability, ratings, and service capabilities.",
-    details: [
-      "Search by ZIP code or city",
-      "Filter by service type and vehicle make",
-      "View shop ratings and reviews",
-      "See real-time availability",
-      "Compare pricing estimates",
-    ],
-    apiNote: "A Nationwide Network since 2012",
-    color: "teal",
-    bgColor: "bg-teal/10",
-    textColor: "text-teal",
-    borderColor: "border-teal",
+    question: "Does it cost anything to get quotes?",
+    answer:
+      "No. There is no fee to request service or to receive quotes from participating service facilities near your vehicle.",
   },
   {
-    number: "02",
-    icon: CalendarCheck,
-    title: "Book Your Appointment",
-    description:
-      "Select your preferred time slot and confirm your appointment in seconds. Our streamlined booking process replaces the industry's typical 6-step workflow with a simple 3-step experience designed for busy operators.",
-    details: [
-      "30-minute time slot precision",
-      "Same-day and next-day availability",
-      "Instant confirmation",
-      "Automatic reminders",
-      "Easy rescheduling if needed",
-    ],
-    apiNote: "Real-time availability sync with shop management systems",
-    color: "gold",
-    bgColor: "bg-gold/10",
-    textColor: "text-gold",
-    borderColor: "border-gold",
+    question: "Am I obligated to choose one of the quotes?",
+    answer:
+      "No. You review the available options and decide. If none of them work for you, you are not obligated to proceed.",
   },
   {
-    number: "03",
-    icon: Wrench,
-    title: "Get Your Vehicle Serviced",
-    description:
-      "Drop off your vehicle and let the certified technicians handle the rest. Receive status updates, review completed work, and maintain your complete service history — all within the Drive Service Network platform.",
-    details: [
-      "Service status notifications",
-      "Digital inspection reports",
-      "Complete service history",
-      "Commercial pricing applied automatically",
-      "All vehicles in one dashboard",
-    ],
-    apiNote: "Full service history synced across all fleet vehicles",
-    color: "navy",
-    bgColor: "bg-navy/10",
-    textColor: "text-navy",
-    borderColor: "border-navy",
+    question: "Can I choose which service facility I use?",
+    answer:
+      "Yes. You select the participating facility you prefer based on price, location, appointment availability, ratings and other facility information.",
+  },
+  {
+    question: "Are the prices shown before I book?",
+    answer:
+      "Yes. Pricing from participating facilities is shown before you schedule the appointment.",
+  },
+  {
+    question: "Can I schedule my appointment online?",
+    answer:
+      "Yes. You choose the service facility, date and time that work for you and schedule the appointment through Drive Service Network.",
+  },
+  {
+    question: "Can I communicate with the service facility?",
+    answer:
+      "Yes. Where the facility supports it, you can message the service facility about the appointment through Drive Service Network.",
+  },
+  {
+    question: "What if the vehicle is in another city?",
+    answer:
+      "Drive Service Network uses the location of the vehicle — not your location — to identify nearby service options. You can arrange service for a vehicle located in another market.",
+  },
+  {
+    question: "Can I use DSN for vehicles in multiple markets?",
+    answer:
+      "Yes. Drive Service Network is designed for operators managing vehicles across multiple locations and markets.",
+  },
+  {
+    question: "How does the up-to-25% discount program work?",
+    answer:
+      "FREE Drive Members may subscribe to an optional nationwide discount program offering savings of up to 25% on participating vehicle repairs and services. Discounts, participating facilities, eligible services and pricing vary by location and service provider.",
+  },
+  {
+    question: "Is Drive Membership really free?",
+    answer:
+      "Yes. There is no membership fee. The nationwide discount program is a separate optional subscription.",
   },
 ];
 
-const vsComparison = [
-  { feature: "Steps to book", dsn: "3 steps", typical: "6+ steps" },
-  { feature: "Time to schedule", dsn: "Under 5 minutes", typical: "20-45 minutes" },
-  { feature: "Phone calls required", dsn: "Zero", typical: "2-4 calls" },
-  { feature: "Pricing transparency", dsn: "Upfront estimates", typical: "Quote after inspection" },
-  { feature: "Commercial pricing", dsn: "Automatic for subscribers", typical: "Must negotiate each time" },
-  { feature: "Service history", dsn: "Centralized for all vehicles", typical: "Scattered across shops" },
-  { feature: "Fleet management", dsn: "Built-in dashboard", typical: "Manual spreadsheets" },
-  { feature: "Nationwide coverage", dsn: "50 states", typical: "Local only" },
+const STEPS = [
+  {
+    number: "1",
+    title: "Tell Us What the Vehicle Needs",
+    lead: "Describe the service you need or the problem you're experiencing.",
+    support: "Brake pads need replacement.",
+    mock: <ServiceRequestMock />,
+  },
+  {
+    number: "2",
+    title: "Get Multiple Nearby Quotes",
+    lead: "Compare. Then You Decide.",
+    support: "One request. Multiple nearby service options. No calling around.",
+    mock: <QuoteComparisonMock />,
+  },
+  {
+    number: "3",
+    title: "Schedule the Service",
+    lead: "Service Appointment Confirmed.",
+    support: "Choose the service facility, date and time that work for you.",
+    mock: <AppointmentMock />,
+  },
 ];
 
 export default function HowItWorksPage() {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-gradient-hero pt-32 pb-20 md:pt-40 md:pb-28">
+      <section className="bg-gradient-hero pt-28 pb-14 md:pt-36 md:pb-16">
         <div className="section-container">
           <div className="max-w-3xl">
-            <Badge variant="teal" size="lg" className="mb-6">
-              Simplified Workflow
-            </Badge>
-            <h1 className="font-montserrat font-black text-white text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-6">
-              Service in{" "}
-              <span className="text-gold">3 Steps.</span>
-              <br />
-              Not Six.
+            <p className="font-montserrat text-xs font-bold uppercase tracking-[0.2em] text-teal">
+              How It Works
+            </p>
+            <h1 className="mt-5 font-montserrat text-4xl font-black leading-tight text-white md:text-5xl">
+              What Actually Happens When You Use DSN
             </h1>
-            <p className="font-opensans text-white/80 text-lg md:text-xl leading-relaxed mb-8">
-              We eliminated the complexity. What used to require multiple phone
-              calls, back-and-forth negotiations, and a 6-step booking process
-              now takes minutes — from any device, anywhere in the country.
+            <p className="mt-5 font-opensans text-lg leading-relaxed text-white/75">
+              Describe the service need. Get and compare multiple nearby quotes.
+              Select and schedule the service. Then get back on the road.
             </p>
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-teal" />
-                <span className="font-opensans text-white/70 text-sm">
-                  Under 5 minutes to book
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-gold" />
-                <span className="font-opensans text-white/70 text-sm">
-                  50 states covered
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Car className="w-5 h-5 text-white/60" />
-                <span className="font-opensans text-white/70 text-sm">
-                  All vehicle types
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3 Steps Detail */}
-      <section className="section-padding bg-white">
-        <div className="section-container">
-          <div className="space-y-16">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              const isEven = index % 2 === 0;
-
-              return (
-                <div
-                  key={step.number}
-                  className={`grid lg:grid-cols-2 gap-12 items-center ${
-                    !isEven ? "lg:grid-flow-dense" : ""
-                  }`}
-                >
-                  {/* Content */}
-                  <div className={!isEven ? "lg:col-start-2" : ""}>
-                    <div className="flex items-center gap-4 mb-6">
-                      <div
-                        className={`w-16 h-16 ${step.bgColor} rounded-2xl flex items-center justify-center flex-shrink-0`}
-                      >
-                        <Icon className={`w-8 h-8 ${step.textColor}`} />
-                      </div>
-                      <div
-                        className={`font-montserrat font-black text-7xl ${step.textColor} opacity-15 leading-none`}
-                      >
-                        {step.number}
-                      </div>
-                    </div>
-
-                    <h2 className="heading-md text-navy mb-4">{step.title}</h2>
-                    <p className="font-opensans text-gray-500 text-base leading-relaxed mb-6">
-                      {step.description}
-                    </p>
-
-                    <ul className="space-y-2.5 mb-6">
-                      {step.details.map((detail) => (
-                        <li key={detail} className="flex items-center gap-3">
-                          <CheckCircle
-                            className={`w-4 h-4 ${step.textColor} flex-shrink-0`}
-                          />
-                          <span className="font-opensans text-gray-600 text-sm">
-                            {detail}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div
-                      className={`inline-flex items-center gap-2 px-4 py-2 ${step.bgColor} rounded-lg`}
-                    >
-                      <span
-                        className={`font-montserrat font-semibold ${step.textColor} text-xs`}
-                      >
-                        {step.apiNote}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Visual */}
-                  <div className={!isEven ? "lg:col-start-1 lg:row-start-1" : ""}>
-                    <div
-                      className={`bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-10 border-2 ${step.borderColor} border-opacity-20 min-h-64 flex items-center justify-center`}
-                    >
-                      <div className="text-center">
-                        <div
-                          className={`w-24 h-24 ${step.bgColor} rounded-3xl flex items-center justify-center mx-auto mb-4`}
-                        >
-                          <Icon className={`w-12 h-12 ${step.textColor}`} />
-                        </div>
-                        <div
-                          className={`font-montserrat font-black text-8xl ${step.textColor} opacity-10 leading-none`}
-                        >
-                          {step.number}
-                        </div>
-                        <p
-                          className={`font-montserrat font-bold ${step.textColor} text-lg mt-2`}
-                        >
-                          {step.title}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* DSN vs Typical */}
-      <section className="section-padding bg-gray-50">
-        <div className="section-container">
-          <div className="text-center mb-14">
-            <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-3">
-              The Difference
-            </p>
-            <h2 className="heading-lg text-navy">
-              Drive Service Network vs.{" "}
-              <span className="text-teal">The Typical Experience</span>
-            </h2>
-            <p className="body-lg text-gray-500 mt-4 max-w-2xl mx-auto">
-              We didn&apos;t just digitize the old process. We reimagined it from
-              the operator&apos;s perspective.
-            </p>
-          </div>
-
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden">
-              {/* Header */}
-              <div className="grid grid-cols-3 bg-navy text-white">
-                <div className="p-4 font-montserrat font-semibold text-sm text-white/60">
-                  Feature
-                </div>
-                <div className="p-4 font-montserrat font-bold text-sm text-gold text-center border-l border-white/10">
-                  Drive Service Network
-                </div>
-                <div className="p-4 font-montserrat font-semibold text-sm text-white/60 text-center border-l border-white/10">
-                  Typical Process
-                </div>
-              </div>
-
-              {/* Rows */}
-              {vsComparison.map((row, index) => (
-                <div
-                  key={row.feature}
-                  className={`grid grid-cols-3 border-b border-gray-100 last:border-0 ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
-                >
-                  <div className="p-4 font-opensans text-navy text-sm font-medium">
-                    {row.feature}
-                  </div>
-                  <div className="p-4 border-l border-gray-100 text-center">
-                    <span className="font-montserrat font-semibold text-teal text-sm">
-                      {row.dsn}
-                    </span>
-                  </div>
-                  <div className="p-4 border-l border-gray-100 text-center">
-                    <span className="font-opensans text-gray-400 text-sm">
-                      {row.typical}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Openbay Partnership */}
-      <section className="section-padding bg-white">
-        <div className="section-container">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="font-montserrat font-semibold text-teal text-sm uppercase tracking-widest mb-4">
-              Powered by Openbay
-            </p>
-            <h2 className="heading-lg text-navy mb-6">
-              Enterprise-Grade Infrastructure.{" "}
-              <span className="text-teal">Drive Service Network Experience.</span>
-            </h2>
-            <p className="font-opensans text-gray-500 text-lg leading-relaxed mb-8">
-              Drive Service Network is powered by Openbay&apos;s industry-leading
-              automotive marketplace infrastructure — giving you access to
-              40,000 Certified Shops, real-time availability, and seamless
-              appointment management, all within the Drive Service Network
-              experience.
-            </p>
-            <div className="grid grid-cols-3 gap-6 mb-10">
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="font-montserrat font-black text-3xl text-teal">40K+</div>
-                <div className="font-opensans text-gray-500 text-xs mt-1">Certified Shops</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="font-montserrat font-black text-3xl text-gold">515+</div>
-                <div className="font-opensans text-gray-500 text-xs mt-1">Services</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="font-montserrat font-black text-3xl text-navy">50</div>
-                <div className="font-opensans text-gray-500 text-xs mt-1">States</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="section-padding bg-gradient-navy">
-        <div className="section-container">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="font-montserrat font-black text-white text-3xl md:text-4xl leading-tight mb-6">
-              Ready to Experience the{" "}
-              <span className="text-gold">3-Step Difference?</span>
-            </h2>
-            <p className="font-opensans text-white/70 text-lg leading-relaxed mb-8">
-              Join Drive Service Network and schedule your first service in
-              minutes. No long-term contracts. No hidden fees.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="mt-8">
               <Button variant="gold" size="lg" asChild>
-                <Link href="/membership">
-                  <span className="text-navy">Get Started Today</span>
-                  <ArrowRight className="w-5 h-5 text-navy" />
+                <Link href={QUOTE_URL}>
+                  Get an Instant Quote
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/contact" className="text-gold">Talk to Our Team</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CHANGE 007-E / 007-F — visual demonstration of the experience */}
+      <section className="bg-white py-16 md:py-24">
+        <div className="section-container space-y-16 md:space-y-24">
+          {STEPS.map((step, index) => (
+            <div
+              key={step.number}
+              className={`grid items-center gap-10 lg:grid-cols-2 lg:gap-16 ${
+                index % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""
+              }`}
+            >
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy font-montserrat text-lg font-black text-gold">
+                    {step.number}
+                  </span>
+                  <p className="font-montserrat text-xs font-bold uppercase tracking-widest text-teal">
+                    Step {step.number}
+                  </p>
+                </div>
+                <h2 className="mt-4 font-montserrat text-2xl font-bold text-navy md:text-3xl">
+                  {step.title}
+                </h2>
+                <p className="mt-3 font-opensans text-base leading-relaxed text-gray-600 md:text-lg">
+                  {step.lead}
+                </p>
+                <p className="mt-4 font-montserrat text-sm font-bold text-navy md:text-base">
+                  {step.support}
+                </p>
+              </div>
+              <div>{step.mock}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* STEP 4 — Save Even More */}
+      <section className="bg-navy py-16 md:py-24">
+        <div className="section-container">
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gold font-montserrat text-lg font-black text-navy">
+                  4
+                </span>
+                <p className="font-montserrat text-xs font-bold uppercase tracking-widest text-gold">
+                  Step 4
+                </p>
+              </div>
+              <h2 className="mt-4 font-montserrat text-2xl font-bold text-white md:text-3xl">
+                Save Even More
+              </h2>
+              <p className="mt-3 font-montserrat text-xl font-black text-gold md:text-2xl">
+                Save Up to 25% on Vehicle Service &amp; Repairs
+              </p>
+              <p className="mt-4 font-opensans text-base leading-relaxed text-white/70">
+                FREE Drive Members may also subscribe to the special nationwide DSN
+                discount program offering savings of up to 25% on participating
+                vehicle repairs and services.
+              </p>
+            </div>
+
+            {/* CHANGE 007-E / 011-C — membership and subscription distinguished */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-white/15 bg-white/5 p-6">
+                <p className="font-montserrat text-sm font-black uppercase tracking-wide text-teal">
+                  Free Drive Membership
+                </p>
+                <p className="mt-3 font-opensans text-sm leading-relaxed text-white/70">
+                  One registration. Easy access to the Drive ecosystem.
+                </p>
+                <p className="mt-4 font-montserrat text-xs font-bold uppercase tracking-widest text-white">
+                  Membership is free.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-gold/40 bg-gold/10 p-6">
+                <p className="flex items-center gap-2 font-montserrat text-sm font-black uppercase tracking-wide text-gold">
+                  <Percent className="h-4 w-4" />
+                  Optional Discount Subscription
+                </p>
+                <p className="mt-3 font-opensans text-sm leading-relaxed text-white/70">
+                  A separate optional subscription providing access to special
+                  nationwide discounts of up to 25% on participating vehicle
+                  repairs and services.
+                </p>
+                <p className="mt-4 font-opensans text-xs text-white/50">
+                  Discounts and participating facilities vary by location.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Button variant="gold" size="lg" asChild>
+              <Link href="/membership/join">
+                Join Free
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link
+                href="/discount-program-faq"
+                className="border-white/70 text-white hover:bg-white hover:text-navy"
+              >
+                See the DSN Discount Program FAQ
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* CHANGE 007-G — In Case You're Wondering */}
+      <section className="bg-gray-50 py-16 md:py-24">
+        <div className="section-container">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-center font-montserrat text-2xl font-bold text-navy md:text-3xl">
+              In Case You&apos;re Wondering&hellip;
+            </h2>
+            <div className="mt-8">
+              <FaqAccordion items={WONDERING} defaultOpen={0} />
+            </div>
+
+            <div className="mt-10 rounded-2xl border border-gray-100 bg-white p-7 text-center shadow-card">
+              <p className="font-montserrat text-lg font-bold text-navy">
+                Still Have Questions?
+              </p>
+              <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Link
+                  href="/faq"
+                  className="inline-flex items-center gap-2 rounded-lg bg-navy px-5 py-3 font-montserrat text-sm font-semibold text-white transition-colors hover:bg-navy-700"
+                >
+                  See the Drive Service Network FAQ
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/discount-program-faq"
+                  className="inline-flex items-center gap-2 rounded-lg border border-navy/20 px-5 py-3 font-montserrat text-sm font-semibold text-navy transition-colors hover:bg-navy/5"
+                >
+                  See the DSN Discount Program FAQ
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Closing CTA */}
+      <section className="bg-white py-16 md:py-20">
+        <div className="section-container">
+          <div className="mx-auto max-w-3xl rounded-3xl bg-gradient-hero px-6 py-12 text-center md:px-12">
+            <h2 className="font-montserrat text-2xl font-black text-white md:text-3xl">
+              Ready to Get Started?
+            </h2>
+            <p className="mt-4 font-opensans text-base text-white/75">
+              Tell us what the vehicle needs and where it&apos;s located.
+            </p>
+            <div className="mt-7">
+              <Button variant="gold" size="lg" asChild>
+                <Link href={QUOTE_URL}>
+                  Get an Instant Quote
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
               </Button>
             </div>
           </div>

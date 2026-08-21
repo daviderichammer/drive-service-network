@@ -155,11 +155,17 @@ function BookPageInner() {
     }
     if (!valid) return;
 
+    // A changed vehicle, service or ZIP must create a fresh upstream request;
+    // retaining a prior offer would associate an estimate with the wrong work.
     writeBookingDraft({
       vehicleId,
       zipCode: zipCode.trim(),
       radius: Number(radius),
       service,
+      serviceRequestId: null,
+      facility: null,
+      scheduledTime: undefined,
+      scheduledLabel: undefined,
       step: 2,
     });
     trackEvent(FUNNEL_EVENTS.FACILITIES_VIEWED, {

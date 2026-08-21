@@ -81,6 +81,8 @@ interface OffersPayload {
   pollAfterMs?: number | null;
   offers?: EstimateOffer[];
   error?: string;
+  code?: string;
+  repairUrl?: string;
 }
 
 function toFacilityCard(offer: EstimateOffer): FacilityCardData | null {
@@ -165,6 +167,10 @@ export default function FacilitiesPage() {
 
         // A 409 means a legacy profile or vehicle still needs upstream linkage.
         // It is intentionally not treated as a generic technical failure.
+        if (response.status === 409 && payload.code === "VEHICLE_TRIM_REQUIRED") {
+          router.push(payload.repairUrl || "/dashboard/vehicles");
+          return false;
+        }
         if (response.status === 409) {
           setAwaitingOffers(true);
           setAutoPolling(false);
@@ -211,7 +217,7 @@ export default function FacilitiesPage() {
         return false;
       }
     },
-    [addAvailability]
+    [addAvailability, router]
   );
 
   const beginPricing = useCallback(
@@ -247,6 +253,10 @@ export default function FacilitiesPage() {
             }),
           });
           const payload = await response.json();
+          if (response.status === 409 && payload.code === "VEHICLE_TRIM_REQUIRED") {
+            router.push(payload.repairUrl || "/dashboard/vehicles");
+            return;
+          }
           if (!response.ok && response.status !== 202) {
             setError(payload.error ?? "We could not request facility estimates. Please try again.");
             return;

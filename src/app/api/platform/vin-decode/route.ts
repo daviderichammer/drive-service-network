@@ -16,6 +16,7 @@ import {
   engineFromStyleName,
   getPlatformClient,
   memberFacingError,
+  resolveVehicleStyle,
   waitForVehicleDecode,
 } from "@/lib/platform";
 import { ensureOpenbayDriver } from "@/lib/membership/service";
@@ -81,12 +82,29 @@ export async function POST(request: NextRequest) {
 
     const decoded = (await waitForVehicleDecode(created.ownedVehicleId)) ?? created;
 
-    if (!decoded.year || !decoded.make || !decoded.model) {
+    if (!decoded.year || !decoded.make || !decoded.model || !decoded.styleId) {
       return NextResponse.json(
         {
           decoded: false,
           message:
-            "We could not identify that VIN. Please choose the vehicle details manually.",
+            "We could not confirm this VIN's exact trim. Please choose the vehicle and trim from the catalogue.",
+        },
+        { status: 200 }
+      );
+    }
+
+    const style = await resolveVehicleStyle({
+      year: Number(decoded.year),
+      make: decoded.make,
+      model: decoded.model,
+      styleId: decoded.styleId,
+    });
+    if (style.status !== "resolved") {
+      return NextResponse.json(
+        {
+          decoded: false,
+          message:
+            "We could not verify this VIN's trim in the vehicle catalogue. Please choose the vehicle and trim manually.",
         },
         { status: 200 }
       );
@@ -98,9 +116,9 @@ export async function POST(request: NextRequest) {
         year: Number(decoded.year),
         make: decoded.make,
         model: decoded.model,
-        trim: decoded.styleName ?? null,
+        trim: style.style.name || decoded.styleName || null,
         engine: engineFromStyleName(decoded.styleName),
-        styleId: decoded.styleId ?? null,
+        styleId: style.style.id,
         vin,
       },
     });

@@ -71,7 +71,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: ownership.message }, { status: 403 });
   }
 
-  // Preserve the member's request even when a legacy account needs upstream
+  const vehicle = await prisma.vehicle.findFirst({
+    where: { id: input.vehicleId, userId: session.user.id, status: { not: "REMOVED" } },
+    select: { openbayStyleId: true },
+  });
+  if (!vehicle?.openbayStyleId) {
+    return NextResponse.json(
+      {
+        code: "VEHICLE_TRIM_REQUIRED",
+        repairVehicleId: input.vehicleId,
+        repairUrl: "/dashboard/vehicles",
+        error:
+          "Confirm this vehicle's trim before requesting quotes so facilities can match the correct parts and labor.",
+      },
+      { status: 409 }
+    );
+  }
+
+  // Preserve the member's request even when an upstream member profile needs
   // linkage repaired before it can be sent for competitive estimates.
   const serviceRequest = await prisma.serviceRequest.create({
     data: {
@@ -110,9 +127,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Older vehicles can also predate upstream mirroring. Recreate the upstream
-  // vehicle where DSN has sufficient VIN or catalog information; never fail the
-  // local membership or booking record when that repair needs member attention.
+  // Style-confirmed older vehicles can predate upstream mirroring. Recreate the
+  // upstream vehicle with their stored catalog style before generating offers.
   const openbayVehicleId = await ensureOpenbayVehicle(
     session.user.id,
     input.vehicleId,
@@ -126,7 +142,7 @@ export async function POST(request: NextRequest) {
         pricingStatus: "PREPARING_VEHICLE",
         retryable: true,
         message:
-          "We are preparing this vehicle for facility estimates. Please confirm its VIN or vehicle details and check again in a moment.",
+          "We are preparing this vehicle for facility estimates. Please check again in a moment.",
       },
       { status: 202 }
     );

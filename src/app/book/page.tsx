@@ -40,6 +40,7 @@ interface VehicleOption {
   licensePlate: string | null;
   vin: string | null;
   programStatus: "FREE" | "DSN_PLUS";
+  needsStyleRepair?: boolean;
 }
 
 const RADIUS_OPTIONS = [
@@ -143,6 +144,10 @@ function BookPageInner() {
     if (!vehicleId) {
       valid = false;
     }
+    if (selectedVehicle?.needsStyleRepair) {
+      router.push("/dashboard/vehicles");
+      return;
+    }
     if (!service) {
       setServiceError("Please choose the service you need.");
       valid = false;
@@ -215,15 +220,24 @@ function BookPageInner() {
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {vehicles.map((vehicle) => {
                   const active = vehicle.id === vehicleId;
+                  const needsStyleRepair = Boolean(vehicle.needsStyleRepair);
                   return (
                     <button
                       key={vehicle.id}
-                      onClick={() => setVehicleId(vehicle.id)}
+                      onClick={() => {
+                        if (needsStyleRepair) {
+                          router.push("/dashboard/vehicles");
+                          return;
+                        }
+                        setVehicleId(vehicle.id);
+                      }}
                       className={cn(
                         "flex items-start justify-between gap-3 rounded-lg border p-4 text-left transition-all",
-                        active
-                          ? "border-teal bg-teal/5 ring-1 ring-teal/30"
-                          : "border-gray-200 hover:border-teal/40"
+                        needsStyleRepair
+                          ? "border-amber-200 bg-amber-50 hover:border-amber-400"
+                          : active
+                            ? "border-teal bg-teal/5 ring-1 ring-teal/30"
+                            : "border-gray-200 hover:border-teal/40"
                       )}
                     >
                       <div>
@@ -237,6 +251,11 @@ function BookPageInner() {
                               ? `VIN …${vehicle.vin.slice(-6)}`
                               : "Registered vehicle"}
                         </div>
+                        {needsStyleRepair && (
+                          <span className="mt-1.5 inline-block rounded bg-amber-100 px-1.5 py-0.5 font-montserrat text-[10px] font-bold uppercase tracking-wide text-amber-800">
+                            Confirm trim before quotes
+                          </span>
+                        )}
                         {vehicle.programStatus === "DSN_PLUS" && (
                           <span className="mt-1.5 inline-block rounded bg-teal/10 px-1.5 py-0.5 font-montserrat text-[10px] font-bold uppercase tracking-wide text-teal">
                             DSN+ enrolled
@@ -355,7 +374,7 @@ function BookPageInner() {
               variant="primary"
               size="lg"
               onClick={handleContinue}
-              disabled={vehicles.length === 0}
+              disabled={vehicles.length === 0 || Boolean(selectedVehicle?.needsStyleRepair)}
               className="w-full sm:w-auto"
             >
               Find service facilities

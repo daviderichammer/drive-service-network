@@ -87,6 +87,7 @@ export default async function VehiclesPage() {
                 mileage: vehicle.mileage,
                 nickname: vehicle.nickname,
                 programStatus: vehicle.programStatus,
+                needsStyleRepair: !vehicle.openbayStyleId,
               }}
             />
           ))}

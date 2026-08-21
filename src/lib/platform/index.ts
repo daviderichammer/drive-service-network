@@ -9,6 +9,13 @@ import type { PlatformVehicle, ServiceSelectionNode } from "./types";
 
 export * from "./types";
 export { getPlatformClient, PlatformApiRequestError };
+export {
+  resolveVehicleStyle,
+  styleChoiceLabel,
+  type CatalogStyleChoice,
+  type VehicleStyleLookupInput,
+  type VehicleStyleLookupResult,
+} from "./vehicle-catalog";
 
 // ============================================================
 // DSN-BRANDED ERROR STATES (REVAMP BUILD section 35)

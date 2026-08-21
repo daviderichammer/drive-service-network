@@ -11,7 +11,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { removeVehicle, updateVehicle } from "@/lib/vehicles/service";
+import {
+  removeVehicle,
+  repairVehicleStyle,
+  updateVehicle,
+} from "@/lib/vehicles/service";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +49,11 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   return NextResponse.json({ vehicle });
 }
 
+const repairStyleSchema = z.object({
+  openbayStyleTrimId: z.number().int().positive(),
+  openbaySubModelId: z.number().int().positive().optional(),
+});
+
 const updateSchema = z.object({
   color: z.string().max(60).optional(),
   engine: z.string().max(120).optional(),
@@ -67,6 +76,16 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  const repairValidation = repairStyleSchema.safeParse(body);
+  if (repairValidation.success) {
+    const repaired = await repairVehicleStyle(session.user.id, id, repairValidation.data);
+    if ("error" in repaired) {
+      return NextResponse.json({ error: repaired.error }, { status: 422 });
+    }
+    const vehicle = await prisma.vehicle.findUnique({ where: { id } });
+    return NextResponse.json({ vehicle, repaired: true });
   }
 
   const validation = updateSchema.safeParse(body);

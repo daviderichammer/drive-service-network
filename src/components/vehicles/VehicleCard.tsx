@@ -11,7 +11,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Car, Loader2, Trash2 } from "lucide-react";
+import { Car, Loader2, Trash2, Wrench } from "lucide-react";
+import { VehicleStyleRepair } from "@/components/vehicles/VehicleStyleRepair";
 
 export interface VehicleCardData {
   id: string;
@@ -26,6 +27,7 @@ export interface VehicleCardData {
   mileage?: number | null;
   nickname?: string | null;
   programStatus: string;
+  needsStyleRepair?: boolean;
 }
 
 export function VehicleCard({ vehicle }: { vehicle: VehicleCardData }) {
@@ -33,6 +35,7 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleCardData }) {
   const [confirming, setConfirming] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [repairingStyle, setRepairingStyle] = useState(false);
 
   const enrolled = vehicle.programStatus === "DSN_PLUS";
 
@@ -139,6 +142,33 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleCardData }) {
         </div>
       </dl>
 
+      {vehicle.needsStyleRepair && !repairingStyle && (
+        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p className="font-montserrat text-sm font-bold text-navy">Trim confirmation required</p>
+          <p className="mt-1 font-opensans text-sm text-amber-900">
+            Confirm this vehicle&apos;s trim before requesting quotes so facilities can price the correct parts and labor.
+          </p>
+          <button
+            type="button"
+            onClick={() => setRepairingStyle(true)}
+            className="mt-3 inline-flex items-center gap-1.5 font-montserrat text-sm font-semibold text-amber-800 hover:text-amber-950 hover:underline"
+          >
+            <Wrench className="h-4 w-4" /> Confirm trim
+          </button>
+        </div>
+      )}
+
+      {vehicle.needsStyleRepair && repairingStyle && (
+        <VehicleStyleRepair
+          vehicle={vehicle}
+          onComplete={() => {
+            setRepairingStyle(false);
+            setNotice("Trim confirmed. This vehicle is ready for accurate facility quotes.");
+            router.refresh();
+          }}
+        />
+      )}
+
       {notice && (
         <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 font-opensans text-xs text-amber-800">
           {notice}
@@ -173,12 +203,22 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleCardData }) {
       )}
 
       <div className="mt-5 border-t border-gray-100 pt-4">
-        <Link
-          href={`/book?vehicleId=${vehicle.id}`}
-          className="font-montserrat text-sm font-semibold text-teal transition-colors hover:text-teal-600"
-        >
-          Get a quote for this vehicle →
-        </Link>
+        {vehicle.needsStyleRepair ? (
+          <button
+            type="button"
+            onClick={() => setRepairingStyle(true)}
+            className="font-montserrat text-sm font-semibold text-amber-800 transition-colors hover:text-amber-950"
+          >
+            Confirm trim to unlock quotes →
+          </button>
+        ) : (
+          <Link
+            href={`/book?vehicleId=${vehicle.id}`}
+            className="font-montserrat text-sm font-semibold text-teal transition-colors hover:text-teal-600"
+          >
+            Get a quote for this vehicle →
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -161,9 +161,21 @@ export function AddVehicleForm({
     setTrimId("");
     setTrims([]);
     if (!value) return;
-    setTrims(
-      await fetchCatalog("trims", { year, makeId, modelId, subModelId: value })
-    );
+    const loadedTrims = await fetchCatalog("trims", {
+      year,
+      makeId,
+      modelId,
+      subModelId: value,
+    });
+    setTrims(loadedTrims);
+    // There is no member choice when the catalog yields a single style. Select
+    // it immediately so the registration payload always carries its style id.
+    if (loadedTrims.length === 1) {
+      const onlyTrim = loadedTrims[0];
+      setTrimId(String(onlyTrim.id));
+      const match = onlyTrim.name.match(/\(([^)]*)\)/);
+      if (match && !engine) setEngine(match[1]);
+    }
   };
 
   const decodeVin = async () => {
@@ -189,10 +201,12 @@ export function AddVehicleForm({
         setError(body.error || "We could not look up that VIN.");
         return;
       }
-      if (!body.decoded) {
+      if (!body.decoded || !body.vehicle?.styleId) {
         setError(
-          body.message || "We could not identify that VIN. Please use the catalogue instead."
+          body.message ||
+            "We could not confirm the vehicle trim from this VIN. Please choose the vehicle and trim from the catalogue."
         );
+        setDecoded(null);
         setMode("catalog");
         return;
       }
@@ -221,21 +235,29 @@ export function AddVehicleForm({
         setError("Please look up the VIN first, or switch to the vehicle catalogue.");
         return;
       }
+      if (!decoded.styleId) {
+        setError("We need a confirmed trim before this vehicle can be registered.");
+        return;
+      }
       payload = {
         year: decoded.year,
         make: decoded.make,
         model: decoded.model,
         trim: decoded.trim ?? undefined,
         vin: vin.trim().toUpperCase(),
-        openbayStyleTrimId: decoded.styleId ?? undefined,
+        openbayStyleTrimId: decoded.styleId,
       };
     } else {
       const selectedYear = Number(year);
       const make = makes.find((m) => String(m.id) === makeId)?.name;
       const model = models.find((m) => String(m.id) === modelId)?.name;
       const trim = trims.find((t) => String(t.id) === trimId)?.name;
-      if (!selectedYear || !make || !model) {
-        setError("Please choose the year, make and model of your vehicle.");
+      if (!selectedYear || !make || !model || !subModelId) {
+        setError("Please choose the year, make, model and body style of your vehicle.");
+        return;
+      }
+      if (!trimId) {
+        setError("Please select the trim and engine before registering this vehicle.");
         return;
       }
       payload = {
@@ -244,7 +266,8 @@ export function AddVehicleForm({
         model,
         trim,
         vin: vin.trim().toUpperCase() || undefined,
-        openbayStyleTrimId: trimId ? Number(trimId) : undefined,
+        openbayStyleTrimId: Number(trimId),
+        openbaySubModelId: Number(subModelId),
       };
     }
 
@@ -473,7 +496,9 @@ export function AddVehicleForm({
           </div>
 
           <div className="sm:col-span-2">
-            <label className={labelClass}>Trim and engine</label>
+            <label className={labelClass}>
+              Trim and engine <span className="text-red-500">*</span>
+            </label>
             <select
               value={trimId}
               onChange={(e) => {
@@ -495,8 +520,8 @@ export function AddVehicleForm({
               ))}
             </select>
             <p className="mt-1.5 font-opensans text-xs text-gray-400">
-              Selecting the trim helps repair facilities quote the correct parts and
-              labour for your vehicle.
+              A confirmed trim is required so repair facilities can match the correct
+              parts and labour. It is selected automatically when only one trim exists.
             </p>
           </div>
 

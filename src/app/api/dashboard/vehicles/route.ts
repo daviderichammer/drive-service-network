@@ -39,16 +39,18 @@ export async function GET() {
       status: true,
       programStatus: true,
       openbayVehicleId: true,
+      openbayStyleId: true,
       createdAt: true,
     },
   });
 
-  // DSN is the customer-facing brand: report only whether the vehicle reached
-  // the service network, never the Openbay identifier itself.
+  // DSN is the customer-facing brand: report only linkage health, never raw
+  // Openbay identifiers. A missing style id is actionable before quote creation.
   return NextResponse.json({
-    vehicles: vehicles.map(({ openbayVehicleId, ...v }) => ({
+    vehicles: vehicles.map(({ openbayVehicleId, openbayStyleId, ...v }) => ({
       ...v,
-      openbayLinked: Boolean(openbayVehicleId),
+      openbayLinked: Boolean(openbayVehicleId && openbayStyleId),
+      needsStyleRepair: !openbayStyleId,
     })),
   });
 }
@@ -73,7 +75,8 @@ const vehicleSchema = z.object({
   mileage: z.number().int().min(0).max(2_000_000).optional(),
   nickname: z.string().max(80).optional(),
   zipCode: z.string().regex(/^\d{5}$/, "A five-digit ZIP code is required"),
-  openbayStyleTrimId: z.number().int().positive().optional(),
+  openbayStyleTrimId: z.number().int().positive("Please select the trim and engine").finite(),
+  openbaySubModelId: z.number().int().positive().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -108,7 +111,7 @@ export async function POST(request: NextRequest) {
   });
 
   if ("error" in result) {
-    return NextResponse.json({ error: result.error }, { status: 409 });
+    return NextResponse.json({ error: result.error }, { status: 422 });
   }
 
   const isFirst =

@@ -53,6 +53,8 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       id: true,
       openbayServiceRequestId: true,
       status: true,
+      vehicleId: true,
+      vehicle: { select: { openbayStyleId: true } },
     },
   });
 
@@ -61,6 +63,24 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   }
 
   if (!serviceRequest.openbayServiceRequestId) {
+    if (!serviceRequest.vehicle.openbayStyleId) {
+      return NextResponse.json(
+        {
+          id: serviceRequest.id,
+          status: serviceRequest.status,
+          ready: false,
+          offers: [],
+          retryable: false,
+          code: "VEHICLE_TRIM_REQUIRED",
+          repairVehicleId: serviceRequest.vehicleId,
+          repairUrl: "/dashboard/vehicles",
+          error:
+            "Confirm this vehicle's trim before requesting quotes so facilities can match the correct parts and labor.",
+        },
+        { status: 409, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+
     return NextResponse.json(
       {
         id: serviceRequest.id,

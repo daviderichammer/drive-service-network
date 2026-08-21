@@ -13,7 +13,8 @@ export interface AppConfig {
   env: AppEnvironment;
   appUrl: string;
   appName: string;
-  openbayPartnerId: string;
+  /** Openbay Platform API partner id — infrastructure only, never shown to members. */
+  platformPartnerId: string;
   features: {
     membership: boolean;
     booking: boolean;
@@ -37,7 +38,14 @@ export interface NavLink {
 // MEMBERSHIP
 // ============================================================
 
-export type MembershipTier = "FREE" | "BASIC" | "PROFESSIONAL" | "ENTERPRISE";
+/**
+ * REVAMP BUILD section J — a member is FREE or DSN_PLUS. The former paid tier
+ * names are obsolete: DSN+ enrolment attaches to vehicles, not to members.
+ */
+export type MembershipTier = "FREE" | "DSN_PLUS";
+
+/** Per-vehicle discount-programme status. */
+export type VehicleProgramStatus = "FREE" | "DSN_PLUS";
 
 export interface MembershipPlan {
   tier: MembershipTier;
@@ -82,11 +90,15 @@ export interface ServiceSearchParams {
   vehicleYear?: number;
 }
 
+/**
+ * BUILD Absolute Rule 2 — vehicleId is mandatory: every quote and booking must
+ * be associated with a vehicle registered in the member's profile.
+ */
 export interface BookingFormData {
-  vehicleId?: string;
+  vehicleId: string;
   serviceId: number;
-  shopId: string;
-  timeslotId: string;
+  shopId?: string;
+  timeslotKey?: string;
   notes?: string;
 }
 

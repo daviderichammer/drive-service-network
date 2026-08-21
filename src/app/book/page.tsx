@@ -159,10 +159,17 @@ export default function BookPage() {
     async function fetchServices() {
       try {
         setLoadingServices(true);
-        const res = await fetch("/api/openbay/services");
+        // Platform API service catalogue (Partner API removed — BUILD section 2).
+        const res = await fetch("/api/platform/services?view=catalog");
         if (!res.ok) throw new Error("Failed to load services");
         const data = await res.json();
-        const list: Service[] = data.services || [];
+        const list: Service[] = (data.data || []).map(
+          (s: { id: number; name: string; categoryName?: string }) => ({
+            id: s.id,
+            name: s.name,
+            category: s.categoryName || "Other",
+          })
+        );
         setServices(list);
         // Group by category
         const catMap: Record<string, Service[]> = {};

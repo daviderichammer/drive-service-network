@@ -108,21 +108,43 @@ export default function ShopsPage() {
     setHasSearched(true);
 
     try {
-      const params = new URLSearchParams({
-        zip: state.zipCode,
+            const params = new URLSearchParams({
+        zipcode: state.zipCode,
         radius: String(state.radius || 25),
-        serviceType: "appointment",
-        ...(state.selectedServiceId && { serviceId: String(state.selectedServiceId) }),
       });
-
-      const res = await fetch(`/api/openbay/locations?${params.toString()}`);
+      // Platform API facility search (Partner API removed — BUILD section 2).
+      const res = await fetch(`/api/platform/locations?${params.toString()}`);
       const data = await res.json();
-
       if (!res.ok) {
-        throw new Error(data.message || "Failed to search shops");
+        throw new Error(data.error || "Failed to search shops");
       }
-
-      const locations: Shop[] = data.locations || [];
+      const locations: Shop[] = (data.data?.locations || []).map(
+        (l: {
+          id: number;
+          name: string;
+          address1: string;
+          address2?: string;
+          city: string;
+          state: string;
+          zipcode: string;
+          ratingAverage?: number;
+          ratingCount?: number;
+          distanceMeters?: number;
+        }) => ({
+          id: String(l.id),
+          name: l.name,
+          address: [l.address1, l.address2].filter(Boolean).join(" ").trim(),
+          city: l.city,
+          state: l.state,
+          zip: l.zipcode,
+          rating: l.ratingAverage,
+          reviewCount: l.ratingCount,
+          distance:
+            typeof l.distanceMeters === "number"
+              ? Math.round((l.distanceMeters / 1609.344) * 10) / 10
+              : undefined,
+        })
+      );
       setShops(locations);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unable to search shops. Please try again.";
@@ -168,7 +190,11 @@ export default function ShopsPage() {
       // ignore
     }
 
-    router.push("/book/appointment");
+    // The final quote-and-book step depends on Platform API service-request
+    // creation, which partner 116 is not yet entitled to (FLAG F-1). Rather
+    // than fabricate pricing or availability, the member is handed to a
+    // request page that DSN staff action directly.
+    router.push("/book/request");
   }
 
   function handleBack() {

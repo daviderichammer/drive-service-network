@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +20,11 @@ const registerSchema = z
     operatorType: z.string().optional(),
     vehicleCount: z.string().optional(),
     primaryMarket: z.string().optional(),
+    zipCode: z
+      .string()
+      .regex(/^\d{5}$/, "Enter a five-digit ZIP code")
+      .optional()
+      .or(z.literal("")),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -52,8 +57,12 @@ const OPERATOR_TYPES = [
 
 const VEHICLE_COUNTS = ["1-5", "6-25", "26-100", "101-500", "500+"];
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Preserved so a visitor stopped at the quote gate is returned to what they
+  // were doing once membership is created (REVAMP BUILD section 6).
+  const returnTo = searchParams.get("returnTo");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -80,8 +89,9 @@ export default function RegisterPage() {
           phone: data.phone,
           companyName: data.companyName,
           operatorType: data.operatorType,
-          vehicleCount: data.vehicleCount,
+          fleetSizeBand: data.vehicleCount,
           primaryMarket: data.primaryMarket,
+          zipCode: data.zipCode,
         }),
       });
 
@@ -102,7 +112,12 @@ export default function RegisterPage() {
       if (signInResult?.error) {
         router.push("/auth/login");
       } else {
-        router.push("/dashboard");
+        // BUILD section 9 — membership completion leads directly into
+        // "Add Your Vehicles", carrying any interrupted quote intent forward.
+        const next = returnTo
+          ? `/dashboard/vehicles/new?welcome=1&returnTo=${encodeURIComponent(returnTo)}`
+          : "/dashboard/vehicles/new?welcome=1";
+        router.push(next);
         router.refresh();
       }
     } catch {
@@ -311,6 +326,27 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            <div className="sm:w-1/3">
+              <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
+                ZIP code{" "}
+                <span className="text-gray-400 font-normal">(where vehicles are based)</span>
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                maxLength={5}
+                {...register("zipCode")}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal transition-colors"
+                placeholder="33101"
+              />
+              {errors.zipCode && (
+                <p className="mt-1.5 font-opensans text-xs text-red-600">
+                  {errors.zipCode.message}
+                </p>
+              )}
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block font-opensans text-sm font-medium text-navy mb-1.5">
@@ -378,6 +414,15 @@ export default function RegisterPage() {
               Password must be at least 8 characters with one uppercase letter and one number.
             </p>
 
+            <div className="rounded-lg border border-teal/20 bg-teal/5 px-4 py-3">
+              <p className="font-opensans text-xs leading-relaxed text-navy">
+                <span className="font-semibold">No payment required.</span> Your Drive
+                Service Network membership is free — no credit card, no trial period.
+                After you join, you will add your vehicles so every quote and booking
+                is tied to the right vehicle.
+              </p>
+            </div>
+
             <Button
               type="submit"
               variant="gold"
@@ -409,5 +454,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
   );
 }

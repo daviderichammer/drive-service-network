@@ -51,7 +51,9 @@ Thumbs.db
 *.swo
 
 # Prisma
-prisma/migrations/
+# Migrations ARE tracked: deploy/deploy.sh runs `prisma migrate deploy`, which
+# requires the committed migration history to bring the server schema forward.
+
 
 # Docker volumes
 docker/volumes/

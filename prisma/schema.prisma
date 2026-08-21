@@ -1,6 +1,19 @@
 // Drive Service Network — Prisma Schema
 // Global Drive Holdings Inc.
-// Phase 1 Foundation + Phase 3 Membership
+//
+// REVAMP BUILD — Priority 1 (Foundation)
+//
+// DSN's application database is the SYSTEM OF RECORD for members, vehicles,
+// membership status, quotes, appointments, repair history, messages and DSN+
+// status (BUILD section 8). Openbay is infrastructure; the Google Sheet is an
+// operational mirror, never the database.
+//
+// Key architectural rules encoded here:
+//   - MEMBER -> VEHICLE -> DSN+ ENROLMENT (BUILD "Discount eligibility must
+//     follow the vehicle"). Enrolment is NEVER a flag on the member.
+//   - VIN is the principal persistent vehicle identifier (BUILD section L).
+//   - Historical data is preserved via status fields, never destructive
+//     deletion (BUILD section K).
 
 generator client {
   provider = "prisma-client-js"
@@ -29,11 +42,13 @@ enum UserStatus {
   PENDING_VERIFICATION
 }
 
+/// BUILD section J — MEMBER STATUS is separate from VEHICLE STATUS.
+/// A member is FREE or DSN_PLUS; DSN_PLUS means at least one of their vehicles
+/// is enrolled in the paid discount programme. It never by itself entitles a
+/// vehicle to discounted pricing.
 enum MembershipTier {
   FREE
-  BASIC
-  PROFESSIONAL
-  ENTERPRISE
+  DSN_PLUS
 }
 
 enum FleetType {
@@ -51,6 +66,30 @@ enum VehicleStatus {
   INACTIVE
   IN_SERVICE
   SOLD
+  REMOVED
+}
+
+/// BUILD "Critical business rule — free registered vehicles vs. discount-program
+/// enrolled vehicles". Every registered vehicle is FREE; only vehicles the
+/// member specifically enrols become DSN_PLUS.
+enum VehicleProgramStatus {
+  FREE
+  DSN_PLUS
+}
+
+/// BUILD section Q — DSN+ must not be a permanent yes/no field.
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRING
+  EXPIRED
+  CANCELLED
+  PENDING_PAYMENT
+}
+
+enum DsnPlusPaymentPlan {
+  PREPAID_6
+  PREPAID_12
+  FINANCE_12
 }
 
 enum AppointmentStatus {
@@ -62,6 +101,15 @@ enum AppointmentStatus {
   NO_SHOW
 }
 
+enum ServiceRequestStatus {
+  DRAFT
+  OPEN_FOR_OFFERS
+  ACCEPTED
+  SETTLED
+  EXPIRED
+  WITHDRAWN
+}
+
 enum ContactFormStatus {
   NEW
   IN_PROGRESS
@@ -69,8 +117,16 @@ enum ContactFormStatus {
   SPAM
 }
 
+/// Google Sheet mirror state (BUILD section 8, TEST L).
+enum SheetSyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+  SKIPPED
+}
+
 // ============================================================
-// USER MANAGEMENT
+// MEMBERS
 // ============================================================
 
 model User {
@@ -82,15 +138,26 @@ model User {
   phone             String?
   role              UserRole   @default(CUSTOMER)
   status            UserStatus @default(ACTIVE)
+
+  /// Derived: DSN_PLUS when the member has at least one actively enrolled
+  /// vehicle. Never used on its own to price a repair.
   membershipTier    MembershipTier @default(FREE)
-  membershipExpiry  DateTime?
+  memberSince       DateTime   @default(now())
 
   // Auth
-  password          String?    // hashed password for credentials provider
+  password          String?
 
-  // Openbay Integration
+  // Company / fleet profile captured at registration (BUILD section 7)
+  companyName       String?
+  operatorType      String?
+  fleetSizeBand     String?
+  primaryMarket     String?
+
+  /// Openbay Platform API driver id (users.users.id). DSN persists this so it
+  /// can always read Openbay by id — the partner-scoped list endpoints do not
+  /// return API-key-created records (FLAGS F-3).
   openbayUserId     String?    @unique
-  openbaySubId      String?
+  openbayLegacyId   String?
 
   // Address
   addressLine1      String?
@@ -99,6 +166,12 @@ model User {
   state             String?
   zipCode           String?
   country           String?    @default("US")
+
+  // Google Sheet mirror
+  sheetSyncStatus   SheetSyncStatus @default(PENDING)
+  sheetSyncedAt     DateTime?
+  sheetSyncError    String?    @db.Text
+  sheetRowRef       String?
 
   // Metadata
   createdAt         DateTime   @default(now())
@@ -109,10 +182,13 @@ model User {
   vehicles          Vehicle[]
   fleets            FleetMember[]
   appointments      Appointment[]
+  serviceRequests   ServiceRequest[]
+  enrollments       VehicleEnrollment[]
   contactForms      ContactForm[]
   accounts          Account[]
   sessions          Session[]
   financingInquiries FinancingInquiry[]
+  funnelEvents      FunnelEvent[]
 
   @@index([email])
   @@index([openbayUserId])
@@ -121,7 +197,7 @@ model User {
 }
 
 // ============================================================
-// NEXTAUTH MODELS
+// NEXTAUTH
 // ============================================================
 
 model Account {
@@ -164,7 +240,7 @@ model VerificationToken {
 }
 
 // ============================================================
-// VEHICLE MANAGEMENT
+// VEHICLES
 // ============================================================
 
 model Vehicle {
@@ -174,42 +250,110 @@ model Vehicle {
   fleetId       String?
   fleet         Fleet?        @relation(fields: [fleetId], references: [id])
 
-  // Vehicle Details
+  // BUILD section 9 — the seven required attributes
   year          Int
   make          String
   model         String
-  trim          String?
-  vin           String?       @unique
-  licensePlate  String?
+  /// NOT SUPPORTED BY THE PLATFORM API — DSN-local only (FLAGS F-4).
   color         String?
+  /// Platform API has no discrete engine field; derived from styleName and/or
+  /// captured from the member (FLAGS F-4).
+  engine        String?
+  /// Unique per member, not globally: the same vehicle can legitimately be
+  /// sold between two DSN members, and a global constraint would permanently
+  /// lock the VIN to the first account that registered it.
+  vin           String?
+  licensePlate  String?
+
+  trim          String?
   mileage       Int?
-  engineType    String?
-  engineSize    String?
-  transmission  String?
-  fuelType      String?
+  nickname      String?
 
-  // Status
+  /// Openbay owned-vehicle id and resolved Edmunds style.
+  openbayVehicleId String?    @unique
+  openbayStyleId   Int?
+  openbayStyleName String?
+
   status        VehicleStatus @default(ACTIVE)
-  nickname      String?       // e.g., "Turo Unit 1"
 
-  // Openbay Integration
-  openbayVehicleId String?
+  /// BUILD: every registered vehicle has FREE membership = YES. This column
+  /// records whether THIS vehicle is enrolled in the paid discount programme.
+  programStatus VehicleProgramStatus @default(FREE)
 
-  // Metadata
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  /// Soft-removal timestamp — history is preserved (BUILD section K).
+  removedAt     DateTime?
 
-  // Relations
-  appointments  Appointment[]
+  appointments    Appointment[]
+  serviceRequests ServiceRequest[]
+  enrollments     VehicleEnrollment[]
+  repairHistory   RepairHistory[]
 
+  @@unique([userId, vin], name: "vehicle_member_vin")
   @@index([userId])
   @@index([fleetId])
   @@index([vin])
+  @@index([programStatus])
   @@map("vehicles")
 }
 
 // ============================================================
-// FLEET MANAGEMENT
+// DSN+ VEHICLE ENROLMENT
+// ============================================================
+
+/// BUILD "Vehicle-specific enrollment date + billing date": each enrolled
+/// vehicle carries its own enrolment date, effective date, billing date,
+/// payment plan, subscription status and renewal date. Vehicles enrolled on
+/// different dates keep different billing anniversaries and are never
+/// automatically prorated onto a common date.
+model VehicleEnrollment {
+  id                String   @id @default(cuid())
+
+  vehicleId         String
+  vehicle           Vehicle  @relation(fields: [vehicleId], references: [id])
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+
+  /// VIN captured at enrolment. Discount eligibility follows the VIN
+  /// (BUILD section L) and must survive edits to the vehicle record.
+  vinAtEnrollment   String?
+
+  plan              DsnPlusPaymentPlan
+  status            SubscriptionStatus @default(PENDING_PAYMENT)
+
+  enrollmentDate    DateTime  @default(now())
+  effectiveDate     DateTime?
+  /// Billing anniversary — same numerical day each month as enrolment.
+  nextBillingDate   DateTime?
+  expirationDate    DateTime?
+  cancelledAt       DateTime?
+
+  /// Fleet tier and unit price captured at the time of this charge. Pricing is
+  /// prospective only — previously completed periods are never recalculated
+  /// (BUILD "No retroactive recalculation").
+  fleetTierId       String?
+  monthlyPerVehicleCents Int?
+  /// Count of the member's ACTIVE enrolled vehicles at the moment of the
+  /// snapshot that produced the tier above.
+  activeVehicleCountAtSnapshot Int?
+
+  /// Populated only once David confirms the payment architecture
+  /// (BUILD section P, FLAGS F-9). No payment processing exists in P1.
+  paymentReference  String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([userId])
+  @@index([status])
+  @@index([nextBillingDate])
+  @@map("vehicle_enrollments")
+}
+
+// ============================================================
+// FLEETS
 // ============================================================
 
 model Fleet {
@@ -218,37 +362,27 @@ model Fleet {
   type            FleetType   @default(OTHER)
   description     String?     @db.Text
 
-  // Contact
   contactName     String?
   contactEmail    String?
   contactPhone    String?
 
-  // Address
   addressLine1    String?
   city            String?
   state           String?
   zipCode         String?
 
-  // Business Details
   dotNumber       String?
   taxId           String?
   vehicleCount    Int?        @default(0)
 
-  // Membership
-  membershipTier  MembershipTier @default(FREE)
-  membershipExpiry DateTime?
-
-  // Metadata
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
-  // Relations
   members         FleetMember[]
   vehicles        Vehicle[]
   appointments    Appointment[]
 
   @@index([type])
-  @@index([membershipTier])
   @@map("fleets")
 }
 
@@ -258,7 +392,7 @@ model FleetMember {
   fleet     Fleet    @relation(fields: [fleetId], references: [id], onDelete: Cascade)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      String   @default("MEMBER") // OWNER, MANAGER, MEMBER
+  role      String   @default("MEMBER")
   createdAt DateTime @default(now())
 
   @@unique([fleetId, userId])
@@ -266,7 +400,51 @@ model FleetMember {
 }
 
 // ============================================================
-// APPOINTMENT / SERVICE MANAGEMENT
+// SERVICE REQUESTS / QUOTES (Priority 2 groundwork)
+// ============================================================
+
+/// BUILD section 31 — MEMBER -> VEHICLE -> SERVICE REQUEST -> FACILITY
+/// ESTIMATES -> APPOINTMENT -> REPAIR HISTORY. Modelled now so Priority 2 has
+/// somewhere to write, without any fabricated data.
+model ServiceRequest {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  vehicleId             String
+  vehicle               Vehicle  @relation(fields: [vehicleId], references: [id])
+
+  /// Openbay service-request id and public openbay id.
+  openbayServiceRequestId String? @unique
+  openbayPublicId       String?
+
+  status                ServiceRequestStatus @default(DRAFT)
+
+  /// Service location — NOT assumed to be the member's company address
+  /// (BUILD section 13).
+  serviceZipCode        String
+  serviceCity           String?
+  serviceState          String?
+
+  /// Requested services with the Platform API interview answers, stored as
+  /// returned/submitted. DSN does not author its own interview logic
+  /// (BUILD section 12).
+  requestedServices     Json?
+  interviewAnswers      Json?
+  notes                 String?  @db.Text
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  appointments          Appointment[]
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@index([status])
+  @@map("service_requests")
+}
+
+// ============================================================
+// APPOINTMENTS
 // ============================================================
 
 model Appointment {
@@ -277,49 +455,123 @@ model Appointment {
   vehicle           Vehicle?          @relation(fields: [vehicleId], references: [id])
   fleetId           String?
   fleet             Fleet?            @relation(fields: [fleetId], references: [id])
+  serviceRequestId  String?
+  serviceRequest    ServiceRequest?   @relation(fields: [serviceRequestId], references: [id])
 
-  // Service Details
   serviceType       String
   serviceDescription String?          @db.Text
-  estimatedCost     Decimal?          @db.Decimal(10, 2)
-  finalCost         Decimal?          @db.Decimal(10, 2)
 
-  // Shop / Provider
+  /// Price the accepted offer was booked at. This is NOT a final invoiced
+  /// amount — the Platform API exposes no settlement payload (FLAGS F-6).
+  quotedPriceCents  Int?
+  finalPriceCents   Int?
+  dsnPlusSavingsCents Int?
+
   shopName          String?
   shopAddress       String?
-  shopPhone         String?
+  shopCity          String?
+  shopState         String?
   shopZipCode       String?
+  shopPhone         String?
+  shopRating        Decimal?          @db.Decimal(3, 2)
 
-  // Scheduling
-  scheduledDate     DateTime?
-  scheduledTime     String?
+  scheduledAt       DateTime?
   completedAt       DateTime?
   status            AppointmentStatus @default(PENDING)
 
-  // Openbay Integration
   openbayAppointmentId String?
-  openbayShopId        String?
-  openbayServiceId     String?
-  openbayTimeslotId    String?
+  openbayOfferId       String?
+  openbayLocationId    String?
 
-  // Notes
   customerNotes     String?           @db.Text
-  technicianNotes   String?           @db.Text
 
-  // Metadata
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
   @@index([userId])
   @@index([vehicleId])
-  @@index([fleetId])
   @@index([status])
-  @@index([scheduledDate])
+  @@index([scheduledAt])
   @@map("appointments")
 }
 
 // ============================================================
-// CONTACT / LEAD MANAGEMENT
+// REPAIR HISTORY (BUILD sections 25 and R)
+// ============================================================
+
+model RepairHistory {
+  id                String    @id @default(cuid())
+  vehicleId         String
+  vehicle           Vehicle   @relation(fields: [vehicleId], references: [id])
+
+  /// Retained even when the vehicle is removed from the fleet
+  /// (BUILD section K).
+  vin               String?
+
+  serviceDate       DateTime?
+  workPerformed     String?   @db.Text
+  facilityName      String?
+  facilityCity      String?
+  facilityState     String?
+
+  quotedPriceCents  Int?
+  finalPriceCents   Int?
+  dsnPlusSavingsCents Int?
+
+  openbayServiceRequestId String?
+  openbayAppointmentId    String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([vin])
+  @@map("repair_history")
+}
+
+// ============================================================
+// ANALYTICS (BUILD sections 37 and T)
+// ============================================================
+
+model FunnelEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  /// e.g. join_free_clicked, membership_completed, first_vehicle_added,
+  /// quote_started, dsn_plus_enrollment_completed
+  event     String
+  metadata  Json?
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("funnel_events")
+}
+
+// ============================================================
+// GOOGLE SHEET SYNC LOG (BUILD section 8, TEST L)
+// ============================================================
+
+model SheetSyncLog {
+  id          String          @id @default(cuid())
+  entityType  String
+  entityId    String
+  operation   String
+  status      SheetSyncStatus
+  attempt     Int             @default(1)
+  errorMessage String?        @db.Text
+  payload     Json?
+  createdAt   DateTime        @default(now())
+
+  @@index([entityType, entityId])
+  @@index([status])
+  @@map("sheet_sync_log")
+}
+
+// ============================================================
+// LEADS
 // ============================================================
 
 model ContactForm {
@@ -327,25 +579,21 @@ model ContactForm {
   userId      String?
   user        User?             @relation(fields: [userId], references: [id])
 
-  // Contact Details
   firstName   String
   lastName    String
   email       String
   phone       String?
   company     String?
 
-  // Inquiry
   subject     String
   message     String            @db.Text
-  inquiryType String?           // general, membership, fleet, partnership, support
+  inquiryType String?
 
-  // Status
   status      ContactFormStatus @default(NEW)
   assignedTo  String?
   resolvedAt  DateTime?
   notes       String?           @db.Text
 
-  // Metadata
   ipAddress   String?
   userAgent   String?           @db.Text
   createdAt   DateTime          @default(now())
@@ -356,33 +604,25 @@ model ContactForm {
   @@map("contact_forms")
 }
 
-// ============================================================
-// FINANCING INQUIRIES (Phase 3)
-// ============================================================
-
 model FinancingInquiry {
   id            String   @id @default(cuid())
   userId        String?
   user          User?    @relation(fields: [userId], references: [id])
 
-  // Contact
   firstName     String
   lastName      String
   email         String
   phone         String?
   company       String?
 
-  // Financing Details
-  fleetSize     String?  // e.g. "1-5", "6-20", "21-50", "50+"
-  financingNeed String?  // e.g. "repair", "maintenance", "commercial", "other"
+  fleetSize     String?
+  financingNeed String?
   estimatedAmount Decimal? @db.Decimal(10, 2)
   notes         String?  @db.Text
 
-  // Status
-  status        String   @default("NEW") // NEW, CONTACTED, QUALIFIED, DECLINED
+  status        String   @default("NEW")
   assignedTo    String?
 
-  // Metadata
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -392,7 +632,7 @@ model FinancingInquiry {
 }
 
 // ============================================================
-// SERVICE CATALOG (cached from Openbay)
+// SERVICE CATALOG CACHE (from the Platform API)
 // ============================================================
 
 model ServiceCategory {
@@ -403,6 +643,7 @@ model ServiceCategory {
   iconName    String?
   sortOrder   Int       @default(0)
   isActive    Boolean   @default(true)
+  openbayCategoryId Int? @unique
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -416,14 +657,10 @@ model Service {
   categoryId      String
   category        ServiceCategory @relation(fields: [categoryId], references: [id])
 
-  // Service Details
   name            String
   description     String?         @db.Text
   openbayServiceId Int?           @unique
-
-  // Pricing (estimated ranges)
-  priceMin        Decimal?        @db.Decimal(10, 2)
-  priceMax        Decimal?        @db.Decimal(10, 2)
+  autoquotable    Boolean         @default(false)
 
   isActive        Boolean         @default(true)
   createdAt       DateTime        @default(now())

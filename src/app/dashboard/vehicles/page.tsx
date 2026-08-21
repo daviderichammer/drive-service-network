@@ -1,387 +1,94 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Car,
-  Plus,
-  Trash2,
-  Edit2,
-  Calendar,
-  CheckCircle2,
-  X,
-  Loader2,
-} from "lucide-react";
+import { redirect } from "next/navigation";
+import { Car, Plus } from "lucide-react";
+import type { Metadata } from "next";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/Button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { VehicleCard } from "@/components/vehicles/VehicleCard";
 
-interface Vehicle {
-  id: string;
-  year: number;
-  make: string;
-  model: string;
-  trim?: string | null;
-  vin?: string | null;
-  licensePlate?: string | null;
-  color?: string | null;
-  mileage?: number | null;
-  nickname?: string | null;
-  fuelType?: string | null;
-  status: string;
-  createdAt: string;
-}
+export const metadata: Metadata = {
+  title: "My Vehicles | Drive Service Network",
+};
 
-const vehicleSchema = z.object({
-  year: z.coerce.number().int().min(1900).max(new Date().getFullYear() + 2),
-  make: z.string().min(1, "Make is required"),
-  model: z.string().min(1, "Model is required"),
-  trim: z.string().optional(),
-  vin: z.string().optional(),
-  licensePlate: z.string().optional(),
-  color: z.string().optional(),
-  mileage: z.coerce.number().int().optional().or(z.literal("")),
-  nickname: z.string().optional(),
-  fuelType: z.string().optional(),
-  transmission: z.string().optional(),
-});
+export const dynamic = "force-dynamic";
 
-type VehicleFormData = z.infer<typeof vehicleSchema>;
+export default async function VehiclesPage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/auth/login?callbackUrl=/dashboard/vehicles");
+  }
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 35 }, (_, i) => currentYear + 1 - i);
-
-export default function VehiclesPage() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<VehicleFormData>({
-    resolver: zodResolver(vehicleSchema),
-    defaultValues: { year: currentYear },
+  const vehicles = await prisma.vehicle.findMany({
+    where: { userId: session.user.id, status: { not: "REMOVED" } },
+    orderBy: { createdAt: "desc" },
   });
 
-  const fetchVehicles = async () => {
-    try {
-      const res = await fetch("/api/dashboard/vehicles");
-      const data = await res.json();
-      setVehicles(data.vehicles || []);
-    } catch {
-      setError("Failed to load vehicles");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchVehicles();
-  }, []);
-
-  const onSubmit = async (data: VehicleFormData) => {
-    setSubmitting(true);
-    setError(null);
-    try {
-      const payload = {
-        ...data,
-        mileage: data.mileage === "" ? undefined : Number(data.mileage),
-      };
-      const res = await fetch("/api/dashboard/vehicles", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        setError(err.error || "Failed to add vehicle");
-        return;
-      }
-      setSuccess(true);
-      reset({ year: currentYear });
-      setTimeout(() => {
-        setSuccess(false);
-        setShowForm(false);
-        fetchVehicles();
-      }, 1500);
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const removeVehicle = async (id: string) => {
-    if (!confirm("Remove this vehicle from your account?")) return;
-    try {
-      await fetch(`/api/dashboard/vehicles/${id}`, { method: "DELETE" });
-      setVehicles((prev) => prev.filter((v) => v.id !== id));
-    } catch {
-      setError("Failed to remove vehicle");
-    }
-  };
+  const enrolled = vehicles.filter((v) => v.programStatus === "DSN_PLUS").length;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div>
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-montserrat font-bold text-navy text-2xl">My Vehicles</h1>
-          <p className="font-opensans text-gray-500 text-sm mt-1">
-            Manage your registered vehicles and track service history
+          <h1 className="font-montserrat text-2xl font-bold text-navy md:text-3xl">
+            My Vehicles
+          </h1>
+          <p className="mt-1.5 font-opensans text-sm text-gray-500">
+            {vehicles.length === 0
+              ? "Add a vehicle to unlock pricing and booking."
+              : `${vehicles.length} vehicle${vehicles.length === 1 ? "" : "s"} registered · ${enrolled} enrolled in the discount program`}
           </p>
         </div>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => setShowForm(!showForm)}
-          leftIcon={showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-        >
-          {showForm ? "Cancel" : "Add Vehicle"}
+        <Button variant="gold" asChild>
+          <Link href="/dashboard/vehicles/new">
+            <Plus className="h-4 w-4" />
+            <span className="ml-1.5">Add Vehicle</span>
+          </Link>
         </Button>
       </div>
 
-      {/* Add Vehicle Form */}
-      {showForm && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-6">
-          <h2 className="font-montserrat font-bold text-navy text-lg mb-5">Add New Vehicle</h2>
-
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="font-opensans text-sm text-red-700">{error}</p>
-            </div>
-          )}
-
-          {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-600" />
-              <p className="font-opensans text-sm text-green-700">Vehicle added successfully!</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Year *</label>
-                <select
-                  {...register("year")}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                >
-                  {years.map((y) => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
-                {errors.year && <p className="mt-1 font-opensans text-xs text-red-600">{errors.year.message}</p>}
-              </div>
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Make *</label>
-                <input
-                  type="text"
-                  {...register("make")}
-                  placeholder="e.g. Ford"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-                {errors.make && <p className="mt-1 font-opensans text-xs text-red-600">{errors.make.message}</p>}
-              </div>
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Model *</label>
-                <input
-                  type="text"
-                  {...register("model")}
-                  placeholder="e.g. F-150"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-                {errors.model && <p className="mt-1 font-opensans text-xs text-red-600">{errors.model.message}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Trim</label>
-                <input
-                  type="text"
-                  {...register("trim")}
-                  placeholder="e.g. XLT"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-              </div>
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Nickname</label>
-                <input
-                  type="text"
-                  {...register("nickname")}
-                  placeholder="e.g. Turo Unit 1"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">VIN</label>
-                <input
-                  type="text"
-                  {...register("vin")}
-                  placeholder="17-character VIN"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-              </div>
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">License Plate</label>
-                <input
-                  type="text"
-                  {...register("licensePlate")}
-                  placeholder="ABC-1234"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-              </div>
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Current Mileage</label>
-                <input
-                  type="number"
-                  {...register("mileage")}
-                  placeholder="e.g. 45000"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Color</label>
-                <input
-                  type="text"
-                  {...register("color")}
-                  placeholder="e.g. White"
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                />
-              </div>
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Fuel Type</label>
-                <select
-                  {...register("fuelType")}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                >
-                  <option value="">Select...</option>
-                  <option value="Gasoline">Gasoline</option>
-                  <option value="Diesel">Diesel</option>
-                  <option value="Electric">Electric</option>
-                  <option value="Hybrid">Hybrid</option>
-                  <option value="Plug-in Hybrid">Plug-in Hybrid</option>
-                  <option value="CNG">CNG</option>
-                </select>
-              </div>
-              <div>
-                <label className="block font-opensans text-sm font-medium text-navy mb-1.5">Transmission</label>
-                <select
-                  {...register("transmission")}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 font-opensans text-sm text-navy focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal"
-                >
-                  <option value="">Select...</option>
-                  <option value="Automatic">Automatic</option>
-                  <option value="Manual">Manual</option>
-                  <option value="CVT">CVT</option>
-                  <option value="DCT">DCT</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <Button type="submit" variant="primary" size="md" loading={submitting}>
-                {submitting ? "Adding..." : "Add Vehicle"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="md"
-                onClick={() => { setShowForm(false); reset(); setError(null); }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Vehicles List */}
-      {loading ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-12 flex items-center justify-center">
-          <Loader2 className="w-6 h-6 text-teal animate-spin" />
-        </div>
-      ) : vehicles.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-12 text-center">
-          <Car className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-          <h3 className="font-montserrat font-bold text-navy text-lg mb-2">
-            No vehicles registered
-          </h3>
-          <p className="font-opensans text-gray-400 text-sm mb-6 max-w-sm mx-auto">
-            Add your vehicles to track service history, get maintenance reminders, and access commercial pricing.
+      {vehicles.length === 0 ? (
+        <div className="mt-8 rounded-2xl border-2 border-dashed border-gray-200 bg-white px-6 py-16 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-navy/5">
+            <Car className="h-7 w-7 text-navy/40" />
+          </div>
+          <h2 className="mt-5 font-montserrat text-lg font-bold text-navy">
+            No vehicles yet
+          </h2>
+          <p className="mx-auto mt-2 max-w-md font-opensans text-sm leading-relaxed text-gray-500">
+            Every quote and booking on Drive Service Network is tied to a specific
+            vehicle, so that pricing, parts and service history stay accurate for each
+            unit you operate.
           </p>
-          <Button variant="primary" size="md" onClick={() => setShowForm(true)} leftIcon={<Plus className="w-4 h-4" />}>
-            Add Your First Vehicle
-          </Button>
+          <div className="mt-6">
+            <Button variant="gold" asChild>
+              <Link href="/dashboard/vehicles/new">
+                <Plus className="h-4 w-4" />
+                <span className="ml-1.5">Add Your First Vehicle</span>
+              </Link>
+            </Button>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
           {vehicles.map((vehicle) => (
-            <div
+            <VehicleCard
               key={vehicle.id}
-              className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 hover:border-teal/30 transition-all duration-200"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 bg-navy/5 rounded-xl flex items-center justify-center">
-                    <Car className="w-5 h-5 text-navy/60" />
-                  </div>
-                  <div>
-                    <h3 className="font-montserrat font-bold text-navy text-base">
-                      {vehicle.year} {vehicle.make} {vehicle.model}
-                    </h3>
-                    {vehicle.nickname && (
-                      <p className="font-opensans text-teal text-xs font-medium">{vehicle.nickname}</p>
-                    )}
-                  </div>
-                </div>
-                <button
-                  onClick={() => removeVehicle(vehicle.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Remove vehicle"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs font-opensans text-gray-500 mb-4">
-                {vehicle.trim && <span>Trim: {vehicle.trim}</span>}
-                {vehicle.color && <span>Color: {vehicle.color}</span>}
-                {vehicle.mileage && <span>Mileage: {vehicle.mileage.toLocaleString()}</span>}
-                {vehicle.fuelType && <span>Fuel: {vehicle.fuelType}</span>}
-                {vehicle.licensePlate && <span>Plate: {vehicle.licensePlate}</span>}
-                {vehicle.vin && <span className="col-span-2 truncate">VIN: {vehicle.vin}</span>}
-              </div>
-
-              <div className="flex gap-2">
-                <Button variant="primary" size="sm" asChild className="flex-1">
-                  <Link href="/book">
-                    <Calendar className="w-3.5 h-3.5" />
-                    Book Service
-                  </Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild className="flex-1">
-                  <Link href="/dashboard/appointments">
-                    <Edit2 className="w-3.5 h-3.5" />
-                    History
-                  </Link>
-                </Button>
-              </div>
-            </div>
+              vehicle={{
+                id: vehicle.id,
+                year: vehicle.year,
+                make: vehicle.make,
+                model: vehicle.model,
+                trim: vehicle.trim,
+                color: vehicle.color,
+                engine: vehicle.engine,
+                vin: vehicle.vin,
+                licensePlate: vehicle.licensePlate,
+                mileage: vehicle.mileage,
+                nickname: vehicle.nickname,
+                programStatus: vehicle.programStatus,
+              }}
+            />
           ))}
         </div>
       )}

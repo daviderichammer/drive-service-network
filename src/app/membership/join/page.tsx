@@ -22,7 +22,20 @@ const DOORWAY = [
   "Monthly Drive Newsletter — new products, savings opportunities, operating ideas and industry developments.",
 ];
 
-export default function JoinPage() {
+export default async function JoinPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>;
+}) {
+  // Carries an interrupted quote intent through registration (BUILD section 6).
+  const { returnTo } = await searchParams;
+  const registerHref = returnTo
+    ? `/auth/register?returnTo=${encodeURIComponent(returnTo)}`
+    : "/auth/register";
+  const loginHref = returnTo
+    ? `/auth/login?callbackUrl=${encodeURIComponent(returnTo)}`
+    : "/auth/login";
+
   return (
     <>
       <section className="bg-gradient-hero pt-28 pb-16 md:pt-36 md:pb-20">
@@ -39,14 +52,14 @@ export default function JoinPage() {
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button variant="gold" size="lg" asChild>
-                <Link href="/auth/register">
+                <Link href={registerHref}>
                   Join Free
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <Link
-                  href="/auth/login"
+                  href={loginHref}
                   className="border-white/70 text-white hover:bg-white hover:text-navy"
                 >
                   Sign In
@@ -109,7 +122,7 @@ export default function JoinPage() {
 
             <div className="mt-8 text-center">
               <Button variant="primary" size="lg" asChild>
-                <Link href="/auth/register">
+                <Link href={registerHref}>
                   Create Your FREE Membership
                   <ArrowRight className="h-5 w-5" />
                 </Link>

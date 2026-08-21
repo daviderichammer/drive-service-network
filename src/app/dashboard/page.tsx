@@ -35,7 +35,7 @@ export default async function DashboardPage() {
 
   const [vehicles, appointments] = await Promise.all([
     prisma.vehicle.findMany({
-      where: { userId: session.user.id, status: { not: "SOLD" } },
+      where: { userId: session.user.id, status: { not: "REMOVED" } },
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
@@ -55,6 +55,9 @@ export default async function DashboardPage() {
   const completedAppointments = appointments.filter(
     (a) => a.status === "COMPLETED"
   );
+  const enrolledVehicles = vehicles.filter(
+    (v) => v.programStatus === "DSN_PLUS"
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -72,16 +75,22 @@ export default async function DashboardPage() {
           <div className="hidden sm:flex items-center gap-2 bg-white/10 rounded-xl px-4 py-2">
             <Star className="w-4 h-4 text-gold" />
             <span className="font-montserrat font-semibold text-white text-sm">
-              Drive Member
+              {session.user.membershipTier === "DSN_PLUS" ? "DSN+ Member" : "Drive Member"}
             </span>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4 mt-6">
+        {/* BUILD "Dashboard visibility" — registered vehicles and enrolled
+            vehicles are always shown as distinct counts. */}
+        <div className="grid grid-cols-2 gap-4 mt-6 sm:grid-cols-4">
           <div className="bg-white/10 rounded-xl p-4 text-center">
             <div className="font-montserrat font-bold text-2xl text-white">{vehicles.length}</div>
-            <div className="font-opensans text-white/60 text-xs mt-0.5">Vehicles</div>
+            <div className="font-opensans text-white/60 text-xs mt-0.5">Vehicles registered</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <div className="font-montserrat font-bold text-2xl text-gold">{enrolledVehicles}</div>
+            <div className="font-opensans text-white/60 text-xs mt-0.5">Enrolled in DSN+</div>
           </div>
           <div className="bg-white/10 rounded-xl p-4 text-center">
             <div className="font-montserrat font-bold text-2xl text-white">{upcomingAppointments.length}</div>
@@ -162,10 +171,10 @@ export default async function DashboardPage() {
                 No vehicles yet
               </p>
               <p className="font-opensans text-gray-400 text-xs mb-4">
-                Add your vehicles to start tracking service history
+                Add a vehicle to unlock pricing and booking
               </p>
               <Button variant="primary" size="sm" asChild>
-                <Link href="/dashboard/vehicles">
+                <Link href="/dashboard/vehicles/new">
                   <Plus className="w-4 h-4" />
                   Add Vehicle
                 </Link>
@@ -189,16 +198,16 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                   <Link
-                    href="/book"
+                    href={`/book?vehicleId=${vehicle.id}`}
                     className="font-opensans text-xs text-teal hover:text-teal-600 transition-colors"
                   >
-                    Book service
+                    Get a quote
                   </Link>
                 </div>
               ))}
               <div className="px-6 py-3">
                 <Link
-                  href="/dashboard/vehicles"
+                  href="/dashboard/vehicles/new"
                   className="flex items-center gap-2 font-opensans text-sm text-navy hover:text-teal transition-colors"
                 >
                   <Plus className="w-4 h-4" />

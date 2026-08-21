@@ -39,12 +39,13 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
     return pathname.startsWith(href);
   };
 
+  // Membership tier is FREE or DSN_PLUS only (REVAMP BUILD section J).
   const tierColors: Record<string, string> = {
-    FREE: "bg-gray-100 text-gray-600",
-    BASIC: "bg-teal/10 text-teal",
-    PROFESSIONAL: "bg-navy/10 text-navy",
-    ENTERPRISE: "bg-gold/20 text-gold-600",
+    FREE: "bg-teal/10 text-teal",
+    DSN_PLUS: "bg-gold/20 text-gold-600",
   };
+
+  const tierLabel = user.membershipTier === "DSN_PLUS" ? "DSN+ Member" : "Drive Member";
 
   return (
     <aside className="w-64 flex-shrink-0 hidden md:block">
@@ -65,7 +66,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         </div>
         <div className={cn("inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-montserrat font-bold", tierColors[user.membershipTier] || tierColors.FREE)}>
           <Star className="w-3 h-3" />
-          Drive Member
+          {tierLabel}
         </div>
       </div>
 

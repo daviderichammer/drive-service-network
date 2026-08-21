@@ -14,6 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { formatCents } from "@/lib/dsn-plus/discount";
 
 interface Appointment {
   id: string;
@@ -21,11 +22,12 @@ interface Appointment {
   serviceDescription?: string | null;
   shopName?: string | null;
   shopAddress?: string | null;
-  scheduledDate?: string | null;
-  scheduledTime?: string | null;
+  /** Offset-bearing timestamp of the booked slot. */
+  scheduledAt?: string | null;
   status: string;
-  estimatedCost?: string | null;
-  finalCost?: string | null;
+  quotedPriceCents?: number | null;
+  finalPriceCents?: number | null;
+  dsnPlusSavingsCents?: number | null;
   createdAt: string;
   vehicle?: {
     year: number;
@@ -147,9 +149,10 @@ export default function AppointmentsPage() {
             const config = statusConfig[appt.status] || statusConfig.PENDING;
             const StatusIcon = config.icon;
             return (
-              <div
+              <Link
                 key={appt.id}
-                className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 hover:border-teal/20 transition-all"
+                href={`/dashboard/appointments/${appt.id}`}
+                className="block bg-white rounded-2xl border border-gray-100 shadow-card p-5 hover:border-teal/40 transition-all"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -183,31 +186,37 @@ export default function AppointmentsPage() {
                           {appt.shopName}
                         </span>
                       )}
-                      {appt.scheduledDate && (
+                      {appt.scheduledAt && (
                         <span className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5" />
-                          {new Date(appt.scheduledDate).toLocaleDateString("en-US", {
+                          {new Date(appt.scheduledAt).toLocaleString("en-US", {
                             weekday: "short",
                             month: "short",
                             day: "numeric",
+                            hour: "numeric",
+                            minute: "2-digit",
                           })}
-                          {appt.scheduledTime && ` at ${appt.scheduledTime}`}
                         </span>
                       )}
                     </div>
                   </div>
 
                   <div className="text-right flex-shrink-0">
-                    {(appt.finalCost || appt.estimatedCost) && (
+                    {(appt.finalPriceCents || appt.quotedPriceCents) && (
                       <div>
                         <div className="font-montserrat font-bold text-navy text-base">
-                          ${Number(appt.finalCost || appt.estimatedCost).toFixed(2)}
+                          {formatCents(appt.finalPriceCents ?? appt.quotedPriceCents)}
                         </div>
                         <div className="font-opensans text-gray-400 text-xs">
-                          {appt.finalCost ? "Final" : "Estimated"}
+                          {appt.finalPriceCents ? "Final" : "Quoted"}
                         </div>
                       </div>
                     )}
+                    {appt.dsnPlusSavingsCents ? (
+                      <div className="font-opensans text-teal text-xs">
+                        saved {formatCents(appt.dsnPlusSavingsCents)}
+                      </div>
+                    ) : null}
                     <div className="font-opensans text-gray-400 text-xs mt-1">
                       {new Date(appt.createdAt).toLocaleDateString("en-US", {
                         month: "short",
@@ -217,7 +226,7 @@ export default function AppointmentsPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

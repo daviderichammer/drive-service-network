@@ -1,63 +1,51 @@
+
+!.env.development
+!.env.example
+!.env.production
+!.env.staging
+# Debug
 # Dependencies
-node_modules
+# Docker volumes
+# Environment files — NEVER commit secrets
+# IDE
+# Keep example and non-secret env files
+# Migrations ARE tracked: deploy/deploy.sh runs `prisma migrate deploy`, which
+# Misc
+# Next.js
+# OS
+# Prisma
+# Production
+# Testing
+# TypeScript
+# Vercel
+# requires the committed migration history to bring the server schema forward.
+*.log
+*.swo
+*.swp
+*.tsbuildinfo
+.DS_Store
+.cache/
+.env
+.env.development.local
+.env.local
+.env.production.local
+.env.test.local
+.idea/
+.next/
+.nyc_output/
 .pnp
 .pnp.js
-
-# Next.js
-.next/
-out/
+.vercel
+.vscode/
+Thumbs.db
 build/
-
-# Production
+coverage/
 dist/
-
-# Environment files — NEVER commit secrets
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-# Keep example and non-secret env files
-!.env.example
-!.env.development
-!.env.staging
-!.env.production
-
-# Debug
+docker/volumes/
+next-env.d.ts
+node_modules
 npm-debug.log*
+out/
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-
-# Vercel
-.vercel
-
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-
-# Testing
-coverage/
-.nyc_output/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Prisma
-# Migrations ARE tracked: deploy/deploy.sh runs `prisma migrate deploy`, which
-# requires the committed migration history to bring the server schema forward.
-
-
-# Docker volumes
-docker/volumes/
-
-# Misc
-*.log
-.cache/

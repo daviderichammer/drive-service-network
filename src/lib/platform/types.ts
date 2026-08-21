@@ -284,6 +284,147 @@ export interface PlatformAppointmentSlot {
   key: string;
   day: string;
   slotTitle: string;
+  /** Offset-bearing ISO-8601 timestamp for the slot, e.g. 2026-08-24T09:00:00.000-04:00 */
+  proposedTime?: string;
+  /** Human-readable full title, e.g. "Monday Aug 24 at 9:00am". */
+  fullSlotTitle?: string;
+}
+
+// ============================================================
+// STANDALONE APPOINTMENTS
+//
+// VERIFIED 2026-08-21: POST /appointments/v2/appointments returns 201 for
+// Partner 116, unlike service-request generation (FLAG F-1, still 403). This
+// is therefore DSN's real, working booking path.
+//
+// CRITICAL: every appointments endpoint keys on the location's PUBLIC SLUG
+// (`openbay_id`, e.g. "m8-3ww"), never the numeric locations/v2 id. Passing the
+// numeric id yields 422 "could not find location".
+// ============================================================
+
+export type PlatformAppointmentType = "service" | "collision" | "car_wash" | "glass";
+
+export interface PlatformCreateAppointmentRequest {
+  /** Required for API-key callers. */
+  userId: number;
+  /** The location's public openbay_id slug. */
+  locationId: string;
+  /** Owned-vehicle id; overrides the loose vehicle fields. */
+  vehicleId?: number;
+  /** Offset-bearing ISO-8601, e.g. 2026-08-24T09:00:00-04:00 */
+  scheduledTime: string;
+  appointmentType: PlatformAppointmentType;
+  phoneNumber?: string;
+  services?: number[];
+  notes?: string;
+  vehicleYear?: number;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleEngine?: string;
+  vehicleTrim?: string;
+  vehicleVin?: string;
+  vehicleMileage?: number;
+}
+
+export interface PlatformCreatedAppointment {
+  id: number;
+  appointmentStatus: string;
+}
+
+export interface PlatformAppointmentService {
+  id: number;
+  name: string;
+}
+
+export interface PlatformAppointment {
+  id: number;
+  location_id: string;
+  source?: string;
+  scheduled_at: string;
+  created_at: string;
+  confirmed_at: string | null;
+  services: PlatformAppointmentService[];
+  notes: string | null;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  vehicle_year?: number | null;
+  vehicle_make?: string | null;
+  vehicle_model?: string | null;
+  vehicle_engine?: string | null;
+  vehicle_trim?: string | null;
+  vehicle_vin?: string | null;
+  vehicle_mileage?: number | null;
+  user_id?: number;
+  appointment_status: string;
+  appointment_type: string;
+  location_name?: string;
+  company_name?: string;
+  location_address_1?: string;
+  location_city?: string;
+  location_state?: string;
+  location_zipcode?: string;
+}
+
+export interface PlatformAppointmentListResponse {
+  data: PlatformAppointment[];
+  pagination?: unknown;
+}
+
+/** A facility returned by /locations/v2/search/by-time-slot. */
+export interface PlatformTimeSlotLocation {
+  name: string;
+  address_1: string;
+  address_2: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  latitude: number;
+  longitude: number;
+  place_id?: string;
+  openbay_id: string;
+  amenities: string[];
+  certifications: string[];
+  review_rating: number;
+  review_count: number;
+  franchise: boolean;
+  labor_rate?: number | null;
+  monday?: PlatformDayHours;
+  tuesday?: PlatformDayHours;
+  wednesday?: PlatformDayHours;
+  thursday?: PlatformDayHours;
+  friday?: PlatformDayHours;
+  saturday?: PlatformDayHours;
+  sunday?: PlatformDayHours;
+}
+
+export interface PlatformTimeSlotSearchResponse {
+  total: number;
+  radius: number;
+  zipcode: string;
+  timeSlot: string;
+  locationType: string;
+  locations: PlatformTimeSlotLocation[];
+}
+
+/** A service with the shop abilities it requires (services/catalog). */
+export interface PlatformServiceAbility {
+  id: number;
+  name: string;
+  category_full_name?: string;
+  category_name?: string;
+}
+
+export interface PlatformCatalogService {
+  id: number;
+  name: string;
+  category?: string;
+  ability_requirements: PlatformServiceAbility[];
+}
+
+export interface PlatformServiceCatalogResponse {
+  services: PlatformCatalogService[];
 }
 
 // ============================================================
@@ -348,6 +489,20 @@ export interface PlatformLocationDetail {
   top_services: string[];
   service_ids: number[];
   warranty_overview: string;
+  /** Present on franchise locations; falls back for independent shops. */
+  national_about_us?: string | null;
+  national_warranty_overview?: string | null;
+  warranty_highlights?: string[];
+  business_highlights_list?: string[];
+  header_image?: string | null;
+  logo_image?: string | null;
+  images?: string[];
+  /** Spelled this way upstream. */
+  poayment_methods?: string[];
+  top_vehicles?: string[];
+  facebook_url?: string | null;
+  twitter_url?: string | null;
+  country_code?: string;
   monday?: PlatformDayHours;
   tuesday?: PlatformDayHours;
   wednesday?: PlatformDayHours;

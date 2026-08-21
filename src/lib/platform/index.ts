@@ -155,3 +155,57 @@ export function findSelectionNode(
 export function isTerminalNode(node: ServiceSelectionNode): boolean {
   return node.children.length === 0 || node.question === null;
 }
+
+// ============================================================
+// FACILITY HELPERS (Priority 2)
+// ============================================================
+
+/**
+ * Resolves the public `openbay_id` slug for a numeric location id.
+ *
+ * Every appointments endpoint keys on the slug; the search and detail
+ * endpoints expose the numeric id. Passing the numeric id to appointments
+ * returns 422 "could not find location", so this translation is mandatory.
+ */
+export async function resolveLocationSlug(locationId: number): Promise<string | null> {
+  try {
+    const detail = await getPlatformClient().getLocation(locationId);
+    return detail.openbay_id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Metres to miles, rounded to one decimal, for facility distance display. */
+export function metresToMiles(metres: number): number {
+  return Math.round((metres / 1609.344) * 10) / 10;
+}
+
+/**
+ * Groups flat slot records by calendar day so the booking calendar can render
+ * a day picker followed by the times available on that day.
+ */
+export function groupSlotsByDay(
+  slots: Array<{ day: string; key: string; slotTitle: string; proposedTime?: string; fullSlotTitle?: string }>
+): Array<{
+  day: string;
+  slots: Array<{ key: string; slotTitle: string; proposedTime?: string; fullSlotTitle?: string }>;
+}> {
+  const byDay = new Map<
+    string,
+    Array<{ key: string; slotTitle: string; proposedTime?: string; fullSlotTitle?: string }>
+  >();
+  for (const slot of slots) {
+    const bucket = byDay.get(slot.day) ?? [];
+    bucket.push({
+      key: slot.key,
+      slotTitle: slot.slotTitle?.trim() || "Early drop off",
+      proposedTime: slot.proposedTime,
+      fullSlotTitle: slot.fullSlotTitle,
+    });
+    byDay.set(slot.day, bucket);
+  }
+  return Array.from(byDay.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([day, daySlots]) => ({ day, slots: daySlots }));
+}

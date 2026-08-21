@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowRight, CheckCircle2, Percent } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Join Free — Create Your FREE Drive Membership",
@@ -25,10 +27,28 @@ const DOORWAY = [
 export default async function JoinPage({
   searchParams,
 }: {
-  searchParams: Promise<{ returnTo?: string }>;
+  searchParams: Promise<{ returnTo?: string; plan?: string; vehicleId?: string }>;
 }) {
   // Carries an interrupted quote intent through registration (BUILD section 6).
-  const { returnTo } = await searchParams;
+  const { returnTo, plan, vehicleId } = await searchParams;
+
+  // A DSN+ call to action from inside the booking workflow belongs on the
+  // enrolment page, not the free-membership page. Signed-out visitors are sent
+  // to register first and land there afterwards, so the intent is never lost.
+  if (plan === "dsn-plus") {
+    const session = await auth();
+    const target = new URLSearchParams();
+    if (vehicleId) target.set("vehicleId", vehicleId);
+    if (returnTo) target.set("returnTo", returnTo);
+    const enrollPath = `/membership/dsn-plus${
+      target.size > 0 ? `?${target.toString()}` : ""
+    }`;
+    redirect(
+      session?.user?.id
+        ? enrollPath
+        : `/auth/register?returnTo=${encodeURIComponent(enrollPath)}`
+    );
+  }
   const registerHref = returnTo
     ? `/auth/register?returnTo=${encodeURIComponent(returnTo)}`
     : "/auth/register";
@@ -104,13 +124,22 @@ export default async function JoinPage({
                 participating vehicle repairs and services. Membership is free; the
                 nationwide discount program is a separate optional subscription.
               </p>
-              <Link
-                href="/discount-program-faq"
-                className="mt-4 inline-flex items-center gap-1.5 font-montserrat text-sm font-semibold text-teal hover:underline"
-              >
-                See the DSN Discount Program FAQ
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+              <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+                <Link
+                  href="/membership/dsn-plus"
+                  className="inline-flex items-center gap-1.5 font-montserrat text-sm font-bold text-navy hover:underline"
+                >
+                  Enroll a vehicle in DSN+
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  href="/discount-program-faq"
+                  className="inline-flex items-center gap-1.5 font-montserrat text-sm font-semibold text-teal hover:underline"
+                >
+                  See the DSN Discount Program FAQ
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
             </div>
 
             <p className="mt-8 text-center font-opensans text-sm leading-relaxed text-gray-500">

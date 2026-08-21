@@ -170,6 +170,17 @@
     text-wrap: balance;
   }
 
+  /* Horizontal pickers (service categories, appointment day selector) scroll
+     without a visible scrollbar, which matters most on touch devices. */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .animation-delay-100 {
     animation-delay: 100ms;
   }

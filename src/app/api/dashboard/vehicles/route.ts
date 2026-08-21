@@ -35,6 +35,7 @@ export async function GET() {
       trim: true,
       mileage: true,
       nickname: true,
+      zipCode: true,
       status: true,
       programStatus: true,
       openbayVehicleId: true,

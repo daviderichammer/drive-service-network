@@ -117,6 +117,38 @@ enum ContactFormStatus {
   SPAM
 }
 
+/// Direction of a facility conversation message (BUILD section 25).
+/// The Platform API publishes no messaging surface (FLAG F-7), so Drive
+/// Service Network operates the conversation itself and relays to the facility.
+enum MessageDirection {
+  MEMBER_TO_FACILITY
+  FACILITY_TO_MEMBER
+  DSN_TO_MEMBER
+}
+
+enum MessageThreadStatus {
+  OPEN
+  AWAITING_FACILITY
+  AWAITING_MEMBER
+  CLOSED
+}
+
+/// Support conversations that are not tied to a specific facility.
+enum SupportTicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_ON_MEMBER
+  RESOLVED
+  CLOSED
+}
+
+enum SupportTicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
 /// Google Sheet mirror state (BUILD section 8, TEST L).
 enum SheetSyncStatus {
   PENDING
@@ -189,6 +221,8 @@ model User {
   sessions          Session[]
   financingInquiries FinancingInquiry[]
   funnelEvents      FunnelEvent[]
+  messageThreads    MessageThread[]
+  supportTickets    SupportTicket[]
 
   @@index([email])
   @@index([openbayUserId])
@@ -269,6 +303,11 @@ model Vehicle {
   mileage       Int?
   nickname      String?
 
+  /// Where the vehicle is based. Openbay requires it when the vehicle is
+  /// created, and DSN reuses it as the default service-search location so the
+  /// member is not asked for the same ZIP twice (BUILD sections 9 and 13).
+  zipCode       String?
+
   /// Openbay owned-vehicle id and resolved Edmunds style.
   openbayVehicleId String?    @unique
   openbayStyleId   Int?
@@ -289,6 +328,8 @@ model Vehicle {
   serviceRequests ServiceRequest[]
   enrollments     VehicleEnrollment[]
   repairHistory   RepairHistory[]
+  messageThreads  MessageThread[]
+  recalls         VehicleRecall[]
 
   @@unique([userId, vin], name: "vehicle_member_vin")
   @@index([userId])
@@ -488,6 +529,8 @@ model Appointment {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
+  messageThreads    MessageThread[]
+
   @@index([userId])
   @@index([vehicleId])
   @@index([status])
@@ -527,6 +570,151 @@ model RepairHistory {
   @@index([vehicleId])
   @@index([vin])
   @@map("repair_history")
+}
+
+// ============================================================
+// FACILITY MESSAGING (BUILD section 25)
+//
+// FLAG F-7: the Openbay Platform API publishes no messaging endpoints — the
+// full 41-path specification was audited and contains none. Drive Service
+// Network therefore owns the conversation itself: the member writes to the
+// facility through DSN, and DSN relays and records the exchange. This keeps
+// the member inside the DSN brand and preserves the record in DSN's own
+// system, which is the system of record (BUILD section 8).
+// ============================================================
+
+model MessageThread {
+  id            String              @id @default(cuid())
+  userId        String
+  user          User                @relation(fields: [userId], references: [id])
+  vehicleId     String?
+  vehicle       Vehicle?            @relation(fields: [vehicleId], references: [id])
+  appointmentId String?
+  appointment   Appointment?        @relation(fields: [appointmentId], references: [id])
+
+  subject       String
+  /// Facility identity captured at the time of writing, so the thread remains
+  /// readable even if the facility later leaves the network.
+  facilityName  String?
+  facilitySlug  String?
+  facilityPhone String?
+
+  status        MessageThreadStatus @default(OPEN)
+  lastMessageAt DateTime            @default(now())
+  unreadForMember Int               @default(0)
+
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  messages      Message[]
+
+  @@index([userId])
+  @@index([appointmentId])
+  @@index([status])
+  @@index([lastMessageAt])
+  @@map("message_threads")
+}
+
+model Message {
+  id         String           @id @default(cuid())
+  threadId   String
+  thread     MessageThread    @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  direction  MessageDirection
+  body       String           @db.Text
+  /// Display name of the author as the member should see it.
+  authorName String?
+  readAt     DateTime?
+
+  createdAt  DateTime         @default(now())
+
+  @@index([threadId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+// ============================================================
+// SUPPORT (BUILD section 26)
+// ============================================================
+
+model SupportTicket {
+  id          String                @id @default(cuid())
+  userId      String
+  user        User                  @relation(fields: [userId], references: [id])
+
+  subject     String
+  category    String?
+  status      SupportTicketStatus   @default(OPEN)
+  priority    SupportTicketPriority @default(NORMAL)
+
+  /// Context the member was in when they asked for help, so the DSN team does
+  /// not have to ask them to repeat it.
+  relatedAppointmentId String?
+  relatedVehicleId     String?
+
+  lastMessageAt DateTime            @default(now())
+  resolvedAt    DateTime?
+
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  messages    SupportMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id         String        @id @default(cuid())
+  ticketId   String
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  fromMember Boolean       @default(true)
+  authorName String?
+  body       String        @db.Text
+  readAt     DateTime?
+
+  createdAt  DateTime      @default(now())
+
+  @@index([ticketId])
+  @@map("support_messages")
+}
+
+// ============================================================
+// SAFETY RECALLS (BUILD section 24)
+//
+// FLAG: the Platform API exposes no recall data. DSN sources open recalls from
+// the U.S. National Highway Traffic Safety Administration, the authoritative
+// public record, and caches the result per vehicle so the dashboard is fast and
+// the member is not exposed to an upstream outage.
+// ============================================================
+
+model VehicleRecall {
+  id              String   @id @default(cuid())
+  vehicleId       String
+  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  /// NHTSA campaign number — the stable public identifier for the recall.
+  campaignNumber  String
+  component       String?  @db.Text
+  summary         String?  @db.Text
+  consequence     String?  @db.Text
+  remedy          String?  @db.Text
+  manufacturer    String?
+  reportReceivedDate DateTime?
+
+  /// Member-managed acknowledgement. DSN never asserts that a recall has been
+  /// performed; only the member or the facility can say that.
+  acknowledgedAt  DateTime?
+
+  fetchedAt       DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([vehicleId, campaignNumber])
+  @@index([vehicleId])
+  @@map("vehicle_recalls")
 }
 
 // ============================================================

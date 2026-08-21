@@ -14,7 +14,7 @@ set -euo pipefail
 APP_DIR="${APP_DIR:-/opt/drive-service-network}"
 BRANCH="${BRANCH:-main}"
 SERVICE="driveservicenetwork"
-ENV_FILE="${APP_DIR}/.env.production"
+ENV_FILE="${ENV_FILE:-/etc/dsn/production.env}"
 
 say() { printf '\n\033[1;36m==> %s\033[0m\n' "$1"; }
 die() { printf '\n\033[1;31mERROR: %s\033[0m\n' "$1" >&2; exit 1; }
@@ -70,7 +70,7 @@ systemctl --no-pager --lines=15 status "$SERVICE" || true
 
 say "Health check"
 PORT_NUM="$(grep -oP '(?<=^PORT=)\d+' "$ENV_FILE" || echo 3049)"
-if curl -fsS --max-time 15 "http://127.0.0.1:${PORT_NUM}/api/platform/health?probe=shallow" >/dev/null; then
+if curl -fsS --max-time 20 -H "x-dsn-internal-secret: ${INTERNAL_API_SECRET}" "http://127.0.0.1:${PORT_NUM}/api/platform/health" >/dev/null; then
   echo "Application is responding on port ${PORT_NUM}."
 else
   die "Health endpoint did not respond. Check: journalctl -u ${SERVICE} -n 100"

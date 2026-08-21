@@ -14,6 +14,11 @@ import {
   Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { getMembershipSnapshot } from "@/lib/dsn-plus/enrollment";
+import {
+  DSN_PLUS_DISCOUNT_LABEL,
+  formatCents,
+} from "@/lib/dsn-plus/discount";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -59,6 +64,11 @@ export default async function DashboardPage() {
     (v) => v.programStatus === "DSN_PLUS"
   ).length;
 
+  // P3 membership tracking. Savings are only ever reported from prices that
+  // were actually recorded against an appointment — never estimated.
+  const snapshot = await getMembershipSnapshot(session.user.id);
+  const unenrolled = vehicles.filter((v) => v.programStatus !== "DSN_PLUS");
+
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
@@ -101,6 +111,18 @@ export default async function DashboardPage() {
             <div className="font-opensans text-white/60 text-xs mt-0.5">Completed</div>
           </div>
         </div>
+
+        {/* Realised DSN+ savings, shown only when there are real savings to
+            report (BUILD sections G and I). */}
+        {snapshot.lifetimeSavingsCents > 0 && (
+          <p className="mt-4 font-opensans text-sm text-white/70">
+            You have saved{" "}
+            <span className="font-montserrat font-bold text-gold">
+              {formatCents(snapshot.lifetimeSavingsCents)}
+            </span>{" "}
+            with DSN+ so far.
+          </p>
+        )}
       </div>
 
       {/* Quick Actions */}
@@ -292,25 +314,51 @@ export default async function DashboardPage() {
       </div>
 
       {/* CHANGE 003-B / 011-C — membership is free; the nationwide discount
-          program is a separate optional subscription. */}
-      {session.user.membershipTier === "FREE" && (
-        <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-6 flex items-center justify-between gap-4">
+          program is a separate optional subscription.
+
+          P3: the call to action is per vehicle, because enrolment is per
+          vehicle. A member who has enrolled one of three vehicles still sees
+          this, addressed to the two that are not covered. */}
+      {unenrolled.length > 0 && (
+        <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="font-montserrat font-bold text-white text-base mb-1">
-              Save Up to 25% on Vehicle Service &amp; Repairs
+              {enrolledVehicles > 0
+                ? `${unenrolled.length} of your vehicles ${unenrolled.length === 1 ? "is" : "are"} not covered by DSN+`
+                : `Save ${DSN_PLUS_DISCOUNT_LABEL} on Vehicle Service & Repairs`}
             </h3>
             <p className="font-opensans text-white/70 text-sm">
-              Your Drive Membership is free. You may also subscribe to the optional
-              nationwide DSN discount program offering savings of up to 25% on
-              participating vehicle repairs and services.
+              Your Drive Membership is free. DSN+ is an optional subscription that
+              takes {DSN_PLUS_DISCOUNT_LABEL} off every service, and it attaches to the
+              vehicle rather than the account.
+              {snapshot.forgoneSavingsCents > 0 && (
+                <>
+                  {" "}
+                  On the work you have already booked, DSN+ would have saved you{" "}
+                  <span className="font-semibold text-gold">
+                    {formatCents(snapshot.forgoneSavingsCents)}
+                  </span>
+                  .
+                </>
+              )}
             </p>
           </div>
-          <Button variant="gold" size="md" asChild className="flex-shrink-0">
-            <Link href="/discount-program-faq">
-              Learn More
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </Button>
+          <div className="flex flex-shrink-0 flex-wrap gap-3">
+            <Button variant="gold" size="md" asChild>
+              <Link href="/membership/dsn-plus">
+                Enroll a vehicle
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="md" asChild>
+              <Link
+                href="/discount-program-faq"
+                className="border-white/60 text-white hover:bg-white hover:text-navy"
+              >
+                Learn More
+              </Link>
+            </Button>
+          </div>
         </div>
       )}
     </div>

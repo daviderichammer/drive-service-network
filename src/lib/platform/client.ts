@@ -22,8 +22,14 @@ import type {
   CatalogSubModel,
   CatalogTrim,
   CatalogYear,
+  PlatformAppointment,
+  PlatformAppointmentListResponse,
   PlatformAppointmentSlot,
   PlatformApiError,
+  PlatformCreateAppointmentRequest,
+  PlatformCreatedAppointment,
+  PlatformServiceCatalogResponse,
+  PlatformTimeSlotSearchResponse,
   PlatformCreateServiceRequest,
   PlatformCreateUserRequest,
   PlatformCreateUserResponse,
@@ -363,6 +369,96 @@ class PlatformApiClient {
 
   getLocation(locationId: number): Promise<PlatformLocationDetail> {
     return this.request("GET", `/locations/v2/${locationId}`);
+  }
+
+  /**
+   * Facilities that are open at a specific time. Returns operating hours,
+   * amenities, certifications and review data, plus the openbay_id slug that
+   * the appointments endpoints require.
+   */
+  searchLocationsByTimeSlot(params: {
+    zipcode: string;
+    radius?: number;
+    /** Offset-bearing ISO-8601, e.g. 2026-08-24T09:00:00-04:00 */
+    timeSlot: string;
+    locationType?: string;
+  }): Promise<PlatformTimeSlotSearchResponse> {
+    return this.request("GET", "/locations/v2/search/by-time-slot", {
+      query: {
+        zipcode: params.zipcode,
+        radius: params.radius ?? 20,
+        timeSlot: params.timeSlot,
+        locationType: params.locationType ?? "oil",
+      },
+    });
+  }
+
+  // ============================================================
+  // STANDALONE APPOINTMENTS — DSN'S WORKING BOOKING PATH
+  //
+  // Verified live 2026-08-21: creation returns 201 "confirmed" for Partner 116
+  // even though service-request generation is refused (FLAG F-1). All of these
+  // take the location's public openbay_id SLUG, not the numeric id.
+  // ============================================================
+
+  /** Real bookable availability for a facility, up to 14 days ahead. */
+  getLocationSlots(
+    locationSlug: string,
+    numberOfDays = 14
+  ): Promise<PlatformAppointmentSlot[]> {
+    return this.request("GET", "/appointments/v2/appointments/slots", {
+      query: { locationId: locationSlug, numberOfDays },
+    });
+  }
+
+  /** Public (unauthenticated-equivalent) slot lookup — same shape. */
+  getPublicLocationSlots(locationSlug: string): Promise<PlatformAppointmentSlot[]> {
+    return this.request(
+      "GET",
+      `/appointments/v2/public/locations/${encodeURIComponent(locationSlug)}/slots`
+    );
+  }
+
+  createAppointment(
+    body: PlatformCreateAppointmentRequest
+  ): Promise<PlatformCreatedAppointment> {
+    return this.request("POST", "/appointments/v2/appointments", { body });
+  }
+
+  getAppointment(appointmentId: number): Promise<PlatformAppointment> {
+    return this.request("GET", `/appointments/v2/appointments/${appointmentId}`);
+  }
+
+  listAppointments(query: {
+    skip?: number;
+    take?: number;
+    filter?: string;
+  } = {}): Promise<PlatformAppointmentListResponse> {
+    return this.request("GET", "/appointments/v2/appointments", {
+      query: {
+        skip: query.skip ?? 0,
+        take: query.take ?? 20,
+        ...(query.filter ? { filter: query.filter } : {}),
+      },
+    });
+  }
+
+  rescheduleAppointment(
+    appointmentId: number,
+    scheduledTime: string
+  ): Promise<unknown> {
+    return this.request("PUT", `/appointments/v2/appointments/${appointmentId}`, {
+      body: { scheduledTime },
+    });
+  }
+
+  cancelAppointment(appointmentId: number): Promise<unknown> {
+    return this.request("DELETE", `/appointments/v2/appointments/${appointmentId}`);
+  }
+
+  /** Services with the shop abilities each one requires. */
+  getServiceCatalogWithAbilities(): Promise<PlatformServiceCatalogResponse> {
+    return this.request("GET", "/service-requests/v2/services/catalog");
   }
 
   // ============================================================

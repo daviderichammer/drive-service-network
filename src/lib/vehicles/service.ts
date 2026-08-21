@@ -172,6 +172,7 @@ export async function addVehicle(
           trim: input.trim?.trim() || null,
           mileage: input.mileage ?? null,
           nickname: input.nickname?.trim() || null,
+          zipCode: input.zipCode,
         },
       });
       await mirrorVehicleToOpenbay(existing.id, userId, input);
@@ -192,6 +193,9 @@ export async function addVehicle(
       trim: input.trim?.trim() || null,
       mileage: input.mileage ?? null,
       nickname: input.nickname?.trim() || null,
+      // Retained so the booking flow can default the service location to where
+      // the vehicle actually lives, rather than asking for the ZIP twice.
+      zipCode: input.zipCode,
       status: "ACTIVE",
       // Adding a vehicle never enrols it in the paid programme.
       programStatus: "FREE",
@@ -235,6 +239,7 @@ export async function updateVehicle(
         : {}),
       ...(input.mileage !== undefined ? { mileage: input.mileage } : {}),
       ...(input.nickname !== undefined ? { nickname: input.nickname?.trim() || null } : {}),
+      ...(input.zipCode !== undefined ? { zipCode: input.zipCode } : {}),
       ...(vin ? { vin } : {}),
     },
   });

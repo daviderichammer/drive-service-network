@@ -65,8 +65,12 @@ export interface CreateBookingInput {
   services: SelectedService[];
   notes?: string;
   phone?: string;
-  /** Quoted standard price in cents where a facility has supplied one. */
+  /** Verified standard price in cents supplied by the selected facility offer. */
   quotedPriceCents?: number | null;
+  /** DSN-local service request that generated the selected facility estimate. */
+  serviceRequestId?: string;
+  /** Openbay facility offer identifier revalidated by the booking route. */
+  openbayOfferId?: string;
 }
 
 export interface BookingResult {
@@ -160,6 +164,7 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingR
     data: {
       userId: input.userId,
       vehicleId: vehicle.id,
+      serviceRequestId: input.serviceRequestId,
       serviceType: serviceNames || "Service appointment",
       serviceDescription: JSON.stringify(input.services),
       scheduledAt: new Date(input.scheduledTime),
@@ -172,6 +177,7 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingR
       shopPhone: facilityPhone,
       shopRating: facilityRating ?? undefined,
       openbayLocationId: input.facilitySlug,
+      openbayOfferId: input.openbayOfferId,
       quotedPriceCents: pricing.standardCents ?? undefined,
       dsnPlusSavingsCents: vehicleEnrolled ? pricing.savingsCents ?? undefined : undefined,
       customerNotes: input.notes || null,
@@ -186,6 +192,8 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingR
       facilitySlug: input.facilitySlug,
       serviceCount: input.services.length,
       dsnPlusVehicle: vehicleEnrolled,
+      quotedPriceCents: pricing.standardCents,
+      openbayOfferId: input.openbayOfferId ?? null,
     },
   });
 

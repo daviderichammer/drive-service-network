@@ -36,6 +36,7 @@ import {
 } from "@/lib/booking/draft";
 import { FUNNEL_EVENTS, trackEvent } from "@/lib/analytics/funnel";
 import { TrackEvent } from "@/components/analytics/TrackEvent";
+import { formatCents } from "@/lib/dsn-plus/discount";
 
 interface VehicleOption {
   id: string;
@@ -108,6 +109,9 @@ export default function SchedulePage() {
             },
           ],
           notes: notes.trim() || undefined,
+          quotedPriceCents: draft.facility.standardPriceCents ?? undefined,
+          serviceRequestId: draft.serviceRequestId ?? undefined,
+          openbayOfferId: draft.facility.openbayOfferId ?? undefined,
         }),
       });
       const payload = await res.json();
@@ -212,6 +216,29 @@ export default function SchedulePage() {
                         : "Registered to your membership"}
                     </p>
                   </div>
+                </div>
+              )}
+
+              {typeof facility.standardPriceCents === "number" && (
+                <div className="rounded-lg border border-teal/20 bg-teal/5 p-3">
+                  <p className="font-montserrat text-xs font-bold uppercase tracking-wide text-teal">
+                    Facility estimate
+                  </p>
+                  <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <p className="font-opensans text-xs text-gray-500">
+                      FREE: <span className="font-bold text-navy">{formatCents(facility.standardPriceCents)}</span>
+                    </p>
+                    {typeof facility.dsnPlusPriceCents === "number" && (
+                      <p className="font-opensans text-xs text-teal">
+                        DSN+: <span className="font-bold">{formatCents(facility.dsnPlusPriceCents)}</span>
+                        {typeof facility.dsnPlusSavingsCents === "number" &&
+                          ` · Save ${formatCents(facility.dsnPlusSavingsCents)}`}
+                      </p>
+                    )}
+                  </div>
+                  <p className="mt-1 font-opensans text-[11px] text-gray-500">
+                    Your price today: {formatCents(enrolled ? facility.dsnPlusPriceCents : facility.standardPriceCents)}. The facility confirms final scope before service.
+                  </p>
                 </div>
               )}
             </div>

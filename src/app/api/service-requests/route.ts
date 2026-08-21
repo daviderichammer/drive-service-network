@@ -1,22 +1,23 @@
 /**
- * POST /api/service-requests — record a member's request for pricing.
+ * POST /api/service-requests — create a member-owned request for real facility estimates.
  *
- * BUILD Absolute Rules 1 and 2 are enforced through the membership gate: the
- * caller must be a member, and the vehicle must belong to them.
- *
- * The request is attempted against the Platform API first. Partner 116 is
- * currently not entitled to service-request generation (FLAG F-1), so the
- * request is persisted in DSN's database and marked DRAFT for the DSN team to
- * action. No pricing, availability or facility estimate is ever fabricated
- * (BUILD sections G and I).
+ * The request is first recorded in DSN, then created through the Openbay Platform
+ * API. The resulting Openbay id is used by the offers route to poll the network
+ * for competitive facility estimates. DSN remains the system of record and never
+ * exposes the upstream service outside the branded member experience.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { assertVehicleOwnership } from "@/lib/membership/gate";
-import { trackFunnelEvent } from "@/lib/membership/service";
-import { getPlatformClient, PlatformApiRequestError } from "@/lib/platform";
+import { ensureOpenbayDriver, trackFunnelEvent } from "@/lib/membership/service";
+import { ensureOpenbayVehicle } from "@/lib/vehicles/service";
+import {
+  getPlatformClient,
+  memberFacingError,
+  PlatformApiRequestError,
+} from "@/lib/platform";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,6 @@ const schema = z.object({
       })
     )
     .min(1, "Please choose at least one service"),
-  preferredLocationId: z.number().int().positive().optional(),
   notes: z.string().max(2000).optional(),
 });
 
@@ -66,24 +66,13 @@ export async function POST(request: NextRequest) {
   }
 
   const input = parsed.data;
-
-  // BUILD Absolute Rule 2.
   const ownership = await assertVehicleOwnership(session.user.id, input.vehicleId);
   if (!ownership.ok) {
     return NextResponse.json({ error: ownership.message }, { status: 403 });
   }
 
-  const [user, vehicle] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { openbayUserId: true },
-    }),
-    prisma.vehicle.findUnique({
-      where: { id: input.vehicleId },
-      select: { openbayVehicleId: true },
-    }),
-  ]);
-
+  // Preserve the member's request even when a legacy account needs upstream
+  // linkage repaired before it can be sent for competitive estimates.
   const serviceRequest = await prisma.serviceRequest.create({
     data: {
       userId: session.user.id,
@@ -92,7 +81,7 @@ export async function POST(request: NextRequest) {
       serviceZipCode: input.serviceZipCode,
       requestedServices: input.services as unknown as object,
       interviewAnswers: input.services
-        .flatMap((s) => s.interview ?? [])
+        .flatMap((service) => service.interview ?? [])
         .filter(Boolean) as unknown as object,
       notes: input.notes || null,
     },
@@ -104,57 +93,93 @@ export async function POST(request: NextRequest) {
     metadata: { vehicleId: input.vehicleId, serviceCount: input.services.length },
   });
 
-  // Attempt the Platform API path. Expected to fail with 403 until Openbay
-  // grants the entitlement; the DSN record above is authoritative either way.
-  if (user?.openbayUserId && vehicle?.openbayVehicleId) {
-    try {
-      const created = await getPlatformClient().createServiceRequest({
-        userId: Number(user.openbayUserId),
-        ownedVehicleId: Number(vehicle.openbayVehicleId),
-        zipcode: input.serviceZipCode,
-        services: input.services.map((s) => ({
-          serviceId: s.serviceId,
-          interview: s.interview,
-        })),
-        notes: input.notes,
-      });
-
-      await prisma.serviceRequest.update({
-        where: { id: serviceRequest.id },
-        data: {
-          openbayServiceRequestId: String(created.id),
-          status: "OPEN_FOR_OFFERS",
-        },
-      });
-
-      return NextResponse.json(
-        {
-          id: serviceRequest.id,
-          status: "OPEN_FOR_OFFERS",
-          message: "We are collecting estimates from service facilities near you.",
-        },
-        { status: 201 }
-      );
-    } catch (err) {
-      const entitlementBlocked =
-        err instanceof PlatformApiRequestError && err.entitlement;
-      console.error("[ServiceRequest] Platform API creation unavailable", {
-        serviceRequestId: serviceRequest.id,
-        entitlementBlocked,
-        message: err instanceof Error ? err.message : String(err),
-      });
-    }
+  // New registrations already provision this identifier. The same helper
+  // gracefully repairs older DSN accounts that predate the Openbay linkage.
+  const openbayUserId = await ensureOpenbayDriver(session.user.id);
+  if (!openbayUserId) {
+    return NextResponse.json(
+      {
+        id: serviceRequest.id,
+        status: "DRAFT",
+        pricingStatus: "PREPARING_MEMBER",
+        retryable: true,
+        message:
+          "We are preparing your member profile for facility estimates. Please check again in a moment.",
+      },
+      { status: 202 }
+    );
   }
 
-  return NextResponse.json(
-    {
-      id: serviceRequest.id,
-      status: "DRAFT",
-      message:
-        "Your request has been received. A Drive Service Network representative will follow up with pricing.",
-      // Signals to the UI that automated estimates are not yet available.
-      automatedEstimatesAvailable: false,
-    },
-    { status: 201 }
+  // Older vehicles can also predate upstream mirroring. Recreate the upstream
+  // vehicle where DSN has sufficient VIN or catalog information; never fail the
+  // local membership or booking record when that repair needs member attention.
+  const openbayVehicleId = await ensureOpenbayVehicle(
+    session.user.id,
+    input.vehicleId,
+    input.serviceZipCode
   );
+  if (!openbayVehicleId) {
+    return NextResponse.json(
+      {
+        id: serviceRequest.id,
+        status: "DRAFT",
+        pricingStatus: "PREPARING_VEHICLE",
+        retryable: true,
+        message:
+          "We are preparing this vehicle for facility estimates. Please confirm its VIN or vehicle details and check again in a moment.",
+      },
+      { status: 202 }
+    );
+  }
+
+  try {
+    const created = await getPlatformClient().createServiceRequest({
+      userId: Number(openbayUserId),
+      ownedVehicleId: Number(openbayVehicleId),
+      zipcode: input.serviceZipCode,
+      services: input.services.map((service) => ({
+        serviceId: service.serviceId,
+        interview: service.interview,
+      })),
+      notes: input.notes,
+    });
+
+    await prisma.serviceRequest.update({
+      where: { id: serviceRequest.id },
+      data: {
+        openbayServiceRequestId: String(created.id),
+        status: "OPEN_FOR_OFFERS",
+      },
+    });
+
+    return NextResponse.json(
+      {
+        id: serviceRequest.id,
+        status: "OPEN_FOR_OFFERS",
+        pricingStatus: "COLLECTING_OFFERS",
+        automatedEstimatesAvailable: true,
+        message: "We are collecting competitive estimates from nearby service facilities.",
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    const mapped = memberFacingError(error);
+    const entitlementBlocked =
+      error instanceof PlatformApiRequestError && error.entitlement;
+    console.error("[ServiceRequest] Platform API creation failed", {
+      serviceRequestId: serviceRequest.id,
+      entitlementBlocked,
+      message: error instanceof Error ? error.message : String(error),
+    });
+
+    return NextResponse.json(
+      {
+        id: serviceRequest.id,
+        status: "DRAFT",
+        retryable: true,
+        error: mapped.message,
+      },
+      { status: mapped.status }
+    );
+  }
 }

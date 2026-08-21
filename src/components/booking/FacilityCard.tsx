@@ -9,16 +9,16 @@
  * review volume, amenities, certifications, operating hours, warranty coverage
  * and whether the facility performs the requested work.
  *
- * No price is shown here. Competitive priced estimates require the
- * service-request entitlement that Openbay has not granted to this partner
- * (FLAG F-1); inventing a figure would breach BUILD sections G and I. The DSN+
- * saving is therefore presented as a benefit rather than a fabricated number.
+ * Real facility estimates are shown only after the member's authenticated
+ * service request has generated offers. The DSN+ member amount is calculated
+ * from the facility's real estimate using the programme's 10% discount rule.
  *
  * The facility is never described as an Openbay shop — it is a Drive Service
  * Network facility (BUILD section 5).
  */
 
-import { Car, Check, Clock, MapPin, Phone, ShieldCheck, Star } from "lucide-react";
+import { BadgeDollarSign, Car, Check, Clock, MapPin, Phone, ShieldCheck, Star } from "lucide-react";
+import { formatCents } from "@/lib/dsn-plus/discount";
 import { cn } from "@/lib/utils";
 
 export interface FacilityCardData {
@@ -42,6 +42,12 @@ export interface FacilityCardData {
   performsRequestedServices: boolean | null;
   /** Count of real bookable openings in the next fourteen days, when known. */
   openSlots?: number | null;
+  /** Facility-supplied estimate from the member's live service request. */
+  standardPriceCents?: number | null;
+  /** Flat 10% DSN+ programme comparison derived from the real facility offer. */
+  dsnPlusPriceCents?: number | null;
+  dsnPlusSavingsCents?: number | null;
+  openbayOfferId?: number | null;
 }
 
 const DAY_ORDER = [
@@ -154,6 +160,34 @@ export function FacilityCard({
             </div>
           )}
 
+          {typeof facility.standardPriceCents === "number" &&
+            typeof facility.dsnPlusPriceCents === "number" &&
+            typeof facility.dsnPlusSavingsCents === "number" && (
+              <div className="mt-3 rounded-lg border border-teal/20 bg-teal/5 p-3">
+                <div className="flex items-center gap-1.5 font-montserrat text-[10px] font-bold uppercase tracking-wide text-teal">
+                  <BadgeDollarSign className="h-3.5 w-3.5" />
+                  Real facility estimate
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="font-opensans text-[11px] text-gray-500">FREE price</p>
+                    <p className="font-montserrat text-base font-bold text-navy">
+                      {formatCents(facility.standardPriceCents)}
+                    </p>
+                  </div>
+                  <div className="border-l border-teal/20 pl-3">
+                    <p className="font-opensans text-[11px] text-teal">DSN+ price</p>
+                    <p className="font-montserrat text-base font-bold text-teal">
+                      {formatCents(facility.dsnPlusPriceCents)}
+                    </p>
+                    <p className="font-opensans text-[11px] font-semibold text-teal">
+                      Save {formatCents(facility.dsnPlusSavingsCents)} (10%)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-opensans text-xs text-gray-500">
             <span className="inline-flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5 text-gray-400" />
@@ -227,7 +261,7 @@ export function FacilityCard({
                 : "bg-navy text-white hover:bg-navy-700"
             )}
           >
-            {selected ? "Selected" : "Choose times"}
+            {selected ? "Selected" : "Choose this estimate"}
           </button>
           <button
             onClick={onViewDetails}

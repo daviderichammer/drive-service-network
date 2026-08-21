@@ -31,6 +31,12 @@ export interface BookingDraftFacility {
   rating: number | null;
   reviewCount: number | null;
   distanceMiles: number | null;
+  /** Facility-supplied estimate, not a DSN-generated estimate. */
+  standardPriceCents?: number | null;
+  /** DSN+ price derived from the facility estimate at the current 10% rate. */
+  dsnPlusPriceCents?: number | null;
+  dsnPlusSavingsCents?: number | null;
+  openbayOfferId?: number | null;
 }
 
 export interface BookingDraft {
@@ -39,6 +45,8 @@ export interface BookingDraft {
   radius?: number;
   service?: BookingDraftService | null;
   facility?: BookingDraftFacility | null;
+  /** DSN-local record whose upstream counterpart generated the live offers. */
+  serviceRequestId?: string | null;
   scheduledTime?: string;
   scheduledLabel?: string;
   notes?: string;

@@ -138,6 +138,75 @@ async function mirrorVehicleToOpenbay(
   }
 }
 
+/**
+ * Returns an Openbay owned-vehicle id for a member-owned DSN vehicle. Newer
+ * vehicles already have this value from their creation flow. For legacy records,
+ * it recreates the upstream mirror only when DSN has a valid VIN or a resolved
+ * platform style id; otherwise the caller can guide the member to complete their
+ * vehicle profile without losing the local request.
+ */
+export async function ensureOpenbayVehicle(
+  userId: string,
+  vehicleId: string,
+  fallbackZipCode: string
+): Promise<string | null> {
+  const vehicle = await prisma.vehicle.findFirst({
+    where: { id: vehicleId, userId, status: { not: "REMOVED" } },
+    select: {
+      id: true,
+      year: true,
+      make: true,
+      model: true,
+      color: true,
+      engine: true,
+      vin: true,
+      licensePlate: true,
+      trim: true,
+      mileage: true,
+      nickname: true,
+      zipCode: true,
+      openbayVehicleId: true,
+      openbayStyleId: true,
+    },
+  });
+
+  if (!vehicle) return null;
+  if (vehicle.openbayVehicleId) return vehicle.openbayVehicleId;
+
+  const vin = normaliseVin(vehicle.vin);
+  if (!((vin && isValidVin(vin)) || vehicle.openbayStyleId)) {
+    console.warn("[Vehicles] cannot mirror legacy vehicle without a VIN or style id", {
+      vehicleId,
+    });
+    return null;
+  }
+
+  const zipCode = /^\d{5}$/.test(vehicle.zipCode ?? "")
+    ? (vehicle.zipCode as string)
+    : fallbackZipCode;
+
+  await mirrorVehicleToOpenbay(vehicle.id, userId, {
+    year: vehicle.year,
+    make: vehicle.make,
+    model: vehicle.model,
+    color: vehicle.color ?? undefined,
+    engine: vehicle.engine ?? undefined,
+    vin: vehicle.vin ?? undefined,
+    licensePlate: vehicle.licensePlate ?? undefined,
+    trim: vehicle.trim ?? undefined,
+    mileage: vehicle.mileage ?? undefined,
+    nickname: vehicle.nickname ?? undefined,
+    zipCode,
+    openbayStyleTrimId: vehicle.openbayStyleId ?? undefined,
+  });
+
+  const refreshed = await prisma.vehicle.findUnique({
+    where: { id: vehicle.id },
+    select: { openbayVehicleId: true },
+  });
+  return refreshed?.openbayVehicleId ?? null;
+}
+
 export async function addVehicle(
   userId: string,
   input: AddVehicleInput

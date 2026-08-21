@@ -14,6 +14,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { assertVehicleOwnership } from "@/lib/membership/gate";
 import { createBooking } from "@/lib/booking/service";
+import { getPlatformClient, memberFacingError } from "@/lib/platform";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,9 @@ const bookingSchema = z.object({
     .min(1, "Please choose at least one service"),
   notes: z.string().max(2000).optional(),
   phone: z.string().max(32).optional(),
+  /** Price is never trusted from the browser; it is verified from this offer. */
+  serviceRequestId: z.string().min(1).optional(),
+  openbayOfferId: z.number().int().positive().optional(),
   quotedPriceCents: z.number().int().nonnegative().nullable().optional(),
 });
 
@@ -79,6 +83,63 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: ownership.message }, { status: 403 });
   }
 
+  let verifiedPriceCents: number | null = null;
+  let serviceRequestId: string | undefined;
+  let openbayOfferId: string | undefined;
+
+  // A real estimate must be verified server-side immediately before booking. The
+  // caller may still use the established no-offer appointment path, but no price
+  // value supplied by the browser is ever stored as a facility quote on its own.
+  if (input.serviceRequestId || input.openbayOfferId) {
+    if (!input.serviceRequestId || !input.openbayOfferId) {
+      return NextResponse.json(
+        { error: "Please choose a facility estimate before booking." },
+        { status: 400 }
+      );
+    }
+
+    const serviceRequest = await prisma.serviceRequest.findFirst({
+      where: {
+        id: input.serviceRequestId,
+        userId: session.user.id,
+        vehicleId: input.vehicleId,
+      },
+      select: { id: true, openbayServiceRequestId: true },
+    });
+    if (!serviceRequest?.openbayServiceRequestId) {
+      return NextResponse.json(
+        { error: "This facility estimate is not ready to book yet. Please refresh estimates." },
+        { status: 409 }
+      );
+    }
+
+    try {
+      const offers = await getPlatformClient().getOffers(
+        Number(serviceRequest.openbayServiceRequestId)
+      );
+      const offer = Array.isArray(offers)
+        ? offers.find(
+            (candidate) =>
+              candidate.id === input.openbayOfferId &&
+              (!input.facilityLocationId || candidate.locationId === input.facilityLocationId)
+          )
+        : undefined;
+      if (!offer || !Number.isFinite(offer.totalPriceCents) || offer.totalPriceCents <= 0) {
+        return NextResponse.json(
+          { error: "That facility estimate is no longer available. Please refresh estimates." },
+          { status: 409 }
+        );
+      }
+
+      verifiedPriceCents = offer.totalPriceCents;
+      serviceRequestId = serviceRequest.id;
+      openbayOfferId = String(offer.id);
+    } catch (error) {
+      const mapped = memberFacingError(error);
+      return NextResponse.json({ error: mapped.message }, { status: mapped.status });
+    }
+  }
+
   const result = await createBooking({
     userId: session.user.id,
     vehicleId: input.vehicleId,
@@ -88,7 +149,9 @@ export async function POST(request: NextRequest) {
     services: input.services,
     notes: input.notes,
     phone: input.phone,
-    quotedPriceCents: input.quotedPriceCents ?? null,
+    quotedPriceCents: verifiedPriceCents,
+    serviceRequestId,
+    openbayOfferId,
   });
 
   if (!result.ok) {

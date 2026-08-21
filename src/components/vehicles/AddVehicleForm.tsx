@@ -146,6 +146,25 @@ export function AddVehicleForm({
     setModels(await fetchCatalog("models", { year, makeId: value }));
   };
 
+  const loadTrimsForSubModel = async (selectedSubModelId: string, selectedModelId = modelId) => {
+    const loadedTrims = await fetchCatalog("trims", {
+      year,
+      makeId,
+      modelId: selectedModelId,
+      subModelId: selectedSubModelId,
+    });
+    setTrims(loadedTrims);
+
+    // A single catalog result is still rendered in the enabled selector, but it
+    // is selected by default so the member can save without an unnecessary step.
+    if (loadedTrims.length === 1) {
+      const onlyTrim = loadedTrims[0];
+      setTrimId(String(onlyTrim.id));
+      const match = onlyTrim.name.match(/\(([^)]*)\)/);
+      if (match && !engine) setEngine(match[1]);
+    }
+  };
+
   const onModelChange = async (value: string) => {
     setModelId(value);
     setSubModelId("");
@@ -153,7 +172,15 @@ export function AddVehicleForm({
     setSubModels([]);
     setTrims([]);
     if (!value) return;
-    setSubModels(await fetchCatalog("subModels", { year, makeId, modelId: value }));
+
+    const loadedSubModels = await fetchCatalog("subModels", { year, makeId, modelId: value });
+    setSubModels(loadedSubModels);
+
+    if (loadedSubModels.length === 1) {
+      const onlyBodyStyle = String(loadedSubModels[0].id);
+      setSubModelId(onlyBodyStyle);
+      await loadTrimsForSubModel(onlyBodyStyle, value);
+    }
   };
 
   const onSubModelChange = async (value: string) => {
@@ -161,21 +188,7 @@ export function AddVehicleForm({
     setTrimId("");
     setTrims([]);
     if (!value) return;
-    const loadedTrims = await fetchCatalog("trims", {
-      year,
-      makeId,
-      modelId,
-      subModelId: value,
-    });
-    setTrims(loadedTrims);
-    // There is no member choice when the catalog yields a single style. Select
-    // it immediately so the registration payload always carries its style id.
-    if (loadedTrims.length === 1) {
-      const onlyTrim = loadedTrims[0];
-      setTrimId(String(onlyTrim.id));
-      const match = onlyTrim.name.match(/\(([^)]*)\)/);
-      if (match && !engine) setEngine(match[1]);
-    }
+    await loadTrimsForSubModel(value);
   };
 
   const decodeVin = async () => {

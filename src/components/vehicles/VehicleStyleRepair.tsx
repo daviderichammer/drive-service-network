@@ -185,7 +185,7 @@ export function VehicleStyleRepair({ vehicle, onComplete }: VehicleStyleRepairPr
                   value={subModelId}
                   onChange={(event) => void onBodyStyleChange(event.target.value)}
                   className={`${inputClass} mt-1.5`}
-                  disabled={saving || subModels.length <= 1}
+                  disabled={saving}
                 >
                   <option value="">Select body style</option>
                   {subModels.map((subModel) => (
@@ -201,7 +201,7 @@ export function VehicleStyleRepair({ vehicle, onComplete }: VehicleStyleRepairPr
                   value={trimId}
                   onChange={(event) => setTrimId(event.target.value)}
                   className={`${inputClass} mt-1.5`}
-                  disabled={saving || !subModelId || trims.length === 1}
+                  disabled={saving || !subModelId}
                 >
                   <option value="">Select trim</option>
                   {trims.map((trim) => (

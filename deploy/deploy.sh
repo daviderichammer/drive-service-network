@@ -70,7 +70,12 @@ systemctl --no-pager --lines=15 status "$SERVICE" || true
 
 say "Health check"
 PORT_NUM="$(grep -oP '(?<=^PORT=)\d+' "$ENV_FILE" || echo 3049)"
-if curl -fsS --max-time 20 -H "x-dsn-internal-secret: ${INTERNAL_API_SECRET}" "http://127.0.0.1:${PORT_NUM}/api/platform/health" >/dev/null; then
+# The secret is read from the env file rather than the deploying shell. It was
+# previously taken from the environment, which is empty under `bash deploy.sh`,
+# so the probe always sent an empty header and the health check always failed —
+# reporting a broken deployment on a perfectly healthy application.
+HEALTH_SECRET="$(grep -oP '(?<=^INTERNAL_API_SECRET=).*' "$ENV_FILE" | tr -d '"' || true)"
+if curl -fsS --max-time 20 -H "x-dsn-internal-secret: ${HEALTH_SECRET}" "http://127.0.0.1:${PORT_NUM}/api/platform/health" >/dev/null; then
   echo "Application is responding on port ${PORT_NUM}."
 else
   die "Health endpoint did not respond. Check: journalctl -u ${SERVICE} -n 100"
